@@ -1,0 +1,36 @@
+---
+name: Linters
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  # TODO: Fix Bandit Vulns
+  "Bandit":
+    runs-on: ubuntu-latest
+    container: python:3.10
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Bandit check
+        uses: jpetrucciani/bandit-check@master
+        with:
+          path: "api/ app.py"
+          bandit_flags: "-lll"
+
+  "Black":
+    runs-on: ubuntu-latest
+    container: python:3.10
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: pip install black
+
+      - name: Run black check
+        run: black --check .
