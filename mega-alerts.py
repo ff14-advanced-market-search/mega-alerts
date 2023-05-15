@@ -146,8 +146,8 @@ def clean_listing_data(auctions, connected_id):
     all_ah_buyouts, all_ah_bids = {}, {}
     pet_ah_buyouts, pet_ah_bids = {}, {}
     for item in auctions:
-        # dont to pets yet
         item_id = item["item"]["id"]
+        # regular items
         if item_id in desired_items and item_id != 82800:
             # idk why this is here, but have a feeling everything breaks without it
             price = 10000000 * 10000
@@ -158,7 +158,7 @@ def clean_listing_data(auctions, connected_id):
                 if price < desired_items[item_id] * 10000:
                     if item_id not in all_ah_bids.keys():
                         all_ah_bids[item_id] = [price / 10000]
-                    else:
+                    elif price / 10000 not in all_ah_bids[item_id]:
                         all_ah_bids[item_id].append(price / 10000)
             if "buyout" in item.keys():
                 price = item["buyout"]
@@ -166,8 +166,9 @@ def clean_listing_data(auctions, connected_id):
                 if price < desired_items[item_id] * 10000:
                     if item_id not in all_ah_buyouts.keys():
                         all_ah_buyouts[item_id] = [price / 10000]
-                    else:
+                    elif price / 10000 not in all_ah_buyouts[item_id]:
                         all_ah_buyouts[item_id].append(price / 10000)
+        # all caged battle pets have item id 82800
         elif item_id == 82800:
             ## pet data example for Sophic Amalgamation
             # {
@@ -196,7 +197,7 @@ def clean_listing_data(auctions, connected_id):
                     if price < desired_pets[pet_id] * 10000:
                         if pet_id not in pet_ah_bids.keys():
                             pet_ah_bids[pet_id] = [price / 10000]
-                        else:
+                        elif price / 10000 not in pet_ah_bids[pet_id]:
                             pet_ah_bids[pet_id].append(price / 10000)
                 if "buyout" in item.keys():
                     price = item["buyout"]
@@ -204,7 +205,7 @@ def clean_listing_data(auctions, connected_id):
                     if price < desired_pets[pet_id] * 10000:
                         if pet_id not in pet_ah_buyouts.keys():
                             pet_ah_buyouts[pet_id] = [price / 10000]
-                        else:
+                        elif price / 10000 not in pet_ah_buyouts[pet_id]:
                             pet_ah_buyouts[pet_id].append(price / 10000)
 
     if (
@@ -237,85 +238,57 @@ def format_alert_messages(
     results = []
     realm_names = [name for name, id in wow_server_names.items() if id == connected_id]
     for itemID, auction in all_ah_buyouts.items():
-        auction.sort()
-        # keep this as a list to see the price differences
-        minPrice = auction[0]
-        # get item names
+        # use instead of item name
         itemlink = f"https://www.wowhead.com/item={itemID}"
-
         results.append(
-            {
-                "region": region,
-                "realmID": connected_id,
-                "realmNames": realm_names,
-                "itemID": itemID,
-                "itemlink": itemlink,
-                "minPrice": minPrice,
-                "buyout_prices": json.dumps(auction),
-            }
+            results_dict(
+                auction, itemlink, connected_id, realm_names, itemID, "itemID", "buyout"
+            )
         )
 
     for itemID, auction in all_ah_bids.items():
-        auction.sort()
-        # keep this as a list to see the price differences
-        minPrice = auction[0]
-        # get item names
+        # use instead of item name
         itemlink = f"https://www.wowhead.com/item={itemID}"
-
         results.append(
-            {
-                "region": region,
-                "realmID": connected_id,
-                "realmNames": realm_names,
-                "itemID": itemID,
-                "itemlink": itemlink,
-                "minPrice": minPrice,
-                "bid_prices": json.dumps(auction),
-            }
+            results_dict(
+                auction, itemlink, connected_id, realm_names, itemID, "itemID", "bid"
+            )
         )
 
     for petID, auction in pet_ah_buyouts.items():
-        auction.sort()
-        # keep this as a list to see the price differences
-        minPrice = auction[0]
-
-        # get item names
+        # use instead of item name
         itemlink = create_oribos_exchange_pet_link(realm_names[0], petID)
-
         results.append(
-            {
-                "region": region,
-                "realmID": connected_id,
-                "realmNames": realm_names,
-                "petID": petID,
-                "itemlink": itemlink,
-                "minPrice": minPrice,
-                "buyout_prices": json.dumps(auction),
-            }
+            results_dict(
+                auction, itemlink, connected_id, realm_names, petID, "petID", "buyout"
+            )
         )
 
     for petID, auction in pet_ah_bids.items():
-        auction.sort()
-        # keep this as a list to see the price differences
-        minPrice = auction[0]
-
-        # get item names
+        # use instead of item name
         itemlink = create_oribos_exchange_pet_link(realm_names[0], petID)
-
         results.append(
-            {
-                "region": region,
-                "realmID": connected_id,
-                "realmNames": realm_names,
-                "petID": petID,
-                "itemlink": itemlink,
-                "minPrice": minPrice,
-                "buyout_prices": json.dumps(auction),
-            }
+            results_dict(
+                auction, itemlink, connected_id, realm_names, petID, "petID", "bid"
+            )
         )
 
     # end of the line alerts go out from here
     return results
+
+
+def results_dict(auction, itemlink, connected_id, realm_names, id, idType, priceType):
+    auction.sort()
+    minPrice = auction[0]
+    return {
+        "region": region,
+        "realmID": connected_id,
+        "realmNames": realm_names,
+        f"{idType}": id,
+        "itemlink": itemlink,
+        "minPrice": minPrice,
+        f"{priceType}_prices": json.dumps(auction),
+    }
 
 
 def main():
