@@ -2,12 +2,14 @@ import requests, os
 from tenacity import retry, stop_after_attempt
 
 
-def send_discord_message(message,webhook_url):
+def send_discord_message(message, webhook_url):
     try:
         json_data = {"content": message}
         requests.post(webhook_url, json=json_data)
     except Exception as ex:
         print(f"The exception was:", ex)
+
+
 @retry(stop=stop_after_attempt(3))
 def get_wow_access_token():
     access_token = requests.post(
@@ -57,4 +59,3 @@ def get_update_timers(home_realm_ids):
         print(server_update_times)
 
     return server_update_times
-

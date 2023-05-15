@@ -3,7 +3,12 @@ from __future__ import print_function
 import time, os, json
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
-from utils.api_requests import get_wow_access_token, get_listings_single, get_update_timers, send_discord_message
+from utils.api_requests import (
+    get_wow_access_token,
+    get_listings_single,
+    get_update_timers,
+    send_discord_message,
+)
 
 #### GLOBALS
 webhook_url = os.getenv("MEGA_WEBHOOK_URL")
@@ -51,6 +56,7 @@ def create_oribos_exchange_pet_link(realm_name, pet_id):
     else:
         url_region = "eu"
     return f"https://oribos.exchange/#{url_region}-{fixed_realm_name}/82800-{pet_id}"
+
 
 # it starts here
 def single_api_calls(connected_id: str):
