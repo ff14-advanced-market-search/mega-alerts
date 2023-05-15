@@ -59,7 +59,7 @@ def create_oribos_exchange_pet_link(realm_name, pet_id):
 
 
 # it starts here
-def single_api_calls(connected_id: str):
+def pull_single_realm_data(connected_id: str):
     access_token = get_wow_access_token()
     auctions = get_listings_single(connected_id, access_token, region)
     clean_auctions = clean_listing_data(auctions, connected_id)
@@ -240,12 +240,12 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
 def main():
     # # run everything once slow
     # for connected_id in set(wow_server_names.values()):
-    #     single_api_calls(connected_id)
+    #     pull_single_realm_data(connected_id)
 
     # # run everything once fast
     # pool = ThreadPoolExecutor(max_workers=16)
     # for connected_id in set(wow_server_names.values()):
-    #     pool.submit(single_api_calls, connected_id)
+    #     pool.submit(pull_single_realm_data, connected_id)
     # pool.shutdown(wait=True)
     # exit()
 
@@ -278,7 +278,7 @@ def main():
         if matching_realms != []:
             pool = ThreadPoolExecutor(max_workers=16)
             for connected_id in matching_realms:
-                pool.submit(single_api_calls, connected_id)
+                pool.submit(pull_single_realm_data, connected_id)
             pool.shutdown(wait=True)
             if os.getenv("HOME_REALMS"):
                 time.sleep(120)
