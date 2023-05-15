@@ -9,6 +9,7 @@ from utils.api_requests import (
     get_update_timers,
     send_discord_message,
 )
+from utils.helpers import create_oribos_exchange_pet_link
 
 #### GLOBALS
 webhook_url = os.getenv("MEGA_WEBHOOK_URL")
@@ -49,16 +50,6 @@ if os.getenv("HOME_REALMS"):
 
 
 #### FUNCTIONS
-def create_oribos_exchange_pet_link(realm_name, pet_id):
-    fixed_realm_name = realm_name.lower().replace("'", "").replace(" ", "-")
-    if region == "NA":
-        url_region = "us"
-    else:
-        url_region = "eu"
-    return f"https://oribos.exchange/#{url_region}-{fixed_realm_name}/82800-{pet_id}"
-
-
-# it starts here
 def pull_single_realm_data(connected_id: str):
     access_token = get_wow_access_token()
     auctions = get_listings_single(connected_id, access_token, region)
@@ -203,7 +194,7 @@ def format_alert_messages(
 
     for petID, auction in pet_ah_buyouts.items():
         # use instead of item name
-        itemlink = create_oribos_exchange_pet_link(realm_names[0], petID)
+        itemlink = create_oribos_exchange_pet_link(realm_names[0], petID, region)
         results.append(
             results_dict(
                 auction, itemlink, connected_id, realm_names, petID, "petID", "buyout"
@@ -238,17 +229,6 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
 
 
 def main():
-    # # run everything once slow
-    # for connected_id in set(wow_server_names.values()):
-    #     pull_single_realm_data(connected_id)
-
-    # # run everything once fast
-    # pool = ThreadPoolExecutor(max_workers=16)
-    # for connected_id in set(wow_server_names.values()):
-    #     pool.submit(pull_single_realm_data, connected_id)
-    # pool.shutdown(wait=True)
-    # exit()
-
     while True:
         update_timers = get_update_timers(home_realm_ids)
         current_min = int(datetime.now().minute)
@@ -273,5 +253,23 @@ def main():
             time.sleep(25)
 
 
+def main_single():
+    # run everything once slow
+    for connected_id in set(wow_server_names.values()):
+        pull_single_realm_data(connected_id)
+
+
+def main_fast():
+    # run everything once fast
+    pool = ThreadPoolExecutor(max_workers=16)
+    for connected_id in set(wow_server_names.values()):
+        pool.submit(pull_single_realm_data, connected_id)
+    pool.shutdown(wait=True)
+
+
 send_discord_message("starting mega alerts", webhook_url)
 main()
+
+## for debugging
+# main_single()
+# main_fast()
