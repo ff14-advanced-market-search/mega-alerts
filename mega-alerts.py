@@ -1,11 +1,17 @@
 #!/usr/bin/python3
 from __future__ import print_function
-import time, os, json, requests
+import time, os, json
 from datetime import datetime
-from tenacity import retry, stop_after_attempt
 from concurrent.futures import ThreadPoolExecutor
+from utils.api_requests import (
+    get_wow_access_token,
+    get_listings_single,
+    get_update_timers,
+    send_discord_message,
+)
+from utils.helpers import create_oribos_exchange_pet_link
 
-#### GLOBALS
+#### GLOBALS ####
 webhook_url = os.getenv("MEGA_WEBHOOK_URL")
 if os.getenv("DESIRED_ITEMS"):
     desired_items_raw = json.loads(os.getenv("DESIRED_ITEMS"))
@@ -43,71 +49,10 @@ if os.getenv("HOME_REALMS"):
         home_realm_ids.append(wow_server_names[r])
 
 
-#### FUNCTIONS
-def create_oribos_exchange_pet_link(realm_name, pet_id):
-    fixed_realm_name = realm_name.lower().replace("'", "").replace(" ", "-")
-    if region == "NA":
-        url_region = "us"
-    else:
-        url_region = "eu"
-    return f"https://oribos.exchange/#{url_region}-{fixed_realm_name}/82800-{pet_id}"
-
-
-@retry(stop=stop_after_attempt(3))
-def get_wow_access_token():
-    access_token = requests.post(
-        "https://oauth.battle.net/token",
-        data={"grant_type": "client_credentials"},
-        auth=(os.getenv("WOW_CLIENT_ID"), os.getenv("WOW_CLIENT_SECRET")),
-    ).json()["access_token"]
-    return access_token
-
-
-@retry(stop=stop_after_attempt(3), retry_error_callback=lambda state: {})
-def get_listings_single(connectedRealmId: int, access_token: str):
-    print("==========================================")
-    print(f"gather data from connectedRealmId {connectedRealmId} of region {region}")
-    if region == "NA":
-        url = f"https://us.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}/auctions?namespace=dynamic-us&locale=en_US&access_token={access_token}"
-    elif region == "EU":
-        url = f"https://eu.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}/auctions?namespace=dynamic-eu&locale=en_EU&access_token={access_token}"
-
-    req = requests.get(url, timeout=25)
-
-    auction_info = req.json()
-    return auction_info["auctions"]
-
-
-def get_update_timers():
-    update_timers = requests.post(
-        "http://api.saddlebagexchange.com/api/wow/uploadtimers",
-        json={},
-    ).json()["data"]
-
-    # cover all realms
-    if not os.getenv("HOME_REALMS"):
-        # remove commodities get all others
-        server_update_times = [
-            time_data
-            for time_data in update_timers
-            if time_data["dataSetID"] not in [-1, -2]
-        ]
-    # cover specific realms
-    else:
-        server_update_times = [
-            time_data
-            for time_data in update_timers
-            if time_data["dataSetID"] in home_realm_ids
-        ]
-        print(server_update_times)
-
-    return server_update_times
-
-
-# it starts here
-def single_api_calls(connected_id: str):
+#### FUNCTIONS ####
+def pull_single_realm_data(connected_id: str):
     access_token = get_wow_access_token()
-    auctions = get_listings_single(connected_id, access_token)
+    auctions = get_listings_single(connected_id, access_token, region)
     clean_auctions = clean_listing_data(auctions, connected_id)
     if not clean_auctions:
         return
@@ -131,23 +76,15 @@ def single_api_calls(connected_id: str):
             message += f"bid_prices: {auction['bid_prices']}\n"
         message += "==================================\n"
 
-        send_discord_message(message)
-
-
-def send_discord_message(message):
-    try:
-        json_data = {"content": message}
-        requests.post(webhook_url, json=json_data)
-    except Exception as ex:
-        print(f"The exception was:", ex)
+        send_discord_message(message, webhook_url)
 
 
 def clean_listing_data(auctions, connected_id):
     all_ah_buyouts, all_ah_bids = {}, {}
     pet_ah_buyouts, pet_ah_bids = {}, {}
     for item in auctions:
-        # dont to pets yet
         item_id = item["item"]["id"]
+        # regular items
         if item_id in desired_items and item_id != 82800:
             # idk why this is here, but have a feeling everything breaks without it
             price = 10000000 * 10000
@@ -158,7 +95,7 @@ def clean_listing_data(auctions, connected_id):
                 if price < desired_items[item_id] * 10000:
                     if item_id not in all_ah_bids.keys():
                         all_ah_bids[item_id] = [price / 10000]
-                    else:
+                    elif price / 10000 not in all_ah_bids[item_id]:
                         all_ah_bids[item_id].append(price / 10000)
             if "buyout" in item.keys():
                 price = item["buyout"]
@@ -166,26 +103,10 @@ def clean_listing_data(auctions, connected_id):
                 if price < desired_items[item_id] * 10000:
                     if item_id not in all_ah_buyouts.keys():
                         all_ah_buyouts[item_id] = [price / 10000]
-                    else:
+                    elif price / 10000 not in all_ah_buyouts[item_id]:
                         all_ah_buyouts[item_id].append(price / 10000)
+        # all caged battle pets have item id 82800
         elif item_id == 82800:
-            ## pet data example for Sophic Amalgamation
-            # {
-            #     'buyout': 85000000,
-            #     'id': 1082597671,
-            #     'item': {
-            #         'id': 82800,
-            #         'modifiers': [
-            #             {'type': 6, 'value': 90715}
-            #         ],
-            #         'pet_breed_id': 14,
-            #         'pet_level': 1,
-            #         'pet_quality_id': 3,
-            #         'pet_species_id': 2580
-            #     },
-            #     'quantity': 1,
-            #     'time_left': 'SHORT'
-            # }
             if item["item"]["pet_species_id"] in desired_pets.keys():
                 pet_id = item["item"]["pet_species_id"]
                 # idk why this is here, but have a feeling everything breaks without it
@@ -196,7 +117,7 @@ def clean_listing_data(auctions, connected_id):
                     if price < desired_pets[pet_id] * 10000:
                         if pet_id not in pet_ah_bids.keys():
                             pet_ah_bids[pet_id] = [price / 10000]
-                        else:
+                        elif price / 10000 not in pet_ah_bids[pet_id]:
                             pet_ah_bids[pet_id].append(price / 10000)
                 if "buyout" in item.keys():
                     price = item["buyout"]
@@ -204,7 +125,7 @@ def clean_listing_data(auctions, connected_id):
                     if price < desired_pets[pet_id] * 10000:
                         if pet_id not in pet_ah_buyouts.keys():
                             pet_ah_buyouts[pet_id] = [price / 10000]
-                        else:
+                        elif price / 10000 not in pet_ah_buyouts[pet_id]:
                             pet_ah_buyouts[pet_id].append(price / 10000)
 
     if (
@@ -237,101 +158,63 @@ def format_alert_messages(
     results = []
     realm_names = [name for name, id in wow_server_names.items() if id == connected_id]
     for itemID, auction in all_ah_buyouts.items():
-        auction.sort()
-        # keep this as a list to see the price differences
-        minPrice = auction[0]
-        # get item names
+        # use instead of item name
         itemlink = f"https://www.wowhead.com/item={itemID}"
-
         results.append(
-            {
-                "region": region,
-                "realmID": connected_id,
-                "realmNames": realm_names,
-                "itemID": itemID,
-                "itemlink": itemlink,
-                "minPrice": minPrice,
-                "buyout_prices": json.dumps(auction),
-            }
+            results_dict(
+                auction, itemlink, connected_id, realm_names, itemID, "itemID", "buyout"
+            )
         )
 
     for itemID, auction in all_ah_bids.items():
-        auction.sort()
-        # keep this as a list to see the price differences
-        minPrice = auction[0]
-        # get item names
+        # use instead of item name
         itemlink = f"https://www.wowhead.com/item={itemID}"
-
         results.append(
-            {
-                "region": region,
-                "realmID": connected_id,
-                "realmNames": realm_names,
-                "itemID": itemID,
-                "itemlink": itemlink,
-                "minPrice": minPrice,
-                "bid_prices": json.dumps(auction),
-            }
+            results_dict(
+                auction, itemlink, connected_id, realm_names, itemID, "itemID", "bid"
+            )
         )
 
     for petID, auction in pet_ah_buyouts.items():
-        auction.sort()
-        # keep this as a list to see the price differences
-        minPrice = auction[0]
-
-        # get item names
-        itemlink = create_oribos_exchange_pet_link(realm_names[0], petID)
-
+        # use instead of item name
+        itemlink = create_oribos_exchange_pet_link(realm_names[0], petID, region)
         results.append(
-            {
-                "region": region,
-                "realmID": connected_id,
-                "realmNames": realm_names,
-                "petID": petID,
-                "itemlink": itemlink,
-                "minPrice": minPrice,
-                "buyout_prices": json.dumps(auction),
-            }
+            results_dict(
+                auction, itemlink, connected_id, realm_names, petID, "petID", "buyout"
+            )
         )
 
     for petID, auction in pet_ah_bids.items():
-        auction.sort()
-        # keep this as a list to see the price differences
-        minPrice = auction[0]
-
-        # get item names
+        # use instead of item name
         itemlink = create_oribos_exchange_pet_link(realm_names[0], petID)
-
         results.append(
-            {
-                "region": region,
-                "realmID": connected_id,
-                "realmNames": realm_names,
-                "petID": petID,
-                "itemlink": itemlink,
-                "minPrice": minPrice,
-                "buyout_prices": json.dumps(auction),
-            }
+            results_dict(
+                auction, itemlink, connected_id, realm_names, petID, "petID", "bid"
+            )
         )
 
     # end of the line alerts go out from here
     return results
 
 
+def results_dict(auction, itemlink, connected_id, realm_names, id, idType, priceType):
+    auction.sort()
+    minPrice = auction[0]
+    return {
+        "region": region,
+        "realmID": connected_id,
+        "realmNames": realm_names,
+        f"{idType}": id,
+        "itemlink": itemlink,
+        "minPrice": minPrice,
+        f"{priceType}_prices": json.dumps(auction),
+    }
+
+
+#### MAIN ####
 def main():
-    # # run everything once slow
-    # for connected_id in set(wow_server_names.values()):
-    #     single_api_calls(connected_id)
-
-    # # run everything once fast
-    # pool = ThreadPoolExecutor(max_workers=16)
-    # for connected_id in set(wow_server_names.values()):
-    #     pool.submit(single_api_calls, connected_id)
-    # pool.shutdown(wait=True)
-    # exit()
-
     while True:
-        update_timers = get_update_timers()
+        update_timers = get_update_timers(home_realm_ids)
         current_min = int(datetime.now().minute)
 
         matching_realms = [
@@ -339,27 +222,11 @@ def main():
             for realm in update_timers
             if current_min <= realm["lastUploadMinute"] <= current_min + 3
         ]
-        # mega wants extra alerts
-        if os.getenv("EXTRA_ALERTS"):
-            extra_alert_mins = json.loads(os.getenv("EXTRA_ALERTS"))
-            if current_min in extra_alert_mins:
-                if not os.getenv("HOME_REALMS"):
-                    matching_realms = [
-                        realm["dataSetID"]
-                        for realm in update_timers
-                        if realm["dataSetID"] not in [-1, -2]
-                    ]
-                else:
-                    matching_realms = [
-                        realm["dataSetID"]
-                        for realm in update_timers
-                        if realm["dataSetID"] in home_realm_ids
-                    ]
 
         if matching_realms != []:
             pool = ThreadPoolExecutor(max_workers=16)
             for connected_id in matching_realms:
-                pool.submit(single_api_calls, connected_id)
+                pool.submit(pull_single_realm_data, connected_id)
             pool.shutdown(wait=True)
             if os.getenv("HOME_REALMS"):
                 time.sleep(120)
@@ -370,5 +237,23 @@ def main():
             time.sleep(25)
 
 
-send_discord_message("starting mega alerts")
+def main_single():
+    # run everything once slow
+    for connected_id in set(wow_server_names.values()):
+        pull_single_realm_data(connected_id)
+
+
+def main_fast():
+    # run everything once fast
+    pool = ThreadPoolExecutor(max_workers=16)
+    for connected_id in set(wow_server_names.values()):
+        pool.submit(pull_single_realm_data, connected_id)
+    pool.shutdown(wait=True)
+
+
+send_discord_message("starting mega alerts", webhook_url)
 main()
+
+## for debugging
+# main_single()
+# main_fast()
