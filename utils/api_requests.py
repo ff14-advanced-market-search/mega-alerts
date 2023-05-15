@@ -42,7 +42,7 @@ def get_update_timers(home_realm_ids):
     ).json()["data"]
 
     # cover all realms
-    if not os.getenv("HOME_REALMS"):
+    if home_realm_ids == []:
         # remove commodities get all others
         server_update_times = [
             time_data
