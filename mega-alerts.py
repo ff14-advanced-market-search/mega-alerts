@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 from __future__ import print_function
-import time, os, json, requests
+import time, os, json
 from datetime import datetime
-from tenacity import retry, stop_after_attempt
 from concurrent.futures import ThreadPoolExecutor
+from utils.api_requests import get_wow_access_token, get_listings_single, get_update_timers, send_discord_message
 
 #### GLOBALS
 webhook_url = os.getenv("MEGA_WEBHOOK_URL")
@@ -52,62 +52,10 @@ def create_oribos_exchange_pet_link(realm_name, pet_id):
         url_region = "eu"
     return f"https://oribos.exchange/#{url_region}-{fixed_realm_name}/82800-{pet_id}"
 
-
-@retry(stop=stop_after_attempt(3))
-def get_wow_access_token():
-    access_token = requests.post(
-        "https://oauth.battle.net/token",
-        data={"grant_type": "client_credentials"},
-        auth=(os.getenv("WOW_CLIENT_ID"), os.getenv("WOW_CLIENT_SECRET")),
-    ).json()["access_token"]
-    return access_token
-
-
-@retry(stop=stop_after_attempt(3), retry_error_callback=lambda state: {})
-def get_listings_single(connectedRealmId: int, access_token: str):
-    print("==========================================")
-    print(f"gather data from connectedRealmId {connectedRealmId} of region {region}")
-    if region == "NA":
-        url = f"https://us.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}/auctions?namespace=dynamic-us&locale=en_US&access_token={access_token}"
-    elif region == "EU":
-        url = f"https://eu.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}/auctions?namespace=dynamic-eu&locale=en_EU&access_token={access_token}"
-
-    req = requests.get(url, timeout=25)
-
-    auction_info = req.json()
-    return auction_info["auctions"]
-
-
-def get_update_timers():
-    update_timers = requests.post(
-        "http://api.saddlebagexchange.com/api/wow/uploadtimers",
-        json={},
-    ).json()["data"]
-
-    # cover all realms
-    if not os.getenv("HOME_REALMS"):
-        # remove commodities get all others
-        server_update_times = [
-            time_data
-            for time_data in update_timers
-            if time_data["dataSetID"] not in [-1, -2]
-        ]
-    # cover specific realms
-    else:
-        server_update_times = [
-            time_data
-            for time_data in update_timers
-            if time_data["dataSetID"] in home_realm_ids
-        ]
-        print(server_update_times)
-
-    return server_update_times
-
-
 # it starts here
 def single_api_calls(connected_id: str):
     access_token = get_wow_access_token()
-    auctions = get_listings_single(connected_id, access_token)
+    auctions = get_listings_single(connected_id, access_token, region)
     clean_auctions = clean_listing_data(auctions, connected_id)
     if not clean_auctions:
         return
@@ -131,15 +79,7 @@ def single_api_calls(connected_id: str):
             message += f"bid_prices: {auction['bid_prices']}\n"
         message += "==================================\n"
 
-        send_discord_message(message)
-
-
-def send_discord_message(message):
-    try:
-        json_data = {"content": message}
-        requests.post(webhook_url, json=json_data)
-    except Exception as ex:
-        print(f"The exception was:", ex)
+        send_discord_message(message, webhook_url)
 
 
 def clean_listing_data(auctions, connected_id):
@@ -304,7 +244,7 @@ def main():
     # exit()
 
     while True:
-        update_timers = get_update_timers()
+        update_timers = get_update_timers(home_realm_ids)
         current_min = int(datetime.now().minute)
 
         matching_realms = [
@@ -343,5 +283,5 @@ def main():
             time.sleep(25)
 
 
-send_discord_message("starting mega alerts")
+send_discord_message("starting mega alerts", webhook_url)
 main()
