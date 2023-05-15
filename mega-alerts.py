@@ -42,6 +42,7 @@ if os.getenv("HOME_REALMS"):
     for r in home_realms:
         home_realm_ids.append(wow_server_names[r])
 
+
 #### FUNCTIONS
 def create_oribos_exchange_pet_link(realm_name, pet_id):
     fixed_realm_name = realm_name.lower().replace("'", "").replace(" ", "-")
