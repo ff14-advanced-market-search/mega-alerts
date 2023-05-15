@@ -24,7 +24,7 @@ COPY ./run /app/
 RUN chmod +x /app/*
 
 # wow data
-COPY ./data/wow-connected-realm-ids.json /app/data/
+COPY ./data/na-wow-connected-realm-ids.json /app/data/
 COPY ./data/eu-wow-connected-realm-ids.json /app/data/
 
 CMD /app/run
