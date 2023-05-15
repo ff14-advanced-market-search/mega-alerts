@@ -11,7 +11,7 @@ from utils.api_requests import (
 )
 from utils.helpers import create_oribos_exchange_pet_link
 
-#### GLOBALS
+#### GLOBALS ####
 webhook_url = os.getenv("MEGA_WEBHOOK_URL")
 if os.getenv("DESIRED_ITEMS"):
     desired_items_raw = json.loads(os.getenv("DESIRED_ITEMS"))
@@ -49,7 +49,7 @@ if os.getenv("HOME_REALMS"):
         home_realm_ids.append(wow_server_names[r])
 
 
-#### FUNCTIONS
+#### FUNCTIONS ####
 def pull_single_realm_data(connected_id: str):
     access_token = get_wow_access_token()
     auctions = get_listings_single(connected_id, access_token, region)
@@ -107,23 +107,6 @@ def clean_listing_data(auctions, connected_id):
                         all_ah_buyouts[item_id].append(price / 10000)
         # all caged battle pets have item id 82800
         elif item_id == 82800:
-            ## pet data example for Sophic Amalgamation
-            # {
-            #     'buyout': 85000000,
-            #     'id': 1082597671,
-            #     'item': {
-            #         'id': 82800,
-            #         'modifiers': [
-            #             {'type': 6, 'value': 90715}
-            #         ],
-            #         'pet_breed_id': 14,
-            #         'pet_level': 1,
-            #         'pet_quality_id': 3,
-            #         'pet_species_id': 2580
-            #     },
-            #     'quantity': 1,
-            #     'time_left': 'SHORT'
-            # }
             if item["item"]["pet_species_id"] in desired_pets.keys():
                 pet_id = item["item"]["pet_species_id"]
                 # idk why this is here, but have a feeling everything breaks without it
@@ -228,6 +211,7 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
     }
 
 
+#### MAIN ####
 def main():
     while True:
         update_timers = get_update_timers(home_realm_ids)
