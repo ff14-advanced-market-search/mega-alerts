@@ -58,7 +58,7 @@ If you want to snipe across all realms then do not add the `HOME_REALMS` env var
 ```
 docker run -dit \
     --name wow-test \
-    --env WEBHOOK_URL=$WEBHOOK_URL \
+    --env MEGA_WEBHOOK_URL=$MEGA_WEBHOOK_URL \
     --env WOW_CLIENT_ID=$WOW_CLIENT_ID \
     --env WOW_CLIENT_SECRET=$WOW_CLIENT_SECRET \
     --env DATA_SET=MEGA \
@@ -72,7 +72,7 @@ If you want to snipe only on specific realms then add the `HOME_REALMS` env var 
 ```
 docker run -dit \
     --name wow-test \
-    --env WEBHOOK_URL=$WEBHOOK_URL \
+    --env MEGA_WEBHOOK_URL=$MEGA_WEBHOOK_URL \
     --env WOW_CLIENT_ID=$WOW_CLIENT_ID \
     --env WOW_CLIENT_SECRET=$WOW_CLIENT_SECRET \
     --env DATA_SET=MEGA \
