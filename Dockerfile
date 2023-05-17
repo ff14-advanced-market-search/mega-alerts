@@ -32,7 +32,6 @@ CMD /app/run
 ## run local
 #  docker run -dit \
 #      --name wow-test \
-#      --env DATA_SET=MEGA \
 #      --env WOW_REGION=NA \
 #      --env DESIRED_ITEMS='{"194641": 500000, "159840":40000}' \
 #      --env DESIRED_PETS='{"3390": 2700}' \

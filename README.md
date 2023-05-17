@@ -61,7 +61,6 @@ docker run -dit \
     --env MEGA_WEBHOOK_URL=$MEGA_WEBHOOK_URL \
     --env WOW_CLIENT_ID=$WOW_CLIENT_ID \
     --env WOW_CLIENT_SECRET=$WOW_CLIENT_SECRET \
-    --env DATA_SET=MEGA \
     --env WOW_REGION=EU \
     --env DESIRED_ITEMS='{"194641": 500000, "159840":40000}' \
     --env DESIRED_PETS='{"3390": 2700}' \
@@ -75,7 +74,6 @@ docker run -dit \
     --env MEGA_WEBHOOK_URL=$MEGA_WEBHOOK_URL \
     --env WOW_CLIENT_ID=$WOW_CLIENT_ID \
     --env WOW_CLIENT_SECRET=$WOW_CLIENT_SECRET \
-    --env DATA_SET=MEGA \
     --env WOW_REGION=EU \
     --env DESIRED_ITEMS='{"194641": 500000, "159840":40000}' \
     --env DESIRED_PETS='{"3390": 2700}' \
