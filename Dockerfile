@@ -19,7 +19,9 @@ RUN apk -v --update add \
 
 WORKDIR /app
 RUN mkdir /app/data/
+RUN mkdir /app/utils/
 COPY ./mega-alerts.py /app/
+COPY ./utils/* /app/utils/
 COPY ./run /app/
 RUN chmod +x /app/*
 
