@@ -3,6 +3,7 @@ from __future__ import print_function
 import time, os, json
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
+
 # from api_requests import (
 #     get_wow_access_token,
 #     get_listings_single,
@@ -73,6 +74,7 @@ def get_update_timers(home_realm_ids):
         print(server_update_times)
 
     return server_update_times
+
 
 def create_oribos_exchange_pet_link(realm_name, pet_id, region):
     fixed_realm_name = realm_name.lower().replace("'", "").replace(" ", "-")
