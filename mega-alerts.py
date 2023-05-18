@@ -10,7 +10,10 @@ from utils.api_requests import (
     get_update_timers,
     send_discord_message,
 )
-from utils.helpers import create_oribos_exchange_pet_link
+from utils.helpers import (
+    create_oribos_exchange_pet_link,
+    create_oribos_exchange_item_link,
+)
 
 #### GLOBALS ####
 alert_record = []
@@ -162,7 +165,10 @@ def format_alert_messages(
     realm_names = [name for name, id in wow_server_names.items() if id == connected_id]
     for itemID, auction in all_ah_buyouts.items():
         # use instead of item name
-        itemlink = f"https://www.wowhead.com/item={itemID}"
+        if os.getenv("UNDERMINE_EMBED"):
+            itemlink = create_oribos_exchange_item_link(realm_names[0], itemID, region)
+        else:
+            itemlink = f"https://www.wowhead.com/item={itemID}"
         results.append(
             results_dict(
                 auction, itemlink, connected_id, realm_names, itemID, "itemID", "buyout"
@@ -171,7 +177,10 @@ def format_alert_messages(
 
     for itemID, auction in all_ah_bids.items():
         # use instead of item name
-        itemlink = f"https://www.wowhead.com/item={itemID}"
+        if os.getenv("UNDERMINE_EMBED"):
+            itemlink = create_oribos_exchange_item_link(realm_names[0], itemID, region)
+        else:
+            itemlink = f"https://www.wowhead.com/item={itemID}"
         results.append(
             results_dict(
                 auction, itemlink, connected_id, realm_names, itemID, "itemID", "bid"
@@ -214,6 +223,18 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
     }
 
 
+def send_upload_timer_message(update_timers):
+    update_timers.sort(key=lambda x: x["lastUploadMinute"])
+    upload_msg = ""
+    for realm_info in update_timers:
+        upload_msg += (
+            f"{realm_info['lastUploadMinute']} : {realm_info['dataSetName']}\n"
+        )
+
+    # this is too big needs to be sent as a file
+    send_discord_message(upload_msg, webhook_url)
+
+
 #### MAIN ####
 def main():
     global alert_record
@@ -223,6 +244,9 @@ def main():
         # clear out the alert record once an hour
         if current_min == 0:
             alert_record = []
+
+        ## wip
+        # send_upload_timer_message(update_timers)
 
         matching_realms = [
             realm["dataSetID"]
@@ -251,8 +275,9 @@ def main():
             for connected_id in matching_realms:
                 pool.submit(pull_single_realm_data, connected_id)
             pool.shutdown(wait=True)
+            # home realms will spam if theres no sleep
             if os.getenv("HOME_REALMS"):
-                time.sleep(120)
+                time.sleep(25)
         else:
             print(
                 f"waiting for a match in update time to run check on {desired_items}, none found triggering at {datetime.now()}"
