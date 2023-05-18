@@ -81,6 +81,21 @@ docker run -dit \
     cohenaj194/mega-alerts
 ```
 
+If you want it to trigger for all selected realms on a minute or several specific min of each hour you can trigger this with `EXTRA_ALERTS`:
+
+```
+docker run -dit \
+    --name wow-test \
+    --env MEGA_WEBHOOK_URL=$MEGA_WEBHOOK_URL \
+    --env WOW_CLIENT_ID=$WOW_CLIENT_ID \
+    --env WOW_CLIENT_SECRET=$WOW_CLIENT_SECRET \
+    --env WOW_REGION=EU \
+    --env DESIRED_ITEMS='{"194641": 500000, "159840":40000}' \
+    --env DESIRED_PETS='{"3390": 2700}' \
+    --env EXTRA_ALERTS=[15,45]
+    cohenaj194/mega-alerts
+```
+
 9. In docker desktop download the image and run it 
 
 <img width="1297" alt="image" src="https://user-images.githubusercontent.com/17516896/224506498-d385e177-4fd0-41fc-ae80-78e77b2e0c7b.png">
