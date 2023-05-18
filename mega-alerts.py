@@ -13,6 +13,7 @@ from utils.api_requests import (
 from utils.helpers import create_oribos_exchange_pet_link
 
 #### GLOBALS ####
+alert_record = []
 webhook_url = os.getenv("MEGA_WEBHOOK_URL")
 if os.getenv("DESIRED_ITEMS"):
     desired_items_raw = json.loads(os.getenv("DESIRED_ITEMS"))
@@ -76,8 +77,9 @@ def pull_single_realm_data(connected_id: str):
         else:
             message += f"bid_prices: {auction['bid_prices']}\n"
         message += "==================================\n"
-
-        send_discord_message(message, webhook_url)
+        if auction not in alert_record:
+            send_discord_message(message, webhook_url)
+            alert_record.append(auction)
 
 
 def clean_listing_data(auctions, connected_id):
@@ -214,9 +216,13 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
 
 #### MAIN ####
 def main():
+    global alert_record
     while True:
         update_timers = get_update_timers(home_realm_ids)
         current_min = int(datetime.now().minute)
+        # clear out the alert record once an hour
+        if current_min == 0:
+            alert_record = []
 
         matching_realms = [
             realm["dataSetID"]
