@@ -47,8 +47,7 @@ def get_update_timers(home_realm_ids, region):
         server_update_times = [
             time_data
             for time_data in update_timers
-            if time_data["dataSetID"] not in [-1, -2]
-            and time_data["region"] == region
+            if time_data["dataSetID"] not in [-1, -2] and time_data["region"] == region
         ]
     # cover specific realms
     else:

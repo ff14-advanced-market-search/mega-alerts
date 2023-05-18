@@ -236,7 +236,6 @@ def send_upload_timer_message(update_timers):
             send_discord_message(f"{upload_msg}```", webhook_url)
             upload_msg = "```"
 
-    # this is too big needs to be sent as a file
     if upload_msg != "```":
         send_discord_message(f"{upload_msg}```", webhook_url)
 
@@ -247,10 +246,11 @@ def main():
     while True:
         update_timers = get_update_timers(home_realm_ids, region)
         current_min = int(datetime.now().minute)
-        # clear out the alert record once an hour and show the new alert minutes
+        # clear out the alert record once an hour
         if current_min == 0:
             print("\n\nClearing Alert Record\n\n")
             alert_record = []
+        # show realm timers once per hour if desired
         if current_min == 1 and os.getenv("SHOW_UPLOAD_TIMES"):
             send_upload_timer_message(update_timers)
 
