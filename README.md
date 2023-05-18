@@ -96,20 +96,9 @@ docker run -dit \
     cohenaj194/mega-alerts
 ```
 
-If you dont want to see wowhead links with embeds you can instead just get the oribos links
-
-```
-docker run -dit \
-    --name wow-test \
-    --env MEGA_WEBHOOK_URL=$MEGA_WEBHOOK_URL \
-    --env WOW_CLIENT_ID=$WOW_CLIENT_ID \
-    --env WOW_CLIENT_SECRET=$WOW_CLIENT_SECRET \
-    --env WOW_REGION=EU \
-    --env DESIRED_ITEMS='{"194641": 500000, "159840":40000}' \
-    --env DESIRED_PETS='{"3390": 2700}' \
-    --env UNDERMINE_EMBED=true \
-    cohenaj194/mega-alerts
-```
+We also have the following optional env vars you can add in to change alert behavior:
+- `--env UNDERMINE_EMBED=true` If you dont want to see wowhead links with embeds, instead it will only show undermine links without an embed
+- `--env SHOW_UPLOAD_TIMES=true` To show the exact minute for all of your selected realms where alerts will trigger
 
 9. In docker desktop download the image and run it 
 
