@@ -221,8 +221,24 @@ def main():
         matching_realms = [
             realm["dataSetID"]
             for realm in update_timers
-            if current_min <= realm["lastUploadMinute"] <= current_min + 3
+            if current_min < realm["lastUploadMinute"] <= current_min + 1
         ]
+        # mega wants extra alerts
+        if os.getenv("EXTRA_ALERTS"):
+            extra_alert_mins = json.loads(os.getenv("EXTRA_ALERTS"))
+            if current_min in extra_alert_mins:
+                if not os.getenv("HOME_REALMS"):
+                    matching_realms = [
+                        realm["dataSetID"]
+                        for realm in update_timers
+                        if realm["dataSetID"] not in [-1, -2]
+                    ]
+                else:
+                    matching_realms = [
+                        realm["dataSetID"]
+                        for realm in update_timers
+                        if realm["dataSetID"] in home_realm_ids
+                    ]
 
         if matching_realms != []:
             pool = ThreadPoolExecutor(max_workers=16)
