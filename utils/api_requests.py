@@ -35,7 +35,7 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
     return auction_info["auctions"]
 
 
-def get_update_timers(home_realm_ids):
+def get_update_timers(home_realm_ids, region):
     update_timers = requests.post(
         "http://api.saddlebagexchange.com/api/wow/uploadtimers",
         json={},
@@ -48,13 +48,16 @@ def get_update_timers(home_realm_ids):
             time_data
             for time_data in update_timers
             if time_data["dataSetID"] not in [-1, -2]
+            and time_data["region"] == region
         ]
     # cover specific realms
     else:
         server_update_times = [
             time_data
             for time_data in update_timers
-            if time_data["dataSetID"] in home_realm_ids
+            if time_data["dataSetID"] not in [-1, -2]
+            and time_data["dataSetID"] in home_realm_ids
+            and time_data["region"] == region
         ]
         print(server_update_times)
 
