@@ -243,6 +243,8 @@ def main():
         current_min = int(datetime.now().minute)
         # clear out the alert record once an hour
         if current_min == 0:
+            # send_discord_message("Clearing Alert Record", webhook_url)
+            print("\n\nClearing Alert Record\n\n")
             alert_record = []
 
         ## wip
