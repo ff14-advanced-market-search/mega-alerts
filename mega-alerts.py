@@ -238,7 +238,9 @@ def main():
     while True:
         update_timers = get_update_timers(home_realm_ids)
         current_min = int(datetime.now().minute)
-        send_upload_timer_message(update_timers)
+
+        ## wip
+        # send_upload_timer_message(update_timers)
 
         matching_realms = [
             realm["dataSetID"]
