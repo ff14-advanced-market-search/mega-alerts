@@ -92,7 +92,7 @@ docker run -dit \
     --env WOW_REGION=EU \
     --env DESIRED_ITEMS='{"194641": 500000, "159840":40000}' \
     --env DESIRED_PETS='{"3390": 2700}' \
-    --env EXTRA_ALERTS=[15,45]
+    --env EXTRA_ALERTS='[15,45]'
     cohenaj194/mega-alerts
 ```
 
