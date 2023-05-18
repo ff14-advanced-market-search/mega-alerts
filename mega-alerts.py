@@ -212,11 +212,24 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
     }
 
 
+def send_upload_timer_message(update_timers):
+    update_timers.sort(key=lambda x: x["lastUploadMinute"])
+    upload_msg = ""
+    for realm_info in update_timers:
+        upload_msg += (
+            f"{realm_info['lastUploadMinute']} : {realm_info['dataSetName']}\n"
+        )
+
+    # this is too big needs to be sent as a file
+    send_discord_message(upload_msg, webhook_url)
+
+
 #### MAIN ####
 def main():
     while True:
         update_timers = get_update_timers(home_realm_ids)
         current_min = int(datetime.now().minute)
+        send_upload_timer_message(update_timers)
 
         matching_realms = [
             realm["dataSetID"]
@@ -245,8 +258,9 @@ def main():
             for connected_id in matching_realms:
                 pool.submit(pull_single_realm_data, connected_id)
             pool.shutdown(wait=True)
+            # home realms will spam if theres no sleep
             if os.getenv("HOME_REALMS"):
-                time.sleep(120)
+                time.sleep(25)
         else:
             print(
                 f"waiting for a match in update time to run check on {desired_items}, none found triggering at {datetime.now()}"
