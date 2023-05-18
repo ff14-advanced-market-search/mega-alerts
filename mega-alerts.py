@@ -225,30 +225,34 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
 
 def send_upload_timer_message(update_timers):
     update_timers.sort(key=lambda x: x["lastUploadMinute"])
-    upload_msg = ""
+    upload_msg = "```"
     for realm_info in update_timers:
-        upload_msg += (
-            f"{realm_info['lastUploadMinute']} : {realm_info['dataSetName']}\n"
-        )
+        if realm_info not in alert_record:
+            upload_msg += (
+                f"{realm_info['lastUploadMinute']} : {realm_info['dataSetName']}\n"
+            )
+            alert_record.append(realm_info)
+        if len(upload_msg) > 1500:
+            send_discord_message(f"{upload_msg}```", webhook_url)
+            upload_msg = "```"
 
-    # this is too big needs to be sent as a file
-    send_discord_message(upload_msg, webhook_url)
+    if upload_msg != "```":
+        send_discord_message(f"{upload_msg}```", webhook_url)
 
 
 #### MAIN ####
 def main():
     global alert_record
     while True:
-        update_timers = get_update_timers(home_realm_ids)
+        update_timers = get_update_timers(home_realm_ids, region)
         current_min = int(datetime.now().minute)
         # clear out the alert record once an hour
         if current_min == 0:
-            # send_discord_message("Clearing Alert Record", webhook_url)
             print("\n\nClearing Alert Record\n\n")
             alert_record = []
-
-        ## wip
-        # send_upload_timer_message(update_timers)
+        # show realm timers once per hour if desired
+        if current_min == 1 and os.getenv("SHOW_UPLOAD_TIMES"):
+            send_upload_timer_message(update_timers)
 
         matching_realms = [
             realm["dataSetID"]
@@ -277,14 +281,14 @@ def main():
             for connected_id in matching_realms:
                 pool.submit(pull_single_realm_data, connected_id)
             pool.shutdown(wait=True)
-            # home realms will spam if theres no sleep
+            # home realms will spam so sleep
             if os.getenv("HOME_REALMS"):
                 time.sleep(25)
         else:
             print(
                 f"waiting for a match in update time to run check on {desired_items}, none found triggering at {datetime.now()}"
             )
-            time.sleep(25)
+            time.sleep(20)
 
 
 def main_single():
