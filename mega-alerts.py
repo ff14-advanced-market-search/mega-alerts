@@ -263,17 +263,11 @@ def main():
         if os.getenv("EXTRA_ALERTS"):
             extra_alert_mins = json.loads(os.getenv("EXTRA_ALERTS"))
             if current_min in extra_alert_mins:
-                if not os.getenv("HOME_REALMS"):
-                    matching_realms = [
-                        realm["dataSetID"]
-                        for realm in update_timers
-                    ]
-                else:
-                    matching_realms = [
-                        realm["dataSetID"]
-                        for realm in update_timers
-                        if realm["dataSetID"] in home_realm_ids
-                    ]
+                matching_realms = [
+                    realm["dataSetID"]
+                    for realm in update_timers
+                ]
+
 
         if matching_realms != []:
             pool = ThreadPoolExecutor(max_workers=16)
