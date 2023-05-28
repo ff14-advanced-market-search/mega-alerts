@@ -38,12 +38,13 @@ for k, v in desired_pets_raw.items():
     desired_pets[int(k)] = int(v)
 
 region = os.getenv("WOW_REGION")
-supported_regions = ["NA", "EU"]
+supported_regions = ["NA", "EU", "US"]
 if region not in supported_regions:
     print(f"error pick one of these regions {supported_regions}")
     exit(1)
 
-if region == "NA":
+if region == "NA" or region == "US":
+    region = "NA"
     wow_server_names = json.load(open("data/na-wow-connected-realm-ids.json"))
 elif region == "EU":
     wow_server_names = json.load(open("data/eu-wow-connected-realm-ids.json"))
