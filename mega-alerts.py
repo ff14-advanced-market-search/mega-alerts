@@ -9,6 +9,7 @@ from utils.api_requests import (
     get_listings_single,
     get_update_timers,
     send_discord_message,
+    get_itemnames,
 )
 from utils.helpers import (
     create_oribos_exchange_pet_link,
@@ -17,6 +18,7 @@ from utils.helpers import (
 
 #### GLOBALS ####
 alert_record = []
+item_names = get_itemnames()
 webhook_url = os.getenv("MEGA_WEBHOOK_URL")
 if os.getenv("DESIRED_ITEMS"):
     desired_items_raw = json.loads(os.getenv("DESIRED_ITEMS"))
@@ -64,6 +66,9 @@ def pull_single_realm_data(connected_id: str):
     for auction in clean_auctions:
         if "itemID" in auction:
             id_msg = f"`itemID:` {auction['itemID']}\n"
+            if str(auction["itemID"]) in item_names:
+                item_name = item_names[str(auction["itemID"])]
+                id_msg += f"`Name:` {item_name}\n"
         else:
             id_msg = f"`petID:` {auction['petID']}\n"
         message = (
@@ -243,6 +248,7 @@ def send_upload_timer_message(update_timers):
 #### MAIN ####
 def main():
     global alert_record
+    global item_names
     while True:
         update_timers = get_update_timers(home_realm_ids, region)
         current_min = int(datetime.now().minute)
@@ -253,6 +259,9 @@ def main():
         # show realm timers once per hour if desired
         if current_min == 1 and os.getenv("SHOW_UPLOAD_TIMES"):
             send_upload_timer_message(update_timers)
+        # update item names once per hour
+        if current_min == 2:
+            item_names = get_itemnames()
 
         matching_realms = [
             realm["dataSetID"]
