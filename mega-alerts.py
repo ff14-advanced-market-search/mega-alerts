@@ -267,7 +267,6 @@ def main():
                     matching_realms = [
                         realm["dataSetID"]
                         for realm in update_timers
-                        if realm["dataSetID"] not in [-1, -2]
                     ]
                 else:
                     matching_realms = [
