@@ -1,2 +1,2 @@
 #!/bin/sh
-python3 mega-alerts.py
+python3 mega_alerts_original.py

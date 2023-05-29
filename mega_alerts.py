@@ -18,7 +18,6 @@ from utils.helpers import (
 
 #### GLOBALS ####
 alert_record = []
-item_names = get_itemnames()
 webhook_url = os.getenv("MEGA_WEBHOOK_URL")
 if os.getenv("DESIRED_ITEMS"):
     desired_items_raw = json.loads(os.getenv("DESIRED_ITEMS"))
@@ -37,6 +36,7 @@ for k, v in desired_items_raw.items():
 for k, v in desired_pets_raw.items():
     desired_pets[int(k)] = int(v)
 
+item_names = get_itemnames(list(desired_items.keys()))
 region = os.getenv("WOW_REGION")
 supported_regions = ["NA", "EU", "US"]
 if region not in supported_regions:
@@ -292,7 +292,7 @@ def main():
 
 def main_single():
     # run everything once slow
-    for connected_id in set(wow_server_names.values()):
+    for connected_id in set([server_id for server_name, server_id in wow_server_names.items() if server_name == "Thrall"]):
         pull_single_realm_data(connected_id)
 
 
@@ -305,7 +305,7 @@ def main_fast():
 
 
 send_discord_message("starting mega alerts", webhook_url)
-main()
+# main()
 
 ## for debugging
 # main_single()

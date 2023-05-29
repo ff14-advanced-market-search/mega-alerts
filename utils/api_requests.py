@@ -63,10 +63,10 @@ def get_update_timers(home_realm_ids, region):
     return server_update_times
 
 
-def get_itemnames():
+def get_itemnames(item_ids):
     item_names = requests.post(
         "http://api.saddlebagexchange.com/api/wow/itemnames",
-        json={"return_all": True},
+        json={"item_ids": item_ids},
     ).json()
 
     return item_names
