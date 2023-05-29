@@ -1,2 +1,5 @@
 #!/bin/sh
+while true; do
+    sleep 3600
+done
 python3 mega_alerts_original.py

@@ -9,6 +9,7 @@ RUN apk -v --update add \
       python3 \
       py-pip \
       bash \
+      openrc \
       && \
       pip3 install --upgrade \
       requests \
