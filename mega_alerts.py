@@ -1,8 +1,12 @@
 #!/usr/bin/python3
 from __future__ import print_function
-import time, os, json
-from datetime import datetime
+
+import json
+import os
+import sys
+import time
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 
 from utils.api_requests import (
     get_wow_access_token,
@@ -250,6 +254,7 @@ def send_upload_timer_message(update_timers):
 def main():
     global alert_record
     global item_names
+    send_discord_message("starting mega alerts", webhook_url)
     while True:
         update_timers = get_update_timers(home_realm_ids, region)
         current_min = int(datetime.now().minute)
@@ -290,10 +295,11 @@ def main():
             time.sleep(20)
 
 
-def main_single():
-    # run everything once slow
-    for connected_id in set([server_id for server_name, server_id in wow_server_names.items() if server_name == "Thrall"]):
-        pull_single_realm_data(connected_id)
+def main_single(connected_id=3678):
+    pull_single_realm_data(connected_id)
+    # # run everything once slow
+    # for connected_id in set(wow_server_names.values()):
+    #     pull_single_realm_data(connected_id)
 
 
 def main_fast():
@@ -303,10 +309,6 @@ def main_fast():
         pool.submit(pull_single_realm_data, connected_id)
     pool.shutdown(wait=True)
 
-
-send_discord_message("starting mega alerts", webhook_url)
 # main()
-
-## for debugging
 # main_single()
 # main_fast()
