@@ -70,3 +70,12 @@ def get_itemnames():
     ).json()
 
     return item_names
+
+
+def get_petnames():
+    access_token = get_wow_access_token()
+    pet_info = requests.get(
+        f"https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US&access_token={access_token}"
+    ).json()["pets"]
+    pet_info = {pet["id"]: pet["name"] for pet in pet_info}
+    return pet_info
