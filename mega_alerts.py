@@ -14,6 +14,7 @@ from utils.api_requests import (
     get_update_timers,
     send_discord_message,
     get_itemnames,
+    get_petnames,
 )
 from utils.helpers import (
     create_oribos_exchange_pet_link,
@@ -60,6 +61,7 @@ if os.getenv("HOME_REALMS"):
     for r in home_realms:
         home_realm_ids.append(wow_server_names[r])
 
+pet_names = get_petnames()
 
 #### FUNCTIONS ####
 def pull_single_realm_data(connected_id: str):
@@ -76,6 +78,9 @@ def pull_single_realm_data(connected_id: str):
                 id_msg += f"`Name:` {item_name}\n"
         else:
             id_msg = f"`petID:` {auction['petID']}\n"
+            if auction["petID"] in pet_names:
+                pet_name = pet_names[auction["petID"]]
+                id_msg += f"`Name:` {pet_name}\n"
         message = (
             "==================================\n"
             + f"`region:` {auction['region']} "
@@ -290,7 +295,7 @@ def main():
                 time.sleep(25)
         else:
             print(
-                f"waiting for a match in update time to run check on {desired_items}, none found triggering at {datetime.now()}"
+                f"waiting for a match in update time to run check on items {desired_items} or pets {desired_pets}, none found triggering at {datetime.now()}"
             )
             time.sleep(20)
 
