@@ -60,8 +60,7 @@ if os.getenv("HOME_REALMS"):
 pet_names = get_petnames()
 
 #### FUNCTIONS ####
-def pull_single_realm_data(connected_id: str):
-    access_token = get_wow_access_token()
+def pull_single_realm_data(connected_id: str, access_token: str):
     auctions = get_listings_single(connected_id, access_token, region)
     clean_auctions = clean_listing_data(auctions, connected_id)
     if not clean_auctions:
@@ -281,9 +280,10 @@ def main():
                 matching_realms = [realm["dataSetID"] for realm in update_timers]
 
         if matching_realms != []:
+            access_token = get_wow_access_token()
             pool = ThreadPoolExecutor(max_workers=16)
             for connected_id in matching_realms:
-                pool.submit(pull_single_realm_data, connected_id)
+                pool.submit(pull_single_realm_data, connected_id, access_token)
             pool.shutdown(wait=True)
             # home realms will spam so sleep
             if os.getenv("HOME_REALMS"):
@@ -297,15 +297,17 @@ def main():
 
 def main_single():
     # run everything once slow
+    access_token = get_wow_access_token()
     for connected_id in set(wow_server_names.values()):
-        pull_single_realm_data(connected_id)
+        pull_single_realm_data(connected_id, access_token)
 
 
 def main_fast():
     # run everything once fast
+    access_token = get_wow_access_token()
     pool = ThreadPoolExecutor(max_workers=16)
     for connected_id in set(wow_server_names.values()):
-        pool.submit(pull_single_realm_data, connected_id)
+        pool.submit(pull_single_realm_data, connected_id, access_token)
     pool.shutdown(wait=True)
 
 
