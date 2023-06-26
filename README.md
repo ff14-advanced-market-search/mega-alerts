@@ -7,9 +7,11 @@
 
 2. Go to https://develop.battle.net/access/clients and create a client, get the blizzard oauth client and secret ids
 
-3. Setup a discord channel with a webhook url for sending the alert messages
+<img width="1304" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/e954289a-ccbc-4afb-9f66-897bbc68f677">
 
-4. Download [the docker image](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/general), if on windows open a [command prompt](https://www.youtube.com/watch?v=uE9WgNr3OjM) to run this.
+4. Setup a discord channel with a webhook url for sending the alert messages
+
+5. Download [the docker image](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/general), if on windows open a [command prompt](https://www.youtube.com/watch?v=uE9WgNr3OjM) to run this.
 
 ```
 docker pull cohenaj194/mega-alerts
