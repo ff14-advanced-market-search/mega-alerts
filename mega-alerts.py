@@ -59,6 +59,7 @@ if os.getenv("HOME_REALMS"):
 
 pet_names = get_petnames()
 
+
 #### FUNCTIONS ####
 def pull_single_realm_data(connected_id: str, access_token: str):
     auctions = get_listings_single(connected_id, access_token, region)
