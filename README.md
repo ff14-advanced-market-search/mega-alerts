@@ -9,7 +9,7 @@
 
 3. Setup a discord channel with a webhook url for sending the alert messages
 
-4. Download [the docker image](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/general)
+4. Download [the docker image](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/general), if on windows open a [command prompt](https://www.youtube.com/watch?v=uE9WgNr3OjM) to run this.
 
 ```
 docker pull cohenaj194/mega-alerts
