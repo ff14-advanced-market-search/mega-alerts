@@ -97,7 +97,6 @@ docker run -dit \
 ```
 
 We also have the following optional env vars you can add in to change alert behavior:
-- `--env UNDERMINE_EMBED=true` If you dont want to see wowhead links with embeds, instead it will only show undermine links without an embed
 - `--env SHOW_UPLOAD_TIMES=true` To show the exact minute for all of your selected realms where alerts will trigger
 
 9. In docker desktop download the image and run it 

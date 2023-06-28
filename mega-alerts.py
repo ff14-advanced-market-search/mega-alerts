@@ -176,10 +176,7 @@ def format_alert_messages(
     realm_names = [name for name, id in wow_server_names.items() if id == connected_id]
     for itemID, auction in all_ah_buyouts.items():
         # use instead of item name
-        if os.getenv("UNDERMINE_EMBED"):
-            itemlink = create_oribos_exchange_item_link(realm_names[0], itemID, region)
-        else:
-            itemlink = f"https://www.wowhead.com/item={itemID}"
+        itemlink = create_oribos_exchange_item_link(realm_names[0], itemID, region)
         results.append(
             results_dict(
                 auction, itemlink, connected_id, realm_names, itemID, "itemID", "buyout"
@@ -188,10 +185,7 @@ def format_alert_messages(
 
     for itemID, auction in all_ah_bids.items():
         # use instead of item name
-        if os.getenv("UNDERMINE_EMBED"):
-            itemlink = create_oribos_exchange_item_link(realm_names[0], itemID, region)
-        else:
-            itemlink = f"https://www.wowhead.com/item={itemID}"
+        itemlink = create_oribos_exchange_item_link(realm_names[0], itemID, region)
         results.append(
             results_dict(
                 auction, itemlink, connected_id, realm_names, itemID, "itemID", "bid"
