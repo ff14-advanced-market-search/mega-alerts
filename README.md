@@ -7,9 +7,14 @@
 
 2. Go to https://develop.battle.net/access/clients and create a client, get the blizzard oauth client and secret ids
 
-3. Setup a discord channel with a webhook url for sending the alert messages
+<img width="1304" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/e954289a-ccbc-4afb-9f66-897bbc68f677">
 
-4. Download [the docker image](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/general)
+<img width="633" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/595fee57-e0db-4910-995d-5b5ae48190a2">
+
+
+4. Setup a discord channel with a webhook url for sending the alert messages
+
+5. Download [the docker image](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/general), if on windows open a [command prompt](https://www.youtube.com/watch?v=uE9WgNr3OjM) to run this.
 
 ```
 docker pull cohenaj194/mega-alerts
@@ -104,6 +109,8 @@ We also have the following optional env vars you can add in to change alert beha
 <img width="1297" alt="image" src="https://user-images.githubusercontent.com/17516896/224506498-d385e177-4fd0-41fc-ae80-78e77b2e0c7b.png">
 
 For the env vars set all the env vars you see in the `--env` lines in step 9 and then click run:
+
+Use `MEGA_WEBHOOK_URL` not `WEBHOOK_URL`
 
 <img width="539" alt="image" src="https://user-images.githubusercontent.com/17516896/224507016-4195f8c2-f55e-44b7-b7f4-991ffdf38d35.png">
 
