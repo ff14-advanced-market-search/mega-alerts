@@ -84,7 +84,6 @@ def pull_single_realm_data(connected_id: str, access_token: str):
             + id_msg
             + f"[wowhead / undermine link]({auction['itemlink']})\n"
             + f"realmNames: {auction['realmNames']}\n"
-            + f"minPrice: {auction['minPrice']}\n"
         )
         if "buyout_prices" in auction:
             message += f"buyout_prices: {auction['buyout_prices']}\n"
