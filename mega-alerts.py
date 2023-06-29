@@ -85,10 +85,10 @@ def pull_single_realm_data(connected_id: str, access_token: str):
             + f"[Undermine link]({auction['itemlink']})\n"
             + f"realmNames: {auction['realmNames']}\n"
         )
-        if "buyout_prices" in auction:
-            message += f"buyout_prices: {auction['buyout_prices']}\n"
-        else:
+        if "bid_prices" in auction:
             message += f"bid_prices: {auction['bid_prices']}\n"
+        else:
+            message += f"buyout_prices: {auction['buyout_prices']}\n"
         message += "==================================\n"
         if auction not in alert_record:
             send_discord_message(message, webhook_url)
@@ -105,7 +105,7 @@ def clean_listing_data(auctions, connected_id):
             # idk why this is here, but have a feeling everything breaks without it
             price = 10000000 * 10000
             # if it has a bid use the bid price
-            if "bid" in item.keys():
+            if "bid" in item.keys() and os.getenv("SHOW_BID_PRICES") == "true":
                 price = item["bid"]
                 # filter out items that are too expensive
                 if price < desired_items[item_id] * 10000:
@@ -127,7 +127,7 @@ def clean_listing_data(auctions, connected_id):
                 pet_id = item["item"]["pet_species_id"]
                 # idk why this is here, but have a feeling everything breaks without it
                 price = 10000000 * 10000
-                if "bid" in item.keys():
+                if "bid" in item.keys() and os.getenv("SHOW_BID_PRICES") == "true":
                     price = item["bid"]
                     # filter out items that are too expensive
                     if price < desired_pets[pet_id] * 10000:
@@ -182,15 +182,6 @@ def format_alert_messages(
             )
         )
 
-    for itemID, auction in all_ah_bids.items():
-        # use instead of item name
-        itemlink = create_oribos_exchange_item_link(realm_names[0], itemID, region)
-        results.append(
-            results_dict(
-                auction, itemlink, connected_id, realm_names, itemID, "itemID", "bid"
-            )
-        )
-
     for petID, auction in pet_ah_buyouts.items():
         # use instead of item name
         itemlink = create_oribos_exchange_pet_link(realm_names[0], petID, region)
@@ -200,14 +191,30 @@ def format_alert_messages(
             )
         )
 
-    for petID, auction in pet_ah_bids.items():
-        # use instead of item name
-        itemlink = create_oribos_exchange_pet_link(realm_names[0], petID)
-        results.append(
-            results_dict(
-                auction, itemlink, connected_id, realm_names, petID, "petID", "bid"
+    if os.getenv("SHOW_BID_PRICES") == "true":
+        for itemID, auction in all_ah_bids.items():
+            # use instead of item name
+            itemlink = create_oribos_exchange_item_link(realm_names[0], itemID, region)
+            results.append(
+                results_dict(
+                    auction,
+                    itemlink,
+                    connected_id,
+                    realm_names,
+                    itemID,
+                    "itemID",
+                    "bid",
+                )
             )
-        )
+
+        for petID, auction in pet_ah_bids.items():
+            # use instead of item name
+            itemlink = create_oribos_exchange_pet_link(realm_names[0], petID)
+            results.append(
+                results_dict(
+                    auction, itemlink, connected_id, realm_names, petID, "petID", "bid"
+                )
+            )
 
     # end of the line alerts go out from here
     return results
