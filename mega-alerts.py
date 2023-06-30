@@ -62,6 +62,11 @@ pet_names = get_petnames()
 
 #### FUNCTIONS ####
 def pull_single_realm_data(connected_id: str, access_token: str):
+    if os.getenv("ADD_DELAY"):
+        if isinstance(os.getenv("ADD_DELAY"), int):
+            delay = int(os.getenv("ADD_DELAY"))
+            print(f"sleeping for {delay} seconds")
+            time.sleep(delay)
     auctions = get_listings_single(connected_id, access_token, region)
     clean_auctions = clean_listing_data(auctions, connected_id)
     if not clean_auctions:
@@ -272,7 +277,7 @@ def main():
         matching_realms = [
             realm["dataSetID"]
             for realm in update_timers
-            if current_min < realm["lastUploadMinute"] <= current_min + 1
+            if current_min <= realm["lastUploadMinute"] <= current_min + 3
         ]
         # mega wants extra alerts
         if os.getenv("EXTRA_ALERTS"):
