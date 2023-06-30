@@ -277,7 +277,7 @@ def main():
         matching_realms = [
             realm["dataSetID"]
             for realm in update_timers
-            if current_min <= realm["lastUploadMinute"] <= current_min + 3
+            if realm["lastUploadMinute"] + 1  < current_min <= realm["lastUploadMinute"] + 5
         ]
         # mega wants extra alerts
         if os.getenv("EXTRA_ALERTS"):
