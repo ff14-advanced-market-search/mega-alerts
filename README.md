@@ -104,6 +104,7 @@ docker run -dit \
 We also have the following optional env vars you can add in to change alert behavior:
 - `--env SHOW_UPLOAD_TIMES=true` To show the exact minute for all of your selected realms where alerts will trigger
 - `--env SHOW_BID_PRICES=true` Bid prices below your price limit will also be shown
+- `--env WOWHEAD_LINK=true` Uses wowhead links instead of undermine and shows pictures, but the message length will be longer
 
 
 9. In docker desktop download the image and run it 
