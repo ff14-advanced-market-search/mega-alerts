@@ -79,3 +79,8 @@ def get_petnames():
     ).json()["pets"]
     pet_info = {pet["id"]: pet["name"] for pet in pet_info}
     return pet_info
+
+
+def get_raidbots_bonus_ids():
+    bonus_ids = requests.get("https://www.raidbots.com/static/data/live/bonuses.json")
+    return {int(id): data for id, data in bonus_ids.items()}
