@@ -90,6 +90,9 @@ def pull_single_realm_data(connected_id: str, access_token: str):
             + f"[Undermine link]({auction['itemlink']})\n"
             + f"realmNames: {auction['realmNames']}\n"
         )
+        if os.getenv("WOWHEAD_LINK") and auction["itemID"]:
+            item_id = auction["itemID"]
+            message += f"https://www.wowhead.com/item={item_id}"
         if "bid_prices" in auction:
             message += f"bid_prices: {auction['bid_prices']}\n"
         else:
