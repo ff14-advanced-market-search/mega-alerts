@@ -285,13 +285,20 @@ def main():
 
         if matching_realms != []:
             if os.getenv("ADD_DELAY"):
-                if isinstance(os.getenv("ADD_DELAY"), int):
+                try:
                     delay = int(os.getenv("ADD_DELAY"))
                     print(f"sleeping for {delay} seconds")
                     time.sleep(delay)
+                except Exception as e:
+                    print(
+                        f"ADD_DELAY must be an integer, got {os.getenv('ADD_DELAY')}:\n{e}"
+                    )
+                    exit(1)
             else:
-                # auto sleep 60 sec
-                time.sleep(60)
+                # auto sleep 30 sec
+                delay = 30
+                print(f"sleeping for {delay} seconds")
+                time.sleep(delay)
 
             access_token = get_wow_access_token()
             pool = ThreadPoolExecutor(max_workers=16)
