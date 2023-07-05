@@ -82,5 +82,7 @@ def get_petnames():
 
 
 def get_raidbots_bonus_ids():
-    bonus_ids = requests.get("https://www.raidbots.com/static/data/live/bonuses.json").json()
+    bonus_ids = requests.get(
+        "https://www.raidbots.com/static/data/live/bonuses.json"
+    ).json()
     return {int(id): data for id, data in bonus_ids.items()}
