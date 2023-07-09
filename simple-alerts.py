@@ -18,6 +18,7 @@ simple_snipe_info = json.load(open("data/simple_snipe_info.json"))
 webhook_url = simple_snipe_info["MEGA_WEBHOOK_URL"]
 extra_alert_mins = simple_snipe_info["EXTRA_ALERTS"]
 
+
 def format_discord_message():
     global alert_record
     snipe_data = simple_snipe(price_alert_data)
