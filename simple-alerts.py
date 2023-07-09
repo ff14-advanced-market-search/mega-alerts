@@ -11,14 +11,12 @@ from utils.api_requests import (
 
 #### GLOBALS ####
 alert_record = []
-webhook_url = os.getenv("MEGA_WEBHOOK_URL")
 price_alert_data = json.load(open("data/region_snipe.json"))
 region = price_alert_data["region"]
-# mega wants extra alerts
-extra_alert_mins = []
-if os.getenv("EXTRA_ALERTS"):
-    extra_alert_mins = json.loads(os.getenv("EXTRA_ALERTS"))
 
+simple_snipe_info = json.load(open("data/simple_snipe_info.json"))
+webhook_url = simple_snipe_info["MEGA_WEBHOOK_URL"]
+extra_alert_mins = simple_snipe_info["EXTRA_ALERTS"]
 
 def format_discord_message():
     global alert_record
@@ -54,8 +52,6 @@ def format_discord_message():
 #### MAIN ####
 def main():
     global alert_record
-    global item_names
-
     while True:
         update_time = get_update_timers([-1, -2], region, True)[0]["lastUploadMinute"]
         current_min = int(datetime.now().minute)
