@@ -35,7 +35,7 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
     return auction_info["auctions"]
 
 
-def get_update_timers(home_realm_ids, region):
+def get_update_timers(home_realm_ids, region, simple_snipe=False):
     update_timers = requests.post(
         "http://api.saddlebagexchange.com/api/wow/uploadtimers",
         json={},
@@ -50,6 +50,16 @@ def get_update_timers(home_realm_ids, region):
             if time_data["dataSetID"] not in [-1, -2] and time_data["region"] == region
         ]
     # cover specific realms
+    elif simple_snipe:
+        if region == "EU":
+            update_id = -2
+        else:
+            update_id = -1
+        server_update_times = [
+            time_data
+            for time_data in update_timers
+            if time_data["dataSetID"] == update_id
+        ]
     else:
         server_update_times = [
             time_data
@@ -79,3 +89,12 @@ def get_petnames():
     ).json()["pets"]
     pet_info = {pet["id"]: pet["name"] for pet in pet_info}
     return pet_info
+
+
+def simple_snipe(json_data):
+    snipe_results = requests.post(
+        "http://api.saddlebagexchange.com/api/wow/regionpricecheck",
+        json=json_data,
+    ).json()
+
+    return snipe_results
