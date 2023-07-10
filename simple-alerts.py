@@ -79,7 +79,7 @@ def main():
             format_discord_message()
             time.sleep(60)
         else:
-            print(f"at {datetime.now()}, waiting for {update_time}")
+            print(f"at {datetime.now()}, waiting for {[update_time]+extra_alert_mins}")
             time.sleep(60)
 
 
