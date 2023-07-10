@@ -57,14 +57,21 @@ def format_discord_message():
 #### MAIN ####
 def main():
     global alert_record
+    update_time = get_update_timers([-1, -2], region, True)[0]["lastUploadMinute"]
     while True:
-        update_time = get_update_timers([-1, -2], region, True)[0]["lastUploadMinute"]
         current_min = int(datetime.now().minute)
+
         # clear out the alert record once an hour
         if current_min == 0:
             print("\n\nClearing Alert Record\n\n")
             alert_record = []
+        # update the update min once per hour
+        if current_min == 1:
+            update_time = get_update_timers([-1, -2], region, True)[0][
+                "lastUploadMinute"
+            ]
 
+        # check the upload min up 3 to 5 min after the commodities trigger
         if (
             update_time + 3 <= current_min <= update_time + 7
             or current_min in extra_alert_mins
