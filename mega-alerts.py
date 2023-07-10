@@ -258,16 +258,16 @@ def send_upload_timer_message(update_timers):
 def main():
     global alert_record
     global item_names
+    update_timers = get_update_timers(home_realm_ids, region)
     while True:
-        update_timers = get_update_timers(home_realm_ids, region)
         current_min = int(datetime.now().minute)
         # clear out the alert record once an hour
         if current_min == 0:
             print("\n\nClearing Alert Record\n\n")
             alert_record = []
-        # show realm timers once per hour if desired
-        if current_min == 1 and os.getenv("SHOW_UPLOAD_TIMES"):
-            send_upload_timer_message(update_timers)
+        # get new update timers once per hour
+        if current_min == 1:
+            update_timers = get_update_timers(home_realm_ids, region)
         # update item names once per hour
         if current_min == 2:
             item_names = get_itemnames()
