@@ -102,7 +102,6 @@ docker run -dit \
 ```
 
 We also have the following optional env vars you can add in to change alert behavior:
-- `--env SHOW_UPLOAD_TIMES=true` To show the exact minute for all of your selected realms where alerts will trigger.
 - `--env SHOW_BID_PRICES=true` Bid prices below your price limit will also be shown.
 - `--env WOWHEAD_LINK=true` Uses wowhead links instead of undermine and shows pictures, but the message length will be longer.
 - `--env ADD_DELAY=30` By default triggers on the exact minute of the update and then sleeps for 30 seconds.  You can increase or decrease the sleep with this value.
