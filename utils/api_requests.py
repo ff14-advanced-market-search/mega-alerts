@@ -1,5 +1,10 @@
+import json
+from datetime import datetime
+
 import requests, os
 from tenacity import retry, stop_after_attempt
+
+from utils.helpers import get_wow_realm_names_by_id
 
 
 def send_discord_message(message, webhook_url):
@@ -28,18 +33,81 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
         url = f"https://us.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}/auctions?namespace=dynamic-us&locale=en_US&access_token={access_token}"
     elif region == "EU":
         url = f"https://eu.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}/auctions?namespace=dynamic-eu&locale=en_EU&access_token={access_token}"
+    else:
+        print(
+            f"{region} is not yet supported, reach out for us to add this region option"
+        )
+        exit(1)
 
     req = requests.get(url, timeout=25)
+
+    if "Last-Modified" in dict(req.headers):
+        last_modified = dict(req.headers)["Last-Modified"]
+        local_update_timers(connectedRealmId, last_modified, region)
 
     auction_info = req.json()
     return auction_info["auctions"]
 
 
-def get_update_timers(home_realm_ids, region, simple_snipe=False):
-    update_timers = requests.post(
-        "http://api.saddlebagexchange.com/api/wow/uploadtimers",
-        json={},
-    ).json()["data"]
+def local_update_timers(dataSetID, lastUploadTimeRaw, region):
+    tableName = f"{dataSetID}_singleMinPrices"
+    dataSetName = get_wow_realm_names_by_id(dataSetID)
+
+    lastUploadMinute = int(lastUploadTimeRaw.split(":")[1])
+    # fix this later
+    lastUploadUnix = int(
+        datetime.strptime(lastUploadTimeRaw, "%a, %d %b %Y %H:%M:%S %Z").timestamp()
+    )
+
+    new_realm_time = {
+        "dataSetID": dataSetID,
+        "dataSetName": dataSetName,
+        "lastUploadMinute": lastUploadMinute,
+        "lastUploadTimeRaw": lastUploadTimeRaw,
+        "lastUploadUnix": lastUploadUnix,
+        "region": region,
+        "tableName": tableName,
+    }
+
+    # open file
+    update_timers = json.load(open("data/upload_timers.json"))
+    update_timers["data"] = [
+        realm_time
+        for realm_time in update_timers["data"]
+        if realm_time["dataSetID"] != dataSetID
+    ]
+    update_timers["data"].append(new_realm_time)
+
+    # write to file again with new data
+    with open("data/upload_timers.json", "w") as outfile:
+        json.dump(update_timers, outfile, indent=2)
+
+
+def get_update_timers(home_realm_ids, region):
+    ## new method
+    # get from api once and then file every time after
+    update_timers = json.load(open("data/upload_timers.json"))
+    if len(update_timers) == 0:
+        update_timers = requests.post(
+            "http://api.saddlebagexchange.com/api/wow/uploadtimers",
+            json={},
+        ).json()
+        with open("data/upload_timers.json", "w") as outfile:
+            json.dump(update_timers, outfile, indent=2)
+    if "data" in update_timers:
+        update_timers = update_timers["data"]
+    else:
+        print(
+            "error no data found in update timers reach out on the discord: https://discord.gg/Pbp5xhmBJ7"
+        )
+        exit(1)
+
+    ## old method
+    # get from api every time
+    # update_timers = requests.post(
+    #     "http://api.saddlebagexchange.com/api/wow/uploadtimers",
+    #     json={},
+    # ).json()
 
     # cover all realms
     if home_realm_ids == []:
