@@ -206,3 +206,4 @@ To set this up:
 
 3. Run the [simple-alerts.py](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/simple-alerts.py) script:
 
+<img width="1043" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/ab94648f-c900-40fe-af3b-51c04df12710">
