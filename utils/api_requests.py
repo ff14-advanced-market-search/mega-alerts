@@ -50,8 +50,6 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
 
 
 def local_update_timers(dataSetID, lastUploadTimeRaw, region):
-    # (dataSetID INT PRIMARY KEY, tableName VARCHAR(255), dataSetName VARCHAR(255), region VARCHAR(255), lastUploadTimeRaw VARCHAR(255), lastUploadMinute INT, lastUploadUnix BIGINT)
-
     tableName = f"{dataSetID}_singleMinPrices"
     dataSetName = get_wow_realm_names_by_id(dataSetID)
 
@@ -86,6 +84,8 @@ def local_update_timers(dataSetID, lastUploadTimeRaw, region):
 
 
 def get_update_timers(home_realm_ids, region):
+    ## new method
+    # get from api once and then file every time after
     update_timers = json.load(open("data/upload_timers.json"))
     if len(update_timers) == 0:
         update_timers = requests.post(
@@ -101,6 +101,13 @@ def get_update_timers(home_realm_ids, region):
             "error no data found in update timers reach out on the discord: https://discord.gg/Pbp5xhmBJ7"
         )
         exit(1)
+
+    ## old method
+    # get from api every time
+    # update_timers = requests.post(
+    #     "http://api.saddlebagexchange.com/api/wow/uploadtimers",
+    #     json={},
+    # ).json()
 
     # cover all realms
     if home_realm_ids == []:

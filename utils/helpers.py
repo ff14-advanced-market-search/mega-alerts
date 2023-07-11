@@ -19,6 +19,7 @@ def create_oribos_exchange_item_link(realm_name, item_id, region):
     return f"https://oribos.exchange/#{url_region}-{fixed_realm_name}/{item_id}"
 
 
+# should move this somewhere else into another file
 na_wow_server_names = json.load(open("data/na-wow-connected-realm-ids.json"))
 na_wow_server_ids = list(set(na_wow_server_names.values()))
 
