@@ -55,7 +55,19 @@ You can find that id at the end of the undermine exchange link for the item next
 '["Thrall", "Silvermoon"]'
 ```
 
-8. Run the docker container (go to 9. if you are running it with docker desktop) with the following env vars.
+8. If you want to run locally with python or pycharm then set all your user values in the data files under the [user_data/mega](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/) json files:
+
+First clone the repo or download it then open it in pycharm:
+
+replace_image_here
+
+- [Set the item ids and prices you want](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/desired_items.json)
+- [Set the pet ids and prices you want](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/desired_pets.json)
+- [Set up all the other important details for alerts](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/mega_data.json)
+
+Then just run the [mega-alerts.py file](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/mega-alerts.py)
+
+9. To run the docker container (go to 10. if you are running it with docker desktop) with the following env vars.
 
 Make sure to set `WOW_REGION` with either `EU` or `NA`
 
@@ -107,18 +119,18 @@ We also have the following optional env vars you can add in to change alert beha
 - `--env ADD_DELAY=30` By default triggers on the exact minute of the update and then sleeps for 30 seconds.  You can increase or decrease the sleep with this value.
 
 
-9. In docker desktop download the image and run it 
+10. In docker desktop download the image and run it 
 
 <img width="1297" alt="image" src="https://user-images.githubusercontent.com/17516896/224506498-d385e177-4fd0-41fc-ae80-78e77b2e0c7b.png">
 
-For the env vars set all the env vars you see in the `--env` lines in step 9 and then click run:
+For the env vars set all the env vars you see in the `--env` lines in step 10 and then click run:
 
 Use `MEGA_WEBHOOK_URL` not `WEBHOOK_URL`
 
 <img width="539" alt="image" src="https://user-images.githubusercontent.com/17516896/224507016-4195f8c2-f55e-44b7-b7f4-991ffdf38d35.png">
 
 
-10. Alternatively you can try to run this in kubernetes on minikube to autorestart if the pods fail
+11. Alternatively you can try to run this in kubernetes on minikube to autorestart if the pods fail
 
 [Download and start minikube](https://kubernetes.io/docs/tutorials/hello-minikube/) with:
 
