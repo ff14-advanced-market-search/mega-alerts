@@ -11,10 +11,10 @@ from utils.api_requests import (
 
 #### GLOBALS ####
 alert_record = []
-price_alert_data = json.load(open("user_data/region_snipe.json"))
+price_alert_data = json.load(open("user_data/simple/region_snipe.json"))
 region = price_alert_data["region"]
 
-simple_snipe_info = json.load(open("user_data/simple_snipe_info.json"))
+simple_snipe_info = json.load(open("user_data/simple/simple_snipe_info.json"))
 webhook_url = simple_snipe_info["MEGA_WEBHOOK_URL"]
 # default to env var if not set in json
 if not webhook_url:
