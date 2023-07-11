@@ -49,12 +49,11 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
     return auction_info["auctions"]
 
 
-def local_update_timers(dataset, lastUploadTimeRaw, region):
+def local_update_timers(dataSetID, lastUploadTimeRaw, region):
     # (dataSetID INT PRIMARY KEY, tableName VARCHAR(255), dataSetName VARCHAR(255), region VARCHAR(255), lastUploadTimeRaw VARCHAR(255), lastUploadMinute INT, lastUploadUnix BIGINT)
 
-    dataSetID = dataset
-    tableName = f"{dataset}_singleMinPrices"
-    dataSetName = get_wow_realm_names_by_id(dataset)
+    tableName = f"{dataSetID}_singleMinPrices"
+    dataSetName = get_wow_realm_names_by_id(dataSetID)
 
     lastUploadMinute = int(lastUploadTimeRaw.split(":")[1])
     # fix this later
@@ -62,28 +61,40 @@ def local_update_timers(dataset, lastUploadTimeRaw, region):
         datetime.strptime(lastUploadTimeRaw, "%a, %d %b %Y %H:%M:%S %Z").timestamp()
     )
 
-    print("raw api data for", tableName, "last updated", lastUploadTimeRaw)
+    new_realm_time = {
+        "dataSetID": dataSetID,
+        "dataSetName": dataSetName,
+        "lastUploadMinute": lastUploadMinute,
+        "lastUploadTimeRaw": lastUploadTimeRaw,
+        "lastUploadUnix": lastUploadUnix,
+        "region": region,
+        "tableName": tableName,
+    }
 
-    # create values
-    val_list = [
-        (
-            str(dataSetID),
-            tableName,
-            json.dumps(dataSetName),
-            region,
-            str(lastUploadTimeRaw),
-            str(lastUploadMinute),
-            str(lastUploadUnix),
-        )
-    ]
+    # open file
+    update_timers = json.load(open("data/upload_timers.json"))
+    update_timers["data"] = [realm_time for realm_time in update_timers["data"]  if realm_time["dataSetID"] != dataSetID]
+    update_timers["data"].append(new_realm_time)
+
+    # write to file again with new data
+    with open("data/upload_timers.json", "w") as outfile:
+        json.dump(update_timers, outfile, indent=2)
 
 
 def get_update_timers(home_realm_ids, region):
-    # update_timers = requests.post(
-    #     "http://api.saddlebagexchange.com/api/wow/uploadtimers",
-    #     json={},
-    # ).json()["data"]
-    update_timers = json.load(open("data/upload_timers.json"))["data"]
+    update_timers = json.load(open("data/upload_timers.json"))
+    if len(update_timers) == 0:
+        update_timers = requests.post(
+            "http://api.saddlebagexchange.com/api/wow/uploadtimers",
+            json={},
+        ).json()
+        with open("data/upload_timers.json", "w") as outfile:
+            json.dump(update_timers, outfile, indent=2)
+    if "data" in update_timers:
+        update_timers = update_timers["data"]
+    else:
+        print("error no data found in update timers reach out on the discord: https://discord.gg/Pbp5xhmBJ7")
+        exit(1)
 
     # cover all realms
     if home_realm_ids == []:
