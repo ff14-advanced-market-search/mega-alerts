@@ -9,6 +9,9 @@ from utils.api_requests import (
     simple_snipe,
 )
 
+print("Sleep 10 sec on start to avoid spamming the api")
+time.sleep(10)
+
 #### GLOBALS ####
 alert_record = []
 price_alert_data = json.load(open("user_data/simple/region_snipe.json"))

@@ -130,6 +130,12 @@ Use `MEGA_WEBHOOK_URL` not `WEBHOOK_URL`
 
 11. Alternatively you can try to run this in kubernetes on minikube to autorestart if the pods fail
 
+If you can run shell and python locally please run this instead of using kubernetes as you can easily exit it by hitting "control" + "c" on your keyboard:
+
+```
+bash auto_restart.sh
+```
+
 [Download and start minikube](https://kubernetes.io/docs/tutorials/hello-minikube/) with:
 
 ```

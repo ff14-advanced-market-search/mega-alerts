@@ -17,6 +17,9 @@ from utils.helpers import (
     create_oribos_exchange_item_link,
 )
 
+print("Sleep 10 sec on start to avoid spamming the api")
+time.sleep(10)
+
 #### GLOBALS ####
 alert_record = []
 item_names = get_itemnames()
