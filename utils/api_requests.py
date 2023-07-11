@@ -41,12 +41,13 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
 
     req = requests.get(url, timeout=25)
 
-    if "Last-Modified" in dict(req.headers):
-        try:
-            last_modified = dict(req.headers)["Last-Modified"]
-            local_update_timers(connectedRealmId, last_modified, region)
-        except Exception as ex:
-            print(f"The exception was:", ex)
+    ## this is bad need to give each realm a file or something
+    # if "Last-Modified" in dict(req.headers):
+    #     try:
+    #         last_modified = dict(req.headers)["Last-Modified"]
+    #         local_update_timers(connectedRealmId, last_modified, region)
+    #     except Exception as ex:
+    #         print(f"The exception was:", ex)
 
     auction_info = req.json()
     return auction_info["auctions"]
@@ -87,36 +88,37 @@ def local_update_timers(dataSetID, lastUploadTimeRaw, region):
 
 
 def get_update_timers(home_realm_ids, region, simple_snipe=False):
+    ## this is bad need to give each realm a file or something
     ## new method
-    if not os.path.exists("data/upload_timers.json"):
-        print("initial run create upload timers file")
-        with open("data/upload_timers.json", "w") as outfile:
-            json.dump({}, outfile, indent=2)
-
-    # get from api once and then file every time after
-    update_timers = json.load(open("data/upload_timers.json"))
-    if len(update_timers) == 0:
-        update_timers = requests.post(
-            "http://api.saddlebagexchange.com/api/wow/uploadtimers",
-            json={},
-        ).json()
-        with open("data/upload_timers.json", "w") as outfile:
-            json.dump(update_timers, outfile, indent=2)
-
-    if "data" in update_timers:
-        update_timers = update_timers["data"]
-    else:
-        print(
-            "error no data found in update timers reach out on the discord: https://discord.gg/Pbp5xhmBJ7"
-        )
-        exit(1)
+    # if not os.path.exists("data/upload_timers.json"):
+    #     print("initial run create upload timers file")
+    #     with open("data/upload_timers.json", "w") as outfile:
+    #         json.dump({}, outfile, indent=2)
+    #
+    # # get from api once and then file every time after
+    # update_timers = json.load(open("data/upload_timers.json"))
+    # if len(update_timers) == 0:
+    #     update_timers = requests.post(
+    #         "http://api.saddlebagexchange.com/api/wow/uploadtimers",
+    #         json={},
+    #     ).json()
+    #     with open("data/upload_timers.json", "w") as outfile:
+    #         json.dump(update_timers, outfile, indent=2)
+    #
+    # if "data" in update_timers:
+    #     update_timers = update_timers["data"]
+    # else:
+    #     print(
+    #         "error no data found in update timers reach out on the discord: https://discord.gg/Pbp5xhmBJ7"
+    #     )
+    #     exit(1)
 
     ## old method
     # get from api every time
-    # update_timers = requests.post(
-    #     "http://api.saddlebagexchange.com/api/wow/uploadtimers",
-    #     json={},
-    # ).json()
+    update_timers = requests.post(
+        "http://api.saddlebagexchange.com/api/wow/uploadtimers",
+        json={},
+    ).json()["data"]
 
     # cover all realms
     if home_realm_ids == []:
