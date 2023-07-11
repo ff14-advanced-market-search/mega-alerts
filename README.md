@@ -59,7 +59,7 @@ You can find that id at the end of the undermine exchange link for the item next
 
 First clone the repo or download it then open it in pycharm:
 
-replace_image_here
+<img width="1050" alt="Screen Shot 2023-07-11 at 1 12 19 PM" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/01d53cfd-5a44-4f62-ba92-0163bdbfe1ec">
 
 - [Set the item ids and prices you want](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/desired_items.json)
 - [Set the pet ids and prices you want](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/desired_pets.json)
