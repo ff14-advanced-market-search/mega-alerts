@@ -16,6 +16,7 @@ from utils.helpers import (
     create_oribos_exchange_pet_link,
     create_oribos_exchange_item_link,
 )
+
 # sets up env vars
 import utils.mega_data_setup
 
@@ -26,7 +27,9 @@ time.sleep(10)
 #### GLOBALS ####
 alert_record = []
 item_names = get_itemnames()
-pet_names = get_petnames(utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET)
+pet_names = get_petnames(
+    utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET
+)
 
 
 #### FUNCTIONS ####
@@ -295,7 +298,10 @@ def main():
                 print(f"sleeping for {delay} seconds")
                 time.sleep(delay)
 
-            access_token = get_wow_access_token(utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET)
+            access_token = get_wow_access_token(
+                utils.mega_data_setup.WOW_CLIENT_ID,
+                utils.mega_data_setup.WOW_CLIENT_SECRET,
+            )
             pool = ThreadPoolExecutor(max_workers=16)
             for connected_id in matching_realms:
                 pool.submit(pull_single_realm_data, connected_id, access_token)
@@ -312,15 +318,25 @@ def main():
 
 
 def main_single():
+    get_update_timers(
+        utils.mega_data_setup.home_realm_ids, utils.mega_data_setup.REGION
+    )
     # run everything once slow
-    access_token = get_wow_access_token(utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET)
+    access_token = get_wow_access_token(
+        utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET
+    )
     for connected_id in set(utils.mega_data_setup.WOW_SERVER_NAMES.values()):
         pull_single_realm_data(connected_id, access_token)
 
 
 def main_fast():
+    get_update_timers(
+        utils.mega_data_setup.home_realm_ids, utils.mega_data_setup.REGION
+    )
     # run everything once fast
-    access_token = get_wow_access_token(utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET)
+    access_token = get_wow_access_token(
+        utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET
+    )
     pool = ThreadPoolExecutor(max_workers=16)
     for connected_id in set(utils.mega_data_setup.WOW_SERVER_NAMES.values()):
         pool.submit(pull_single_realm_data, connected_id, access_token)

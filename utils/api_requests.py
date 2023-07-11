@@ -20,7 +20,7 @@ def get_wow_access_token(client_id, client_secret):
     access_token = requests.post(
         "https://oauth.battle.net/token",
         data={"grant_type": "client_credentials"},
-        auth=(client_id, client_secret)
+        auth=(client_id, client_secret),
     ).json()["access_token"]
     return access_token
 
@@ -102,6 +102,7 @@ def get_update_timers(home_realm_ids, region, simple_snipe=False):
         ).json()
         with open("data/upload_timers.json", "w") as outfile:
             json.dump(update_timers, outfile, indent=2)
+
     if "data" in update_timers:
         update_timers = update_timers["data"]
     else:
