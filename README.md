@@ -191,3 +191,18 @@ You can then view the logs with:
 pod_name=$(kubectl get pods | grep -v NAME | awk '{print $1}')
 kubectl logs $pod_name 
 ```
+
+# Simple Alerts
+
+If you have trouble setting up mega alerts or making a battle.net oauth token you can use the [simple-alerts.py](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/mega-alerts.py) instead.
+
+This is slower than mega alerts and can be out of sync at times, but it only requires a discord webhook url to run.
+
+To set this up:
+
+1. Add your webhook url and any extra alert times into the [user_data/simple/simple-alerts.json](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/simple/simple-alerts.json)
+
+2. Generate your alert json using [our price alert webpage](https://saddlebagexchange.com/wow/price-alert) and then paste it into the [user_data/simple/simple-alerts.json](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/simple/simple-alerts.json).
+
+3. Run the [simple-alerts.py](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/simple-alerts.py) script:
+
