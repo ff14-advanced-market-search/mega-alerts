@@ -61,6 +61,12 @@ You can find that id at the end of the undermine exchange link for the item next
 - [Set the pet ids and prices you want](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/desired_pets.json)
 - [Set up all the other important details for alerts](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/mega_data.json)
 
+You can then run it with python or run locally with docker compose using:
+
+```
+docker compose up --build
+```
+
 Make sure the required packages are installed by running:
 
 ```
