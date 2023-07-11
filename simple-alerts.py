@@ -13,7 +13,9 @@ from utils.api_requests import (
 alert_record = []
 price_alert_data = json.load(open("user_data/simple/region_snipe.json"))
 if len(price_alert_data) == 0:
-    print("Error please generate your snipe data at: https://saddlebagexchange.com/wow/price-alert")
+    print(
+        "Error please generate your snipe data at: https://saddlebagexchange.com/wow/price-alert"
+    )
     print("Then paste it into user_data/simple/region_snipe.json")
     exit(1)
 region = price_alert_data["region"]
