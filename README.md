@@ -118,3 +118,66 @@ Use `MEGA_WEBHOOK_URL` not `WEBHOOK_URL`
 <img width="539" alt="image" src="https://user-images.githubusercontent.com/17516896/224507016-4195f8c2-f55e-44b7-b7f4-991ffdf38d35.png">
 
 
+10. Alternatively you can try to run this in kubernetes on minikube to autorestart if the pods fail
+
+[Download and start minikube](https://kubernetes.io/docs/tutorials/hello-minikube/) with:
+
+```
+minikube start
+```
+
+Then update the [https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/kube-manifest.yml](kube-manifest.yml) with your own environmental variables:
+
+``` 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mega-alerts
+spec:
+  selector:
+    matchLabels:
+      run: mega-alerts
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: mega-alerts
+    spec:
+      containers:
+      - name: mega-alerts
+        image: cohenaj194/mega-alerts
+        env:
+        - name: MEGA_WEBHOOK_URL
+          value: "https://discord.com/api/webhooks/12345678/foobar"
+        # EU or NA
+        - name: WOW_REGION
+          value: "NA"
+        - name: WOW_CLIENT_ID
+          value: 123456789asdfghjk
+        - name: WOW_CLIENT_SECRET
+          value: 123456789asdfghjk
+        - name: DESIRED_ITEMS
+          value: '{"194641": 500000, "159840":40000}'
+        - name: DESIRED_PETS
+          value: '{"3390": 2700}'
+```
+
+Once you do that just run:
+
+```
+kubectl apply -f kube-manifest.yml
+```
+
+To update to the latest container version of mega alerts run:
+
+```
+kubectl rollout restart deployment/mega-alerts
+```
+
+You can then view the logs with:
+
+```
+pod_name=$(kubectl get pods | grep -v NAME | awk '{print $1}')
+kubectl logs $pod_name 
+```
