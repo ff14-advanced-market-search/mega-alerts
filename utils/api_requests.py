@@ -16,11 +16,11 @@ def send_discord_message(message, webhook_url):
 
 
 @retry(stop=stop_after_attempt(3))
-def get_wow_access_token():
+def get_wow_access_token(client_id, client_secret):
     access_token = requests.post(
         "https://oauth.battle.net/token",
         data={"grant_type": "client_credentials"},
-        auth=(os.getenv("WOW_CLIENT_ID"), os.getenv("WOW_CLIENT_SECRET")),
+        auth=(client_id, client_secret)
     ).json()["access_token"]
     return access_token
 
@@ -42,8 +42,11 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
     req = requests.get(url, timeout=25)
 
     if "Last-Modified" in dict(req.headers):
-        last_modified = dict(req.headers)["Last-Modified"]
-        local_update_timers(connectedRealmId, last_modified, region)
+        try:
+            last_modified = dict(req.headers)["Last-Modified"]
+            local_update_timers(connectedRealmId, last_modified, region)
+        except Exception as ex:
+            print(f"The exception was:", ex)
 
     auction_info = req.json()
     return auction_info["auctions"]
@@ -155,8 +158,8 @@ def get_itemnames():
     return item_names
 
 
-def get_petnames():
-    access_token = get_wow_access_token()
+def get_petnames(client_id, client_secret):
+    access_token = get_wow_access_token(client_id, client_secret)
     pet_info = requests.get(
         f"https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US&access_token={access_token}"
     ).json()["pets"]

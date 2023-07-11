@@ -26,6 +26,8 @@ RUN mkdir /app/utils/
 COPY ./mega-alerts.py /app/
 COPY ./utils/* /app/utils/
 COPY ./data/* /app/data/
+COPY ./user_data/mega/* /app/user_data/mega/
+COPY ./user_data/simple/* /app/user_data/simple/
 COPY ./run /app/
 RUN chmod +x /app/*
 

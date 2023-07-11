@@ -16,6 +16,9 @@ from utils.helpers import (
     create_oribos_exchange_pet_link,
     create_oribos_exchange_item_link,
 )
+# sets up env vars
+import utils.mega_data_setup
+
 
 print("Sleep 10 sec on start to avoid spamming the api")
 time.sleep(10)
@@ -23,9 +26,7 @@ time.sleep(10)
 #### GLOBALS ####
 alert_record = []
 item_names = get_itemnames()
-pet_names = get_petnames()
-# sets up env vars
-import utils.mega_data_setup
+pet_names = get_petnames(utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET)
 
 
 #### FUNCTIONS ####
@@ -294,7 +295,7 @@ def main():
                 print(f"sleeping for {delay} seconds")
                 time.sleep(delay)
 
-            access_token = get_wow_access_token()
+            access_token = get_wow_access_token(utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET)
             pool = ThreadPoolExecutor(max_workers=16)
             for connected_id in matching_realms:
                 pool.submit(pull_single_realm_data, connected_id, access_token)
@@ -312,14 +313,14 @@ def main():
 
 def main_single():
     # run everything once slow
-    access_token = get_wow_access_token()
+    access_token = get_wow_access_token(utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET)
     for connected_id in set(utils.mega_data_setup.WOW_SERVER_NAMES.values()):
         pull_single_realm_data(connected_id, access_token)
 
 
 def main_fast():
     # run everything once fast
-    access_token = get_wow_access_token()
+    access_token = get_wow_access_token(utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET)
     pool = ThreadPoolExecutor(max_workers=16)
     for connected_id in set(utils.mega_data_setup.WOW_SERVER_NAMES.values()):
         pool.submit(pull_single_realm_data, connected_id, access_token)

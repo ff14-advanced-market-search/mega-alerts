@@ -13,7 +13,9 @@ raw_mega_data = json.load(open("user_data/mega/mega_data.json"))
 # load from file if setup
 if len(raw_mega_data) != 0:
     print("loading mega data from user_data/mega/mega_data.json")
-    WEBHOOK_URL = raw_mega_data["WEBHOOK_URL"]
+    WOW_CLIENT_ID = raw_mega_data["WOW_CLIENT_ID"]
+    WOW_CLIENT_SECRET = raw_mega_data["WOW_CLIENT_SECRET"]
+    WEBHOOK_URL = raw_mega_data["MEGA_WEBHOOK_URL"]
     WOWHEAD_LINK = raw_mega_data["WOWHEAD_LINK"]
     SHOW_BIDPRICES = raw_mega_data["SHOW_BID_PRICES"]
     REGION = raw_mega_data["WOW_REGION"]
@@ -31,15 +33,22 @@ else:
     EXTRA_ALERTS = os.getenv("EXTRA_ALERTS")
     ADD_DELAY = os.getenv("ADD_DELAY")
 
-    if REGION == "NA" or REGION == "US":
-        REGION = "NA"
-        WOW_SERVER_NAMES = json.load(open("data/na-wow-connected-realm-ids.json"))
-    elif REGION == "EU":
-        WOW_SERVER_NAMES = json.load(open("data/eu-wow-connected-realm-ids.json"))
-    else:
-        print(f"error region is not valid choose NA, US or EU")
-        exit(1)
+    WOW_CLIENT_ID = os.getenv("WOW_CLIENT_ID")
+    WOW_CLIENT_SECRET = os.getenv("WOW_CLIENT_SECRET")
 
+# need to do this no matter where we get the region from
+if REGION == "NA" or REGION == "US":
+    REGION = "NA"
+    WOW_SERVER_NAMES = json.load(open("data/na-wow-connected-realm-ids.json"))
+elif REGION == "EU":
+    WOW_SERVER_NAMES = json.load(open("data/eu-wow-connected-realm-ids.json"))
+else:
+    print(f"error region is not valid choose NA, US or EU")
+    exit(1)
+
+HOME_REALMS = open("user_data/mega/home_realms.json").read()
+home_realm_ids = json.loads(HOME_REALMS)
+if len(home_realm_ids) == 0:
     home_realm_ids = []
     if os.getenv("HOME_REALMS"):
         HOME_REALMS = json.loads(os.getenv("HOME_REALMS"))
