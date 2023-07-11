@@ -285,7 +285,7 @@ def main():
             if utils.mega_data_setup.ADD_DELAY:
                 try:
                     delay = int(utils.mega_data_setup.ADD_DELAY)
-                    print(f"sleeping for {delay} seconds")
+                    print(f"sleeping for {delay} seconds for ADD_DELAY")
                     time.sleep(delay)
                 except Exception as e:
                     print(
@@ -295,7 +295,7 @@ def main():
             else:
                 # auto sleep 30 sec
                 delay = 30
-                print(f"sleeping for {delay} seconds")
+                print(f"sleeping for {delay} seconds for ADD_DELAY")
                 time.sleep(delay)
 
             access_token = get_wow_access_token(
@@ -344,8 +344,8 @@ def main_fast():
 
 
 send_discord_message("starting mega alerts", utils.mega_data_setup.WEBHOOK_URL)
-# main()
+main()
 
 ## for debugging
-main_single()
+# main_single()
 # main_fast()
