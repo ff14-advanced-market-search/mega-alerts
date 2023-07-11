@@ -60,7 +60,7 @@ if len(desired_items_raw) == 0:
         desired_items_raw = {}
 
 # if file is not set use env var
-if len(desired_pets_raw) != 0:
+if len(desired_pets_raw) == 0:
     print("no desired pets found in user_data/mega/desired_pets.json pulling from env vars")
     if os.getenv("DESIRED_PETS"):
         desired_pets_raw = json.loads(os.getenv("DESIRED_PETS"))

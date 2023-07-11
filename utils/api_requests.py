@@ -83,7 +83,7 @@ def local_update_timers(dataSetID, lastUploadTimeRaw, region):
         json.dump(update_timers, outfile, indent=2)
 
 
-def get_update_timers(home_realm_ids, region):
+def get_update_timers(home_realm_ids, region, simple_snipe=False):
     ## new method
     # get from api once and then file every time after
     update_timers = json.load(open("data/upload_timers.json"))
