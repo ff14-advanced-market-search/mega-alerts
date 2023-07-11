@@ -169,6 +169,12 @@ Once you do that just run:
 kubectl apply -f kube-manifest.yml
 ```
 
+To update to the latest container version of mega alerts run:
+
+```
+kubectl rollout restart deployment/mega-alerts
+```
+
 You can then view the logs with:
 
 ```
