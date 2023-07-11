@@ -53,7 +53,9 @@ desired_pets_raw = json.load(open("user_data/mega/desired_pets.json"))
 
 # if file is not set use env var
 if len(desired_items_raw) == 0:
-    print("no desired items found in user_data/mega/desired_items.json pulling from env vars")
+    print(
+        "no desired items found in user_data/mega/desired_items.json pulling from env vars"
+    )
     if os.getenv("DESIRED_ITEMS"):
         desired_items_raw = json.loads(os.getenv("DESIRED_ITEMS"))
     else:
@@ -61,7 +63,9 @@ if len(desired_items_raw) == 0:
 
 # if file is not set use env var
 if len(desired_pets_raw) == 0:
-    print("no desired pets found in user_data/mega/desired_pets.json pulling from env vars")
+    print(
+        "no desired pets found in user_data/mega/desired_pets.json pulling from env vars"
+    )
     if os.getenv("DESIRED_PETS"):
         desired_pets_raw = json.loads(os.getenv("DESIRED_PETS"))
     else:
@@ -69,7 +73,9 @@ if len(desired_pets_raw) == 0:
 
 if desired_pets_raw == {} and desired_items_raw == {}:
     print("Error no snipe data found!")
-    print("You need to set up your user_data/mega/desired_items.json or user_data/mega/desired_pets.json")
+    print(
+        "You need to set up your user_data/mega/desired_items.json or user_data/mega/desired_pets.json"
+    )
     print("You can also set env vars with the json for DESIRED_ITEMS or DESIRED_PETS")
     exit(1)
 

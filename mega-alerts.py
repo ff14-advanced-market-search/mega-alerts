@@ -27,7 +27,9 @@ import utils.mega_data_setup
 
 #### FUNCTIONS ####
 def pull_single_realm_data(connected_id, access_token):
-    auctions = get_listings_single(connected_id, access_token, utils.mega_data_setup.REGION)
+    auctions = get_listings_single(
+        connected_id, access_token, utils.mega_data_setup.REGION
+    )
     clean_auctions = clean_listing_data(auctions, connected_id)
     if not clean_auctions:
         return
@@ -91,11 +93,17 @@ def clean_listing_data(auctions, connected_id):
                         all_ah_buyouts[item_id].append(price / 10000)
         # all caged battle pets have item id 82800
         elif item_id == 82800:
-            if item["item"]["pet_species_id"] in utils.mega_data_setup.desired_pets.keys():
+            if (
+                item["item"]["pet_species_id"]
+                in utils.mega_data_setup.desired_pets.keys()
+            ):
                 pet_id = item["item"]["pet_species_id"]
                 # idk why this is here, but have a feeling everything breaks without it
                 price = 10000000 * 10000
-                if "bid" in item.keys() and utils.mega_data_setup.SHOW_BIDPRICES == "true":
+                if (
+                    "bid" in item.keys()
+                    and utils.mega_data_setup.SHOW_BIDPRICES == "true"
+                ):
                     price = item["bid"]
                     # filter out items that are too expensive
                     if price < utils.mega_data_setup.desired_pets[pet_id] * 10000:
@@ -142,10 +150,16 @@ def format_alert_messages(
     pet_ah_bids,
 ):
     results = []
-    realm_names = [name for name, id in utils.mega_data_setup.WOW_SERVER_NAMES.items() if id == connected_id]
+    realm_names = [
+        name
+        for name, id in utils.mega_data_setup.WOW_SERVER_NAMES.items()
+        if id == connected_id
+    ]
     for itemID, auction in all_ah_buyouts.items():
         # use instead of item name
-        itemlink = create_oribos_exchange_item_link(realm_names[0], itemID, utils.mega_data_setup.REGION)
+        itemlink = create_oribos_exchange_item_link(
+            realm_names[0], itemID, utils.mega_data_setup.REGION
+        )
         results.append(
             results_dict(
                 auction, itemlink, connected_id, realm_names, itemID, "itemID", "buyout"
@@ -154,7 +168,9 @@ def format_alert_messages(
 
     for petID, auction in pet_ah_buyouts.items():
         # use instead of item name
-        itemlink = create_oribos_exchange_pet_link(realm_names[0], petID, utils.mega_data_setup.REGION)
+        itemlink = create_oribos_exchange_pet_link(
+            realm_names[0], petID, utils.mega_data_setup.REGION
+        )
         results.append(
             results_dict(
                 auction, itemlink, connected_id, realm_names, petID, "petID", "buyout"
@@ -164,7 +180,9 @@ def format_alert_messages(
     if utils.mega_data_setup.SHOW_BIDPRICES == "true":
         for itemID, auction in all_ah_bids.items():
             # use instead of item name
-            itemlink = create_oribos_exchange_item_link(realm_names[0], itemID, utils.mega_data_setup.REGION)
+            itemlink = create_oribos_exchange_item_link(
+                realm_names[0], itemID, utils.mega_data_setup.REGION
+            )
             results.append(
                 results_dict(
                     auction,
@@ -179,7 +197,9 @@ def format_alert_messages(
 
         for petID, auction in pet_ah_bids.items():
             # use instead of item name
-            itemlink = create_oribos_exchange_pet_link(realm_names[0], petID, utils.mega_data_setup.REGION)
+            itemlink = create_oribos_exchange_pet_link(
+                realm_names[0], petID, utils.mega_data_setup.REGION
+            )
             results.append(
                 results_dict(
                     auction, itemlink, connected_id, realm_names, petID, "petID", "bid"
@@ -225,7 +245,9 @@ def send_upload_timer_message(update_timers):
 def main():
     global alert_record
     global item_names
-    update_timers = get_update_timers(utils.mega_data_setup.home_realm_ids, utils.mega_data_setup.REGION)
+    update_timers = get_update_timers(
+        utils.mega_data_setup.home_realm_ids, utils.mega_data_setup.REGION
+    )
     while True:
         current_min = int(datetime.now().minute)
         # clear out the alert record once an hour
@@ -234,7 +256,9 @@ def main():
             alert_record = []
         # get new update timers once per hour
         if current_min == 1:
-            update_timers = get_update_timers(utils.mega_data_setup.home_realm_ids, utils.mega_data_setup.REGION)
+            update_timers = get_update_timers(
+                utils.mega_data_setup.home_realm_ids, utils.mega_data_setup.REGION
+            )
         # update item names once per hour
         if current_min == 2:
             item_names = get_itemnames()
@@ -257,7 +281,9 @@ def main():
                     print(f"sleeping for {delay} seconds")
                     time.sleep(delay)
                 except Exception as e:
-                    print(f"ADD_DELAY must be an integer, got {utils.mega_data_setup.ADD_DELAY}:\n{e}")
+                    print(
+                        f"ADD_DELAY must be an integer, got {utils.mega_data_setup.ADD_DELAY}:\n{e}"
+                    )
                     exit(1)
             else:
                 # auto sleep 30 sec
