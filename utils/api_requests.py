@@ -73,7 +73,11 @@ def local_update_timers(dataSetID, lastUploadTimeRaw, region):
 
     # open file
     update_timers = json.load(open("data/upload_timers.json"))
-    update_timers["data"] = [realm_time for realm_time in update_timers["data"]  if realm_time["dataSetID"] != dataSetID]
+    update_timers["data"] = [
+        realm_time
+        for realm_time in update_timers["data"]
+        if realm_time["dataSetID"] != dataSetID
+    ]
     update_timers["data"].append(new_realm_time)
 
     # write to file again with new data
@@ -93,7 +97,9 @@ def get_update_timers(home_realm_ids, region):
     if "data" in update_timers:
         update_timers = update_timers["data"]
     else:
-        print("error no data found in update timers reach out on the discord: https://discord.gg/Pbp5xhmBJ7")
+        print(
+            "error no data found in update timers reach out on the discord: https://discord.gg/Pbp5xhmBJ7"
+        )
         exit(1)
 
     # cover all realms
