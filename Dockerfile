@@ -22,12 +22,9 @@ RUN mkdir /app/data/
 RUN mkdir /app/utils/
 COPY ./mega-alerts.py /app/
 COPY ./utils/* /app/utils/
+COPY ./data/* /app/data/
 COPY ./run /app/
 RUN chmod +x /app/*
-
-# wow data
-COPY ./data/na-wow-connected-realm-ids.json /app/data/
-COPY ./data/eu-wow-connected-realm-ids.json /app/data/
 
 CMD /app/run
 
