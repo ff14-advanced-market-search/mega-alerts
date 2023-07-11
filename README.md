@@ -55,17 +55,18 @@ You can find that id at the end of the undermine exchange link for the item next
 '["Thrall", "Silvermoon"]'
 ```
 
-8. If you want to run locally with python or pycharm then set all your user values in the data files under the [user_data/mega](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/) json files:
+8. If you want to run locally with python or pycharm, first clone the repo or [download the code](https://github.com/ff14-advanced-market-search/mega-alerts/archive/refs/heads/main.zip).  Then set all your user values in the data files under the [user_data/mega](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/) json files:
 
-First clone the repo or download it then open it in pycharm:
+First clone the repo or download it.  Then update the json
 
-<img width="1050" alt="Screen Shot 2023-07-11 at 1 12 19 PM" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/01d53cfd-5a44-4f62-ba92-0163bdbfe1ec">
 
 - [Set the item ids and prices you want](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/desired_items.json)
 - [Set the pet ids and prices you want](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/desired_pets.json)
 - [Set up all the other important details for alerts](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/mega_data.json)
 
-Then just run the [mega-alerts.py file](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/mega-alerts.py)
+Then just run the [mega-alerts.py file](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/mega-alerts.py). To do this right click the mega alerts file and click run:
+
+<img width="1046" alt="Screen Shot 2023-07-11 at 1 14 40 PM" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/d7363e3d-fef6-4a06-93ab-42ae38fa3ac0">
 
 9. To run the docker container (go to 10. if you are running it with docker desktop) with the following env vars.
 
