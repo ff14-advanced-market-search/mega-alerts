@@ -1,5 +1,10 @@
+import json
+from datetime import datetime
+
 import requests, os
 from tenacity import retry, stop_after_attempt
+
+from utils.helpers import get_wow_realm_names_by_id
 
 
 def send_discord_message(message, webhook_url):
@@ -28,18 +33,57 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
         url = f"https://us.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}/auctions?namespace=dynamic-us&locale=en_US&access_token={access_token}"
     elif region == "EU":
         url = f"https://eu.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}/auctions?namespace=dynamic-eu&locale=en_EU&access_token={access_token}"
+    else:
+        print(
+            f"{region} is not yet supported, reach out for us to add this region option"
+        )
+        exit(1)
 
     req = requests.get(url, timeout=25)
+
+    if "Last-Modified" in dict(req.headers):
+        last_modified = dict(req.headers)["Last-Modified"]
+        local_update_timers(connectedRealmId, last_modified, region)
 
     auction_info = req.json()
     return auction_info["auctions"]
 
 
+def local_update_timers(dataset, lastUploadTimeRaw, region):
+    # (dataSetID INT PRIMARY KEY, tableName VARCHAR(255), dataSetName VARCHAR(255), region VARCHAR(255), lastUploadTimeRaw VARCHAR(255), lastUploadMinute INT, lastUploadUnix BIGINT)
+
+    dataSetID = dataset
+    tableName = f"{dataset}_singleMinPrices"
+    dataSetName = get_wow_realm_names_by_id(dataset)
+
+    lastUploadMinute = int(lastUploadTimeRaw.split(":")[1])
+    # fix this later
+    lastUploadUnix = int(
+        datetime.strptime(lastUploadTimeRaw, "%a, %d %b %Y %H:%M:%S %Z").timestamp()
+    )
+
+    print("raw api data for", tableName, "last updated", lastUploadTimeRaw)
+
+    # create values
+    val_list = [
+        (
+            str(dataSetID),
+            tableName,
+            json.dumps(dataSetName),
+            region,
+            str(lastUploadTimeRaw),
+            str(lastUploadMinute),
+            str(lastUploadUnix),
+        )
+    ]
+
+
 def get_update_timers(home_realm_ids, region):
-    update_timers = requests.post(
-        "http://api.saddlebagexchange.com/api/wow/uploadtimers",
-        json={},
-    ).json()["data"]
+    # update_timers = requests.post(
+    #     "http://api.saddlebagexchange.com/api/wow/uploadtimers",
+    #     json={},
+    # ).json()["data"]
+    update_timers = json.load(open("data/upload_timers.json"))["data"]
 
     # cover all realms
     if home_realm_ids == []:
