@@ -66,7 +66,7 @@ if os.getenv("HOME_REALMS"):
 
 #### FUNCTIONS ####
 def pull_single_realm_data(connected_id, access_token):
-    auctions = get_listings_single(connected_id, access_token)
+    auctions = get_listings_single(connected_id, access_token, REGION)
     clean_auctions = clean_listing_data(auctions, connected_id)
     if not clean_auctions:
         return
