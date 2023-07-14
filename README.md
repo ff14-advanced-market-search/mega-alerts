@@ -135,9 +135,7 @@ We also have the following optional env vars you can add in to change alert beha
 
 For the env vars set all the env vars you see in the `--env` lines in step 10 and then click run:
 
-Use `MEGA_WEBHOOK_URL` not `WEBHOOK_URL`
-
-<img width="539" alt="image" src="https://user-images.githubusercontent.com/17516896/224507016-4195f8c2-f55e-44b7-b7f4-991ffdf38d35.png">
+<img width="554" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/2fd6618b-1532-485c-8959-0c83f39ca7ea">
 
 
 11. Alternatively you can try to run this in kubernetes on minikube to autorestart if the pods fail
