@@ -22,7 +22,7 @@ import utils.mega_data_setup
 mega_data = utils.mega_data_setup.mega_data()
 
 print("Sleep 10 sec on start to avoid spamming the api")
-time.sleep(10)
+# time.sleep(10)
 
 #### GLOBALS ####
 alert_record = []
@@ -78,14 +78,14 @@ def clean_listing_data(auctions, connected_id):
     for item in auctions:
         item_id = item["item"]["id"]
         # regular items
-        if item_id in mega_data.desired_items and item_id != 82800:
+        if item_id in mega_data.DESIRED_ITEMS and item_id != 82800:
             # idk why this is here, but have a feeling everything breaks without it
             price = 10000000 * 10000
             # if it has a bid use the bid price
             if "bid" in item.keys() and mega_data.SHOW_BIDPRICES == "true":
                 price = item["bid"]
                 # filter out items that are too expensive
-                if price < mega_data.desired_items[item_id] * 10000:
+                if price < mega_data.DESIRED_ITEMS[item_id] * 10000:
                     if item_id not in all_ah_bids.keys():
                         all_ah_bids[item_id] = [price / 10000]
                     elif price / 10000 not in all_ah_bids[item_id]:
@@ -93,7 +93,7 @@ def clean_listing_data(auctions, connected_id):
             if "buyout" in item.keys():
                 price = item["buyout"]
                 # filter out items that are too expensive
-                if price < mega_data.desired_items[item_id] * 10000:
+                if price < mega_data.DESIRED_ITEMS[item_id] * 10000:
                     if item_id not in all_ah_buyouts.keys():
                         all_ah_buyouts[item_id] = [price / 10000]
                     elif price / 10000 not in all_ah_buyouts[item_id]:
@@ -102,7 +102,7 @@ def clean_listing_data(auctions, connected_id):
         elif item_id == 82800:
             if (
                 item["item"]["pet_species_id"]
-                in mega_data.desired_pets.keys()
+                in mega_data.DESIRED_PETS.keys()
             ):
                 pet_id = item["item"]["pet_species_id"]
                 # idk why this is here, but have a feeling everything breaks without it
@@ -113,7 +113,7 @@ def clean_listing_data(auctions, connected_id):
                 ):
                     price = item["bid"]
                     # filter out items that are too expensive
-                    if price < mega_data.desired_pets[pet_id] * 10000:
+                    if price < mega_data.DESIRED_PETS[pet_id] * 10000:
                         if pet_id not in pet_ah_bids.keys():
                             pet_ah_bids[pet_id] = [price / 10000]
                         elif price / 10000 not in pet_ah_bids[pet_id]:
@@ -121,7 +121,7 @@ def clean_listing_data(auctions, connected_id):
                 if "buyout" in item.keys():
                     price = item["buyout"]
                     # filter out items that are too expensive
-                    if price < mega_data.desired_pets[pet_id] * 10000:
+                    if price < mega_data.DESIRED_PETS[pet_id] * 10000:
                         if pet_id not in pet_ah_buyouts.keys():
                             pet_ah_buyouts[pet_id] = [price / 10000]
                         elif price / 10000 not in pet_ah_buyouts[pet_id]:
@@ -134,8 +134,8 @@ def clean_listing_data(auctions, connected_id):
         and pet_ah_bids == {}
     ):
         print(
-            f"no listings found matching items {mega_data.desired_items} "
-            + f"or pets {mega_data.desired_pets} on {connected_id} "
+            f"no listings found matching items {mega_data.DESIRED_ITEMS} "
+            + f"or pets {mega_data.DESIRED_PETS} on {connected_id} "
             + f"{mega_data.REGION}"
         )
         return
@@ -311,8 +311,8 @@ def main():
                 time.sleep(25)
         else:
             print(
-                f"waiting for a match in update time to run check on items {mega_data.desired_items} "
-                + f"or pets {mega_data.desired_pets}, none found triggering at {datetime.now()}"
+                f"waiting for a match in update time to run check on items {mega_data.DESIRED_ITEMS} "
+                + f"or pets {mega_data.DESIRED_PETS}, none found triggering at {datetime.now()}"
             )
             time.sleep(20)
 

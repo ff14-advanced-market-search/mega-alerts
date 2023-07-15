@@ -84,8 +84,8 @@ class mega_data:
             exit(1)
 
         # fix the json dict keys from strings to ints
-        self.desired_items, self.desired_pets = {}, {}
+        self.DESIRED_ITEMS, self.DESIRED_PETS = {}, {}
         for k, v in desired_items_raw.items():
-            self.desired_items[int(k)] = int(v)
+            self.DESIRED_ITEMS[int(k)] = int(v)
         for k, v in desired_pets_raw.items():
-            self.desired_pets[int(k)] = int(v)
+            self.DESIRED_PETS[int(k)] = int(v)
