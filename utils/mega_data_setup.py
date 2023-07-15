@@ -2,6 +2,8 @@
 from __future__ import print_function
 import os, json
 
+from utils.api_requests import get_petnames, get_itemnames
+
 
 class mega_data:
     def __init__(self, use_file: bool = False):
@@ -33,6 +35,10 @@ class mega_data:
             self.ADD_DELAY = os.getenv("ADD_DELAY")
             self.WOW_CLIENT_ID = os.getenv("WOW_CLIENT_ID")
             self.WOW_CLIENT_SECRET = os.getenv("WOW_CLIENT_SECRET")
+
+        # get name dictionaries
+        self.ITEM_NAMES = self.get_item_names()
+        self.PET_NAMES = self.get_pet_names()
 
         # need to do this no matter where we get the region from
         if self.REGION == "NA" or self.REGION == "US":
@@ -97,3 +103,9 @@ class mega_data:
             self.DESIRED_ITEMS[int(k)] = int(v)
         for k, v in desired_pets_raw.items():
             self.DESIRED_PETS[int(k)] = int(v)
+
+    def get_pet_names(self):
+        return get_petnames(self.WOW_CLIENT_ID, self.WOW_CLIENT_SECRET)
+
+    def get_item_names(self):
+        return get_itemnames()

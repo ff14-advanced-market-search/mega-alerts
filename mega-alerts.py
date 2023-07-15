@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from __future__ import print_function
-import time, os, json
+import time, json
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 
@@ -9,8 +9,6 @@ from utils.api_requests import (
     get_listings_single,
     get_update_timers,
     send_discord_message,
-    get_itemnames,
-    get_petnames,
 )
 from utils.helpers import (
     create_oribos_exchange_pet_link,
@@ -27,8 +25,6 @@ print("Sleep 10 sec on start to avoid spamming the api")
 
 #### GLOBALS ####
 alert_record = []
-item_names = get_itemnames()
-pet_names = get_petnames(mega_data.WOW_CLIENT_ID, mega_data.WOW_CLIENT_SECRET)
 
 
 #### FUNCTIONS ####
@@ -40,13 +36,13 @@ def pull_single_realm_data(connected_id, access_token):
     for auction in clean_auctions:
         if "itemID" in auction:
             id_msg = f"`itemID:` {auction['itemID']}\n"
-            if str(auction["itemID"]) in item_names:
-                item_name = item_names[str(auction["itemID"])]
+            if str(auction["itemID"]) in mega_data.ITEM_NAMES:
+                item_name = mega_data.ITEM_NAMES[str(auction["itemID"])]
                 id_msg += f"`Name:` {item_name}\n"
         else:
             id_msg = f"`petID:` {auction['petID']}\n"
-            if auction["petID"] in pet_names:
-                pet_name = pet_names[auction["petID"]]
+            if auction["petID"] in mega_data.PET_NAMES:
+                pet_name = mega_data.PET_NAMES[auction["petID"]]
                 id_msg += f"`Name:` {pet_name}\n"
         message = (
             "==================================\n"
@@ -240,7 +236,6 @@ def send_upload_timer_message(update_timers):
 #### MAIN ####
 def main():
     global alert_record
-    global item_names
     update_timers = get_update_timers(mega_data.HOME_REALM_IDS, mega_data.REGION)
     while True:
         current_min = int(datetime.now().minute)
@@ -253,9 +248,6 @@ def main():
             update_timers = get_update_timers(
                 mega_data.HOME_REALM_IDS, mega_data.REGION
             )
-        # update item names once per hour
-        if current_min == 2:
-            item_names = get_itemnames()
 
         matching_realms = [
             realm["dataSetID"]
@@ -325,8 +317,8 @@ def main_fast():
 
 
 send_discord_message("starting mega alerts", mega_data.WEBHOOK_URL)
-main()
+# main()
 
 ## for debugging
-# main_single()
+main_single()
 # main_fast()
