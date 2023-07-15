@@ -61,7 +61,9 @@ class MegaData:
                     self.HOME_REALM_IDS.append(self.WOW_SERVER_NAMES[r])
 
         #### ITEM SNIPE SETUP ###
-        self.DESIRED_ITEMS = self.set_desired_items("desired_items.json", "DESIRED_ITEMS")
+        self.DESIRED_ITEMS = self.set_desired_items(
+            "desired_items.json", "DESIRED_ITEMS"
+        )
         self.DESIRED_PETS = self.set_desired_items("desired_pets.json", "DESIRED_PETS")
         if len(self.DESIRED_ITEMS) == 0 and len(self.DESIRED_PETS) == 0:
             print("Error no snipe data found!")

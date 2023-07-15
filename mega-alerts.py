@@ -14,17 +14,15 @@ from utils.helpers import (
     create_oribos_exchange_pet_link,
     create_oribos_exchange_item_link,
 )
-
-# sets up env vars
 import utils.mega_data_setup
 
-mega_data = utils.mega_data_setup.MegaData()
 
 print("Sleep 10 sec on start to avoid spamming the api")
 # time.sleep(10)
 
 #### GLOBALS ####
 alert_record = []
+mega_data = utils.mega_data_setup.MegaData()
 
 
 #### FUNCTIONS ####
