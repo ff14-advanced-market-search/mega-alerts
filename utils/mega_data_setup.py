@@ -36,24 +36,20 @@ class MegaData:
             self.EXTRA_ALERTS = os.getenv("EXTRA_ALERTS")
             self.ADD_DELAY = os.getenv("ADD_DELAY")
 
-
         # get name dictionaries
         self.ITEM_NAMES = self.get_item_names()
         self.PET_NAMES = self.get_pet_names()
 
         # need to do this no matter where we get the region from
-        if self.REGION == "NA" or self.REGION == "US":
-            self.REGION = "NA"
-            self.WOW_SERVER_NAMES = json.load(
-                open("data/na-wow-connected-realm-ids.json")
-            )
-        elif self.REGION == "EU":
-            self.WOW_SERVER_NAMES = json.load(
-                open("data/eu-wow-connected-realm-ids.json")
-            )
-        else:
-            print(f"error region is not valid choose NA, US or EU")
+        if self.REGION not in ["US", "EU", "NA"]:
+            print(f"error {self.REGION} not a valid region")
             exit(1)
+        if self.REGION == "US":
+            self.REGION = "NA"
+
+        self.WOW_SERVER_NAMES = json.load(
+            open(f"data/{self.REGION.lower()}-wow-connected-realm-ids.json")
+        )
 
         self.HOME_REALMS = open("user_data/mega/home_realms.json").read()
         self.HOME_REALM_IDS = json.loads(self.HOME_REALMS)
@@ -65,30 +61,9 @@ class MegaData:
                     self.HOME_REALM_IDS.append(self.WOW_SERVER_NAMES[r])
 
         #### ITEM SNIPE SETUP ###
-        desired_items_raw = json.load(open("user_data/mega/desired_items.json"))
-        desired_pets_raw = json.load(open("user_data/mega/desired_pets.json"))
-
-        # if file is not set use env var
-        if len(desired_items_raw) == 0:
-            print(
-                "no desired items found in user_data/mega/desired_items.json pulling from env vars"
-            )
-            if os.getenv("DESIRED_ITEMS"):
-                desired_items_raw = json.loads(os.getenv("DESIRED_ITEMS"))
-            else:
-                desired_items_raw = {}
-
-        # if file is not set use env var
-        if len(desired_pets_raw) == 0:
-            print(
-                "no desired pets found in user_data/mega/desired_pets.json pulling from env vars"
-            )
-            if os.getenv("DESIRED_PETS"):
-                desired_pets_raw = json.loads(os.getenv("DESIRED_PETS"))
-            else:
-                desired_pets_raw = {}
-
-        if desired_pets_raw == {} and desired_items_raw == {}:
+        self.DESIRED_ITEMS = self.set_desired_items("desired_items.json", "DESIRED_ITEMS")
+        self.DESIRED_PETS = self.set_desired_items("desired_pets.json", "DESIRED_PETS")
+        if len(self.DESIRED_ITEMS) == 0 and len(self.DESIRED_PETS) == 0:
             print("Error no snipe data found!")
             print(
                 "You need to set up your user_data/mega/desired_items.json or user_data/mega/desired_pets.json"
@@ -98,15 +73,24 @@ class MegaData:
             )
             exit(1)
 
-        # fix the json dict keys from strings to ints
-        self.DESIRED_ITEMS, self.DESIRED_PETS = {}, {}
-        for k, v in desired_items_raw.items():
-            self.DESIRED_ITEMS[int(k)] = int(v)
-        for k, v in desired_pets_raw.items():
-            self.DESIRED_PETS[int(k)] = int(v)
-
     def get_pet_names(self):
         return get_petnames(self.WOW_CLIENT_ID, self.WOW_CLIENT_SECRET)
 
     def get_item_names(self):
         return get_itemnames()
+
+    def set_desired_items(self, file_name, env_var_name):
+        desired_items_raw = json.load(open(f"user_data/mega/{file_name}"))
+        # if file is not set use env var
+        if len(desired_items_raw) == 0:
+            print(
+                f"no desired items found in user_data/mega/{file_name} pulling from env vars"
+            )
+            if os.getenv(env_var_name):
+                desired_items_raw = json.loads(os.getenv(env_var_name))
+            else:
+                desired_items_raw = {}
+        desired_items = {}
+        for k, v in desired_items_raw.items():
+            desired_items[int(k)] = int(v)
+        return desired_items

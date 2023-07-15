@@ -317,7 +317,7 @@ def main_fast():
 
 
 send_discord_message("starting mega alerts", mega_data.WEBHOOK_URL)
-main()
+# main()
 
 ## for debugging
 main_single()
