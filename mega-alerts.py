@@ -19,7 +19,7 @@ from utils.helpers import (
 
 # sets up env vars
 import utils.mega_data_setup
-
+mega_data = utils.mega_data_setup.mega_data()
 
 print("Sleep 10 sec on start to avoid spamming the api")
 time.sleep(10)
@@ -28,14 +28,14 @@ time.sleep(10)
 alert_record = []
 item_names = get_itemnames()
 pet_names = get_petnames(
-    utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET
+    mega_data.WOW_CLIENT_ID, mega_data.WOW_CLIENT_SECRET
 )
 
 
 #### FUNCTIONS ####
 def pull_single_realm_data(connected_id, access_token):
     auctions = get_listings_single(
-        connected_id, access_token, utils.mega_data_setup.REGION
+        connected_id, access_token, mega_data.REGION
     )
     clean_auctions = clean_listing_data(auctions, connected_id)
     if not clean_auctions:
@@ -53,13 +53,13 @@ def pull_single_realm_data(connected_id, access_token):
                 id_msg += f"`Name:` {pet_name}\n"
         message = (
             "==================================\n"
-            + f"`region:` {utils.mega_data_setup.REGION} "
+            + f"`region:` {mega_data.REGION} "
             + f"`realmID:` {auction['realmID']} "
             + id_msg
             + f"[Undermine link]({auction['itemlink']})\n"
             + f"realmNames: {auction['realmNames']}\n"
         )
-        if utils.mega_data_setup.WOWHEAD_LINK and auction["itemID"]:
+        if mega_data.WOWHEAD_LINK and auction["itemID"]:
             item_id = auction["itemID"]
             message += f"https://www.wowhead.com/item={item_id}"
         if "bid_prices" in auction:
@@ -68,7 +68,7 @@ def pull_single_realm_data(connected_id, access_token):
             message += f"buyout_prices: {auction['buyout_prices']}\n"
         message += "==================================\n"
         if auction not in alert_record:
-            send_discord_message(message, utils.mega_data_setup.WEBHOOK_URL)
+            send_discord_message(message, mega_data.WEBHOOK_URL)
             alert_record.append(auction)
 
 
@@ -78,14 +78,14 @@ def clean_listing_data(auctions, connected_id):
     for item in auctions:
         item_id = item["item"]["id"]
         # regular items
-        if item_id in utils.mega_data_setup.desired_items and item_id != 82800:
+        if item_id in mega_data.desired_items and item_id != 82800:
             # idk why this is here, but have a feeling everything breaks without it
             price = 10000000 * 10000
             # if it has a bid use the bid price
-            if "bid" in item.keys() and utils.mega_data_setup.SHOW_BIDPRICES == "true":
+            if "bid" in item.keys() and mega_data.SHOW_BIDPRICES == "true":
                 price = item["bid"]
                 # filter out items that are too expensive
-                if price < utils.mega_data_setup.desired_items[item_id] * 10000:
+                if price < mega_data.desired_items[item_id] * 10000:
                     if item_id not in all_ah_bids.keys():
                         all_ah_bids[item_id] = [price / 10000]
                     elif price / 10000 not in all_ah_bids[item_id]:
@@ -93,7 +93,7 @@ def clean_listing_data(auctions, connected_id):
             if "buyout" in item.keys():
                 price = item["buyout"]
                 # filter out items that are too expensive
-                if price < utils.mega_data_setup.desired_items[item_id] * 10000:
+                if price < mega_data.desired_items[item_id] * 10000:
                     if item_id not in all_ah_buyouts.keys():
                         all_ah_buyouts[item_id] = [price / 10000]
                     elif price / 10000 not in all_ah_buyouts[item_id]:
@@ -102,18 +102,18 @@ def clean_listing_data(auctions, connected_id):
         elif item_id == 82800:
             if (
                 item["item"]["pet_species_id"]
-                in utils.mega_data_setup.desired_pets.keys()
+                in mega_data.desired_pets.keys()
             ):
                 pet_id = item["item"]["pet_species_id"]
                 # idk why this is here, but have a feeling everything breaks without it
                 price = 10000000 * 10000
                 if (
                     "bid" in item.keys()
-                    and utils.mega_data_setup.SHOW_BIDPRICES == "true"
+                    and mega_data.SHOW_BIDPRICES == "true"
                 ):
                     price = item["bid"]
                     # filter out items that are too expensive
-                    if price < utils.mega_data_setup.desired_pets[pet_id] * 10000:
+                    if price < mega_data.desired_pets[pet_id] * 10000:
                         if pet_id not in pet_ah_bids.keys():
                             pet_ah_bids[pet_id] = [price / 10000]
                         elif price / 10000 not in pet_ah_bids[pet_id]:
@@ -121,7 +121,7 @@ def clean_listing_data(auctions, connected_id):
                 if "buyout" in item.keys():
                     price = item["buyout"]
                     # filter out items that are too expensive
-                    if price < utils.mega_data_setup.desired_pets[pet_id] * 10000:
+                    if price < mega_data.desired_pets[pet_id] * 10000:
                         if pet_id not in pet_ah_buyouts.keys():
                             pet_ah_buyouts[pet_id] = [price / 10000]
                         elif price / 10000 not in pet_ah_buyouts[pet_id]:
@@ -134,9 +134,9 @@ def clean_listing_data(auctions, connected_id):
         and pet_ah_bids == {}
     ):
         print(
-            f"no listings found matching items {utils.mega_data_setup.desired_items} "
-            + f"or pets {utils.mega_data_setup.desired_pets} on {connected_id} "
-            + f"{utils.mega_data_setup.REGION}"
+            f"no listings found matching items {mega_data.desired_items} "
+            + f"or pets {mega_data.desired_pets} on {connected_id} "
+            + f"{mega_data.REGION}"
         )
         return
     else:
@@ -159,13 +159,13 @@ def format_alert_messages(
     results = []
     realm_names = [
         name
-        for name, id in utils.mega_data_setup.WOW_SERVER_NAMES.items()
+        for name, id in mega_data.WOW_SERVER_NAMES.items()
         if id == connected_id
     ]
     for itemID, auction in all_ah_buyouts.items():
         # use instead of item name
         itemlink = create_oribos_exchange_item_link(
-            realm_names[0], itemID, utils.mega_data_setup.REGION
+            realm_names[0], itemID, mega_data.REGION
         )
         results.append(
             results_dict(
@@ -176,7 +176,7 @@ def format_alert_messages(
     for petID, auction in pet_ah_buyouts.items():
         # use instead of item name
         itemlink = create_oribos_exchange_pet_link(
-            realm_names[0], petID, utils.mega_data_setup.REGION
+            realm_names[0], petID, mega_data.REGION
         )
         results.append(
             results_dict(
@@ -184,11 +184,11 @@ def format_alert_messages(
             )
         )
 
-    if utils.mega_data_setup.SHOW_BIDPRICES == "true":
+    if mega_data.SHOW_BIDPRICES == "true":
         for itemID, auction in all_ah_bids.items():
             # use instead of item name
             itemlink = create_oribos_exchange_item_link(
-                realm_names[0], itemID, utils.mega_data_setup.REGION
+                realm_names[0], itemID, mega_data.REGION
             )
             results.append(
                 results_dict(
@@ -205,7 +205,7 @@ def format_alert_messages(
         for petID, auction in pet_ah_bids.items():
             # use instead of item name
             itemlink = create_oribos_exchange_pet_link(
-                realm_names[0], petID, utils.mega_data_setup.REGION
+                realm_names[0], petID, mega_data.REGION
             )
             results.append(
                 results_dict(
@@ -221,7 +221,7 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
     auction.sort()
     minPrice = auction[0]
     return {
-        "region": utils.mega_data_setup.REGION,
+        "region": mega_data.REGION,
         "realmID": connected_id,
         "realmNames": realm_names,
         f"{idType}": id,
@@ -241,11 +241,11 @@ def send_upload_timer_message(update_timers):
             )
             alert_record.append(realm_info)
         if len(upload_msg) > 1500:
-            send_discord_message(f"{upload_msg}```", utils.mega_data_setup.WEBHOOK_URL)
+            send_discord_message(f"{upload_msg}```", mega_data.WEBHOOK_URL)
             upload_msg = "```"
 
     if upload_msg != "```":
-        send_discord_message(f"{upload_msg}```", utils.mega_data_setup.WEBHOOK_URL)
+        send_discord_message(f"{upload_msg}```", mega_data.WEBHOOK_URL)
 
 
 #### MAIN ####
@@ -253,7 +253,7 @@ def main():
     global alert_record
     global item_names
     update_timers = get_update_timers(
-        utils.mega_data_setup.home_realm_ids, utils.mega_data_setup.REGION
+        mega_data.home_realm_ids, mega_data.REGION
     )
     while True:
         current_min = int(datetime.now().minute)
@@ -264,7 +264,7 @@ def main():
         # get new update timers once per hour
         if current_min == 1:
             update_timers = get_update_timers(
-                utils.mega_data_setup.home_realm_ids, utils.mega_data_setup.REGION
+                mega_data.home_realm_ids, mega_data.REGION
             )
         # update item names once per hour
         if current_min == 2:
@@ -276,20 +276,20 @@ def main():
             if realm["lastUploadMinute"] <= current_min <= realm["lastUploadMinute"] + 5
         ]
         # mega wants extra alerts
-        if utils.mega_data_setup.EXTRA_ALERTS:
-            extra_alert_mins = json.loads(utils.mega_data_setup.EXTRA_ALERTS)
+        if mega_data.EXTRA_ALERTS:
+            extra_alert_mins = json.loads(mega_data.EXTRA_ALERTS)
             if current_min in extra_alert_mins:
                 matching_realms = [realm["dataSetID"] for realm in update_timers]
 
         if matching_realms != []:
-            if utils.mega_data_setup.ADD_DELAY:
+            if mega_data.ADD_DELAY:
                 try:
-                    delay = int(utils.mega_data_setup.ADD_DELAY)
+                    delay = int(mega_data.ADD_DELAY)
                     print(f"sleeping for {delay} seconds for ADD_DELAY")
                     time.sleep(delay)
                 except Exception as e:
                     print(
-                        f"ADD_DELAY must be an integer, got {utils.mega_data_setup.ADD_DELAY}:\n{e}"
+                        f"ADD_DELAY must be an integer, got {mega_data.ADD_DELAY}:\n{e}"
                     )
                     exit(1)
             else:
@@ -299,51 +299,45 @@ def main():
                 time.sleep(delay)
 
             access_token = get_wow_access_token(
-                utils.mega_data_setup.WOW_CLIENT_ID,
-                utils.mega_data_setup.WOW_CLIENT_SECRET,
+                mega_data.WOW_CLIENT_ID,
+                mega_data.WOW_CLIENT_SECRET,
             )
             pool = ThreadPoolExecutor(max_workers=16)
             for connected_id in matching_realms:
                 pool.submit(pull_single_realm_data, connected_id, access_token)
             pool.shutdown(wait=True)
             # home realms will spam so sleep
-            if utils.mega_data_setup.HOME_REALMS:
+            if mega_data.HOME_REALMS:
                 time.sleep(25)
         else:
             print(
-                f"waiting for a match in update time to run check on items {utils.mega_data_setup.desired_items} "
-                + f"or pets {utils.mega_data_setup.desired_pets}, none found triggering at {datetime.now()}"
+                f"waiting for a match in update time to run check on items {mega_data.desired_items} "
+                + f"or pets {mega_data.desired_pets}, none found triggering at {datetime.now()}"
             )
             time.sleep(20)
 
 
 def main_single():
-    get_update_timers(
-        utils.mega_data_setup.home_realm_ids, utils.mega_data_setup.REGION
-    )
     # run everything once slow
     access_token = get_wow_access_token(
-        utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET
+        mega_data.WOW_CLIENT_ID, mega_data.WOW_CLIENT_SECRET
     )
-    for connected_id in set(utils.mega_data_setup.WOW_SERVER_NAMES.values()):
+    for connected_id in set(mega_data.WOW_SERVER_NAMES.values()):
         pull_single_realm_data(connected_id, access_token)
 
 
 def main_fast():
-    get_update_timers(
-        utils.mega_data_setup.home_realm_ids, utils.mega_data_setup.REGION
-    )
     # run everything once fast
     access_token = get_wow_access_token(
-        utils.mega_data_setup.WOW_CLIENT_ID, utils.mega_data_setup.WOW_CLIENT_SECRET
+        mega_data.WOW_CLIENT_ID, mega_data.WOW_CLIENT_SECRET
     )
     pool = ThreadPoolExecutor(max_workers=16)
-    for connected_id in set(utils.mega_data_setup.WOW_SERVER_NAMES.values()):
+    for connected_id in set(mega_data.WOW_SERVER_NAMES.values()):
         pool.submit(pull_single_realm_data, connected_id, access_token)
     pool.shutdown(wait=True)
 
 
-send_discord_message("starting mega alerts", utils.mega_data_setup.WEBHOOK_URL)
+send_discord_message("starting mega alerts", mega_data.WEBHOOK_URL)
 main()
 
 ## for debugging
