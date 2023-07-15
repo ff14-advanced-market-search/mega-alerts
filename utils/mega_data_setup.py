@@ -2,7 +2,7 @@
 from __future__ import print_function
 import os, json
 
-from utils.api_requests import get_petnames, get_itemnames
+from utils.api_requests import get_petnames, get_itemnames, send_discord_message
 
 
 class MegaData:
@@ -96,3 +96,6 @@ class MegaData:
         for k, v in desired_items_raw.items():
             desired_items[int(k)] = int(v)
         return desired_items
+
+    def send_discord_message(self, message):
+        send_discord_message(message, self.WEBHOOK_URL)

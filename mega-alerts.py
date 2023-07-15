@@ -8,7 +8,6 @@ from utils.api_requests import (
     get_wow_access_token,
     get_listings_single,
     get_update_timers,
-    send_discord_message,
 )
 from utils.helpers import (
     create_oribos_exchange_pet_link,
@@ -59,7 +58,7 @@ def pull_single_realm_data(connected_id, access_token):
             message += f"buyout_prices: {auction['buyout_prices']}\n"
         message += "==================================\n"
         if auction not in alert_record:
-            send_discord_message(message, mega_data.WEBHOOK_URL)
+            mega_data.send_discord_message(message)
             alert_record.append(auction)
 
 
@@ -224,11 +223,11 @@ def send_upload_timer_message(update_timers):
             )
             alert_record.append(realm_info)
         if len(upload_msg) > 1500:
-            send_discord_message(f"{upload_msg}```", mega_data.WEBHOOK_URL)
+            mega_data.send_discord_message(f"{upload_msg}```")
             upload_msg = "```"
 
     if upload_msg != "```":
-        send_discord_message(f"{upload_msg}```", mega_data.WEBHOOK_URL)
+        mega_data.send_discord_message(f"{upload_msg}```")
 
 
 #### MAIN ####
@@ -314,7 +313,7 @@ def main_fast():
     pool.shutdown(wait=True)
 
 
-send_discord_message("starting mega alerts", mega_data.WEBHOOK_URL)
+mega_data.send_discord_message("starting mega alerts")
 # main()
 
 ## for debugging
