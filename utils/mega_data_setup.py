@@ -5,8 +5,8 @@ import os, json
 from utils.api_requests import get_petnames, get_itemnames
 
 
-class mega_data:
-    def __init__(self, use_file: bool = False):
+class MegaData:
+    def __init__(self):
         #### CONTANTS ####
         raw_mega_data = json.load(open("user_data/mega/mega_data.json"))
 
@@ -27,14 +27,15 @@ class mega_data:
             print(
                 "no mega data found in user_data/mega/mega_data.json pulling from env vars"
             )
+            self.WOW_CLIENT_ID = os.getenv("WOW_CLIENT_ID")
+            self.WOW_CLIENT_SECRET = os.getenv("WOW_CLIENT_SECRET")
             self.WEBHOOK_URL = os.getenv("MEGA_WEBHOOK_URL")
             self.WOWHEAD_LINK = os.getenv("WOWHEAD_LINK")
             self.SHOW_BIDPRICES = os.getenv("SHOW_BID_PRICES")
             self.REGION = os.getenv("WOW_REGION")
             self.EXTRA_ALERTS = os.getenv("EXTRA_ALERTS")
             self.ADD_DELAY = os.getenv("ADD_DELAY")
-            self.WOW_CLIENT_ID = os.getenv("WOW_CLIENT_ID")
-            self.WOW_CLIENT_SECRET = os.getenv("WOW_CLIENT_SECRET")
+
 
         # get name dictionaries
         self.ITEM_NAMES = self.get_item_names()

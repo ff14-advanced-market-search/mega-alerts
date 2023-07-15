@@ -18,7 +18,7 @@ from utils.helpers import (
 # sets up env vars
 import utils.mega_data_setup
 
-mega_data = utils.mega_data_setup.mega_data()
+mega_data = utils.mega_data_setup.MegaData()
 
 print("Sleep 10 sec on start to avoid spamming the api")
 # time.sleep(10)
@@ -317,7 +317,7 @@ def main_fast():
 
 
 send_discord_message("starting mega alerts", mega_data.WEBHOOK_URL)
-# main()
+main()
 
 ## for debugging
 main_single()
