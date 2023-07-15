@@ -19,6 +19,7 @@ from utils.helpers import (
 
 # sets up env vars
 import utils.mega_data_setup
+
 mega_data = utils.mega_data_setup.mega_data()
 
 print("Sleep 10 sec on start to avoid spamming the api")
@@ -27,16 +28,12 @@ print("Sleep 10 sec on start to avoid spamming the api")
 #### GLOBALS ####
 alert_record = []
 item_names = get_itemnames()
-pet_names = get_petnames(
-    mega_data.WOW_CLIENT_ID, mega_data.WOW_CLIENT_SECRET
-)
+pet_names = get_petnames(mega_data.WOW_CLIENT_ID, mega_data.WOW_CLIENT_SECRET)
 
 
 #### FUNCTIONS ####
 def pull_single_realm_data(connected_id, access_token):
-    auctions = get_listings_single(
-        connected_id, access_token, mega_data.REGION
-    )
+    auctions = get_listings_single(connected_id, access_token, mega_data.REGION)
     clean_auctions = clean_listing_data(auctions, connected_id)
     if not clean_auctions:
         return
@@ -100,17 +97,11 @@ def clean_listing_data(auctions, connected_id):
                         all_ah_buyouts[item_id].append(price / 10000)
         # all caged battle pets have item id 82800
         elif item_id == 82800:
-            if (
-                item["item"]["pet_species_id"]
-                in mega_data.DESIRED_PETS.keys()
-            ):
+            if item["item"]["pet_species_id"] in mega_data.DESIRED_PETS.keys():
                 pet_id = item["item"]["pet_species_id"]
                 # idk why this is here, but have a feeling everything breaks without it
                 price = 10000000 * 10000
-                if (
-                    "bid" in item.keys()
-                    and mega_data.SHOW_BIDPRICES == "true"
-                ):
+                if "bid" in item.keys() and mega_data.SHOW_BIDPRICES == "true":
                     price = item["bid"]
                     # filter out items that are too expensive
                     if price < mega_data.DESIRED_PETS[pet_id] * 10000:
@@ -158,9 +149,7 @@ def format_alert_messages(
 ):
     results = []
     realm_names = [
-        name
-        for name, id in mega_data.WOW_SERVER_NAMES.items()
-        if id == connected_id
+        name for name, id in mega_data.WOW_SERVER_NAMES.items() if id == connected_id
     ]
     for itemID, auction in all_ah_buyouts.items():
         # use instead of item name
@@ -252,9 +241,7 @@ def send_upload_timer_message(update_timers):
 def main():
     global alert_record
     global item_names
-    update_timers = get_update_timers(
-        mega_data.home_realm_ids, mega_data.REGION
-    )
+    update_timers = get_update_timers(mega_data.HOME_REALM_IDS, mega_data.REGION)
     while True:
         current_min = int(datetime.now().minute)
         # clear out the alert record once an hour
@@ -264,7 +251,7 @@ def main():
         # get new update timers once per hour
         if current_min == 1:
             update_timers = get_update_timers(
-                mega_data.home_realm_ids, mega_data.REGION
+                mega_data.HOME_REALM_IDS, mega_data.REGION
             )
         # update item names once per hour
         if current_min == 2:
