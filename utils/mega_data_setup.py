@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 from __future__ import print_function
-import os, json
-
+import json, requests, os
+from datetime import datetime
+from tenacity import retry, stop_after_attempt
 from utils.api_requests import get_petnames, get_itemnames, send_discord_message
 
 
 class MegaData:
     def __init__(self):
+        # the raw file users can write their input into
         raw_mega_data = json.load(open("user_data/mega/mega_data.json"))
 
         # set generic values usually in the env vars
@@ -20,17 +22,16 @@ class MegaData:
         self.REGION = self.__set_mega_vars("WOW_REGION", raw_mega_data, True)
         self.EXTRA_ALERTS = self.__set_mega_vars("EXTRA_ALERTS", raw_mega_data)
         self.ADD_DELAY = self.__set_mega_vars("ADD_DELAY", raw_mega_data)
-
-        # get name dictionaries
-        self.ITEM_NAMES = self.set_item_names()
-        self.PET_NAMES = self.set_pet_names()
-
-        # set servers to search
-        self.HOME_REALMS = open("user_data/mega/home_realms.json").read()
-        self.HOME_REALM_IDS = json.loads(self.HOME_REALMS)
         self.WOW_SERVER_NAMES = json.load(
             open(f"data/{self.REGION.lower()}-wow-connected-realm-ids.json")
         )
+        # set access token for wow api
+        self.access_token_creation_unix_time = 0
+        self.access_token = self.check_access_token()
+
+        # set optional home_name
+        self.HOME_REALMS = open("user_data/mega/home_realms.json").read()
+        self.HOME_REALM_IDS = json.loads(self.HOME_REALMS)
 
         if len(self.HOME_REALM_IDS) == 0:
             self.HOME_REALM_IDS = []
@@ -43,6 +44,11 @@ class MegaData:
         self.DESIRED_ITEMS = self.set_desired_items("desired_items")
         self.DESIRED_PETS = self.set_desired_items("desired_pets")
         self.validate_snipe_lists()
+
+        ## should do this here and only get the names of desired items to limit data
+        # get name dictionaries
+        self.ITEM_NAMES = self.set_item_names()
+        self.PET_NAMES = self.set_pet_names()
 
     #### VARIABLE RELATED FUNCTIONS ####
     @staticmethod
@@ -71,8 +77,32 @@ class MegaData:
 
         return var_value
 
+    # access token setter
+    @retry(stop=stop_after_attempt(3))
+    def check_access_token(self):
+        # tokens are valid for 24 hours
+        if (
+            int(datetime.now().timestamp()) - self.access_token_creation_unix_time
+            < 20 * 60 * 60
+        ):
+            return self.access_token
+        # if over 20 hours make a new token and reset the creation time
+        else:
+            access_token_raw = requests.post(
+                "https://oauth.battle.net/token",
+                data={"grant_type": "client_credentials"},
+                auth=(self.WOW_CLIENT_ID, self.WOW_CLIENT_SECRET),
+            ).json()
+            self.access_token = access_token_raw["access_token"]
+            self.access_token_creation_unix_time = int(datetime.now().timestamp())
+            return self.access_token
+
     def set_pet_names(self):
-        return get_petnames(self.WOW_CLIENT_ID, self.WOW_CLIENT_SECRET)
+        pet_info = requests.get(
+            f"https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US&access_token={self.access_token}"
+        ).json()["pets"]
+        pet_info = {pet["id"]: pet["name"] for pet in pet_info}
+        return pet_info
 
     def set_item_names(self):
         return get_itemnames()
