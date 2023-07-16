@@ -5,8 +5,6 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 
 from utils.api_requests import (
-    get_wow_access_token,
-    get_listings_single,
     get_update_timers,
 )
 from utils.helpers import (
@@ -25,8 +23,8 @@ mega_data = utils.mega_data_setup.MegaData()
 
 
 #### FUNCTIONS ####
-def pull_single_realm_data(connected_id, access_token):
-    auctions = get_listings_single(connected_id, access_token, mega_data.REGION)
+def pull_single_realm_data(connected_id):
+    auctions = mega_data.get_listings_single(connected_id)
     clean_auctions = clean_listing_data(auctions, connected_id)
     if not clean_auctions:
         return
@@ -141,9 +139,7 @@ def format_alert_messages(
     pet_ah_bids,
 ):
     results = []
-    realm_names = [
-        name for name, id in mega_data.WOW_SERVER_NAMES.items() if id == connected_id
-    ]
+    realm_names = mega_data.get_realm_names(connected_id)
     for itemID, auction in all_ah_buyouts.items():
         # use instead of item name
         itemlink = create_oribos_exchange_item_link(
@@ -222,9 +218,6 @@ def main():
         if current_min == 0:
             print("\n\nClearing Alert Record\n\n")
             alert_record = []
-        # get new update timers once per hour
-        if current_min == 1:
-            update_timers = get_update_timers(mega_data.REGION)
 
         matching_realms = [
             realm["dataSetID"]
@@ -256,13 +249,9 @@ def main():
                 print(f"sleeping for {delay} seconds for ADD_DELAY")
                 time.sleep(delay)
 
-            access_token = get_wow_access_token(
-                mega_data.WOW_CLIENT_ID,
-                mega_data.WOW_CLIENT_SECRET,
-            )
             pool = ThreadPoolExecutor(max_workers=16)
             for connected_id in matching_realms:
-                pool.submit(pull_single_realm_data, connected_id, access_token)
+                pool.submit(pull_single_realm_data, connected_id)
             pool.shutdown(wait=True)
 
         else:
@@ -277,21 +266,15 @@ def main():
 
 def main_single():
     # run everything once slow
-    access_token = get_wow_access_token(
-        mega_data.WOW_CLIENT_ID, mega_data.WOW_CLIENT_SECRET
-    )
     for connected_id in set(mega_data.WOW_SERVER_NAMES.values()):
-        pull_single_realm_data(connected_id, access_token)
+        pull_single_realm_data(connected_id)
 
 
 def main_fast():
     # run everything once fast
-    access_token = get_wow_access_token(
-        mega_data.WOW_CLIENT_ID, mega_data.WOW_CLIENT_SECRET
-    )
     pool = ThreadPoolExecutor(max_workers=16)
     for connected_id in set(mega_data.WOW_SERVER_NAMES.values()):
-        pool.submit(pull_single_realm_data, connected_id, access_token)
+        pool.submit(pull_single_realm_data, connected_id)
     pool.shutdown(wait=True)
 
 

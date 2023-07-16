@@ -151,6 +151,62 @@ class MegaData:
     def get_upload_time_minutes(self):
         return set(realm["lastUploadMinute"] for realm in self.get_upload_time_list())
 
+    def get_realm_names(self, connectedRealmId):
+        realm_names = [
+            name for name, id in self.WOW_SERVER_NAMES.items() if id == connectedRealmId
+        ]
+        realm_names.sort()
+        return realm_names
+
+    #### AH API CALLS ####
+    @retry(stop=stop_after_attempt(3), retry_error_callback=lambda state: {})
+    def get_listings_single(self, connectedRealmId: int):
+        print("==========================================")
+        print(
+            f"gather data from connectedRealmId {connectedRealmId} of region {self.REGION}"
+        )
+        # we want to use check_access_token here to update the token when expired
+        if self.REGION == "NA":
+            url = f"https://us.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}"
+            url += f"/auctions?namespace=dynamic-us&locale=en_US&access_token={self.check_access_token()}"
+        elif self.REGION == "EU":
+            url = f"https://eu.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}"
+            url += f"/auctions?namespace=dynamic-eu&locale=en_EU&access_token={self.check_access_token()}"
+        else:
+            raise Exception(
+                f"{self.REGION} is not yet supported, reach out for us to add this region option"
+            )
+
+        req = requests.get(url, timeout=25)
+        # this auto updates self.upload_timers for each realm
+        if "Last-Modified" in dict(req.headers):
+            try:
+                lastUploadTimeRaw = dict(req.headers)["Last-Modified"]
+                self.update_local_timers(connectedRealmId, lastUploadTimeRaw)
+            except Exception as ex:
+                print(f"The exception was:", ex)
+
+        auction_info = req.json()
+        return auction_info["auctions"]
+
+    def update_local_timers(self, dataSetID, lastUploadTimeRaw):
+        tableName = f"{dataSetID}_singleMinPrices"
+        dataSetName = self.get_realm_names(dataSetID)
+        lastUploadMinute = int(lastUploadTimeRaw.split(":")[1])
+        lastUploadUnix = int(
+            datetime.strptime(lastUploadTimeRaw, "%a, %d %b %Y %H:%M:%S %Z").timestamp()
+        )
+        new_realm_time = {
+            "dataSetID": dataSetID,
+            "dataSetName": dataSetName,
+            "lastUploadMinute": lastUploadMinute,
+            "lastUploadTimeRaw": lastUploadTimeRaw,
+            "lastUploadUnix": lastUploadUnix,
+            "region": self.REGION,
+            "tableName": tableName,
+        }
+        self.upload_timers[dataSetID] = new_realm_time
+
     #### GENERAL USE FUNCTIONS ####
     def send_discord_message(self, message):
         send_discord_message(message, self.WEBHOOK_URL)

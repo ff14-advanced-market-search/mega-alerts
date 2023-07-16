@@ -1,10 +1,5 @@
-import json
-from datetime import datetime
-
-import requests, os
+import requests
 from tenacity import retry, stop_after_attempt
-
-from utils.helpers import get_wow_realm_names_by_id
 
 
 def send_discord_message(message, webhook_url):
@@ -41,50 +36,8 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
 
     req = requests.get(url, timeout=25)
 
-    ## this is bad need to give each realm a file or something
-    # if "Last-Modified" in dict(req.headers):
-    #     try:
-    #         last_modified = dict(req.headers)["Last-Modified"]
-    #         local_update_timers(connectedRealmId, last_modified, region)
-    #     except Exception as ex:
-    #         print(f"The exception was:", ex)
-
     auction_info = req.json()
     return auction_info["auctions"]
-
-
-def local_update_timers(dataSetID, lastUploadTimeRaw, region):
-    tableName = f"{dataSetID}_singleMinPrices"
-    dataSetName = get_wow_realm_names_by_id(dataSetID)
-
-    lastUploadMinute = int(lastUploadTimeRaw.split(":")[1])
-    # fix this later
-    lastUploadUnix = int(
-        datetime.strptime(lastUploadTimeRaw, "%a, %d %b %Y %H:%M:%S %Z").timestamp()
-    )
-
-    new_realm_time = {
-        "dataSetID": dataSetID,
-        "dataSetName": dataSetName,
-        "lastUploadMinute": lastUploadMinute,
-        "lastUploadTimeRaw": lastUploadTimeRaw,
-        "lastUploadUnix": lastUploadUnix,
-        "region": region,
-        "tableName": tableName,
-    }
-
-    # open file
-    update_timers = json.load(open("data/upload_timers.json"))
-    update_timers["data"] = [
-        realm_time
-        for realm_time in update_timers["data"]
-        if realm_time["dataSetID"] != dataSetID
-    ]
-    update_timers["data"].append(new_realm_time)
-
-    # write to file again with new data
-    with open("data/upload_timers.json", "w") as outfile:
-        json.dump(update_timers, outfile, indent=2)
 
 
 def get_update_timers(region, simple_snipe=False):
