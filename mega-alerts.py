@@ -3,10 +3,6 @@ from __future__ import print_function
 import time, json
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
-
-from utils.api_requests import (
-    get_update_timers,
-)
 from utils.helpers import (
     create_oribos_exchange_pet_link,
     create_oribos_exchange_item_link,
@@ -15,7 +11,7 @@ import utils.mega_data_setup
 
 
 print("Sleep 10 sec on start to avoid spamming the api")
-# time.sleep(10)
+time.sleep(10)
 
 #### GLOBALS ####
 alert_record = []
@@ -236,13 +232,13 @@ def main():
             if mega_data.ADD_DELAY:
                 try:
                     delay = int(mega_data.ADD_DELAY)
-                    print(f"sleeping for {delay} seconds for ADD_DELAY")
-                    time.sleep(delay)
+                    if delay > 0:
+                        print(f"sleeping for {delay} seconds for ADD_DELAY")
+                        time.sleep(delay)
                 except Exception as e:
-                    print(
+                    raise Exception(
                         f"ADD_DELAY must be an integer, got {mega_data.ADD_DELAY}:\n{e}"
                     )
-                    exit(1)
             else:
                 # auto sleep 30 sec
                 delay = 30
@@ -279,8 +275,8 @@ def main_fast():
 
 
 mega_data.send_discord_message("starting mega alerts")
-# main()
+main()
 
 ## for debugging
-main_single()
+# main_single()
 # main_fast()
