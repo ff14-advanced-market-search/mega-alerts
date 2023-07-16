@@ -87,49 +87,15 @@ def local_update_timers(dataSetID, lastUploadTimeRaw, region):
         json.dump(update_timers, outfile, indent=2)
 
 
-def get_update_timers(home_realm_ids, region, simple_snipe=False):
-    ## this is bad need to give each realm a file or something
-    ## new method
-    # if not os.path.exists("data/upload_timers.json"):
-    #     print("initial run create upload timers file")
-    #     with open("data/upload_timers.json", "w") as outfile:
-    #         json.dump({}, outfile, indent=2)
-    #
-    # # get from api once and then file every time after
-    # update_timers = json.load(open("data/upload_timers.json"))
-    # if len(update_timers) == 0:
-    #     update_timers = requests.post(
-    #         "http://api.saddlebagexchange.com/api/wow/uploadtimers",
-    #         json={},
-    #     ).json()
-    #     with open("data/upload_timers.json", "w") as outfile:
-    #         json.dump(update_timers, outfile, indent=2)
-    #
-    # if "data" in update_timers:
-    #     update_timers = update_timers["data"]
-    # else:
-    #     print(
-    #         "error no data found in update timers reach out on the discord: https://discord.gg/Pbp5xhmBJ7"
-    #     )
-    #     exit(1)
-
-    ## old method
+def get_update_timers(region, simple_snipe=False):
     # get from api every time
     update_timers = requests.post(
         "http://api.saddlebagexchange.com/api/wow/uploadtimers",
         json={},
     ).json()["data"]
 
-    # cover all realms
-    if home_realm_ids == []:
-        # remove commodities get all others
-        server_update_times = [
-            time_data
-            for time_data in update_timers
-            if time_data["dataSetID"] not in [-1, -2] and time_data["region"] == region
-        ]
     # cover specific realms
-    elif simple_snipe:
+    if simple_snipe:
         if region == "EU":
             update_id = -2
         else:
@@ -143,9 +109,7 @@ def get_update_timers(home_realm_ids, region, simple_snipe=False):
         server_update_times = [
             time_data
             for time_data in update_timers
-            if time_data["dataSetID"] not in [-1, -2]
-            and time_data["dataSetID"] in home_realm_ids
-            and time_data["region"] == region
+            if time_data["dataSetID"] not in [-1, -2] and time_data["region"] == region
         ]
         print(server_update_times)
 

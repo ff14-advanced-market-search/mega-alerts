@@ -33,8 +33,8 @@ def pull_single_realm_data(connected_id, access_token):
     for auction in clean_auctions:
         if "itemID" in auction:
             id_msg = f"`itemID:` {auction['itemID']}\n"
-            if str(auction["itemID"]) in mega_data.ITEM_NAMES:
-                item_name = mega_data.ITEM_NAMES[str(auction["itemID"])]
+            if auction["itemID"] in mega_data.ITEM_NAMES:
+                item_name = mega_data.ITEM_NAMES[auction["itemID"]]
                 id_msg += f"`Name:` {item_name}\n"
         else:
             id_msg = f"`petID:` {auction['petID']}\n"
@@ -213,27 +213,9 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
     }
 
 
-def send_upload_timer_message(update_timers):
-    update_timers.sort(key=lambda x: x["lastUploadMinute"])
-    upload_msg = "```"
-    for realm_info in update_timers:
-        if realm_info not in alert_record:
-            upload_msg += (
-                f"{realm_info['lastUploadMinute']} : {realm_info['dataSetName']}\n"
-            )
-            alert_record.append(realm_info)
-        if len(upload_msg) > 1500:
-            mega_data.send_discord_message(f"{upload_msg}```")
-            upload_msg = "```"
-
-    if upload_msg != "```":
-        mega_data.send_discord_message(f"{upload_msg}```")
-
-
 #### MAIN ####
 def main():
     global alert_record
-    update_timers = get_update_timers(mega_data.HOME_REALM_IDS, mega_data.REGION)
     while True:
         current_min = int(datetime.now().minute)
         # clear out the alert record once an hour
@@ -242,20 +224,20 @@ def main():
             alert_record = []
         # get new update timers once per hour
         if current_min == 1:
-            update_timers = get_update_timers(
-                mega_data.HOME_REALM_IDS, mega_data.REGION
-            )
+            update_timers = get_update_timers(mega_data.REGION)
 
         matching_realms = [
             realm["dataSetID"]
-            for realm in update_timers
+            for realm in mega_data.get_upload_time_list()
             if realm["lastUploadMinute"] <= current_min <= realm["lastUploadMinute"] + 5
         ]
         # mega wants extra alerts
         if mega_data.EXTRA_ALERTS:
             extra_alert_mins = json.loads(mega_data.EXTRA_ALERTS)
             if current_min in extra_alert_mins:
-                matching_realms = [realm["dataSetID"] for realm in update_timers]
+                matching_realms = [
+                    realm["dataSetID"] for realm in mega_data.get_upload_time_list()
+                ]
 
         if matching_realms != []:
             if mega_data.ADD_DELAY:
@@ -282,13 +264,13 @@ def main():
             for connected_id in matching_realms:
                 pool.submit(pull_single_realm_data, connected_id, access_token)
             pool.shutdown(wait=True)
-            # home realms will spam so sleep
-            if mega_data.HOME_REALMS:
-                time.sleep(25)
+
         else:
             print(
-                f"waiting for a match in update time to run check on items {mega_data.DESIRED_ITEMS} "
-                + f"or pets {mega_data.DESIRED_PETS}, none found triggering at {datetime.now()}"
+                f"Waiting for a match in update minute {mega_data.get_upload_time_minutes()} "
+                f"none found triggering at {datetime.now()} : "
+                f"checking for items {mega_data.DESIRED_ITEMS} "
+                + f"or pets {mega_data.DESIRED_PETS} "
             )
             time.sleep(20)
 

@@ -81,7 +81,6 @@ Then just run the [mega-alerts.py file](https://github.com/ff14-advanced-market-
 
 Make sure to set `WOW_REGION` with either `EU` or `NA`
 
-If you want to snipe across all realms then do not add the `HOME_REALMS` env var.
 ```
 docker run -dit \
     --name wow-test \
@@ -91,20 +90,6 @@ docker run -dit \
     --env WOW_REGION=EU \
     --env DESIRED_ITEMS='{"194641": 500000, "159840":40000}' \
     --env DESIRED_PETS='{"3390": 2700}' \
-    cohenaj194/mega-alerts
-```
-If you want to snipe only on specific realms then add the `HOME_REALMS` env var in as a string:
-
-```
-docker run -dit \
-    --name wow-test \
-    --env MEGA_WEBHOOK_URL=$MEGA_WEBHOOK_URL \
-    --env WOW_CLIENT_ID=$WOW_CLIENT_ID \
-    --env WOW_CLIENT_SECRET=$WOW_CLIENT_SECRET \
-    --env WOW_REGION=EU \
-    --env DESIRED_ITEMS='{"194641": 500000, "159840":40000}' \
-    --env DESIRED_PETS='{"3390": 2700}' \
-    --env HOME_REALMS='["Thrall", "Silvermoon"]' \
     cohenaj194/mega-alerts
 ```
 

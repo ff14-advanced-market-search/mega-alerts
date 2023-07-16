@@ -3,7 +3,7 @@ from __future__ import print_function
 import json, requests, os
 from datetime import datetime
 from tenacity import retry, stop_after_attempt
-from utils.api_requests import get_petnames, get_itemnames, send_discord_message
+from utils.api_requests import send_discord_message, get_itemnames
 
 
 class MegaData:
@@ -29,17 +29,6 @@ class MegaData:
         self.access_token_creation_unix_time = 0
         self.access_token = self.check_access_token()
 
-        # set optional home_name
-        self.HOME_REALMS = open("user_data/mega/home_realms.json").read()
-        self.HOME_REALM_IDS = json.loads(self.HOME_REALMS)
-
-        if len(self.HOME_REALM_IDS) == 0:
-            self.HOME_REALM_IDS = []
-            if os.getenv("HOME_REALMS"):
-                self.HOME_REALMS = json.loads(os.getenv("HOME_REALMS"))
-                for r in self.HOME_REALMS:
-                    self.HOME_REALM_IDS.append(self.WOW_SERVER_NAMES[r])
-
         # setup items to snipe
         self.DESIRED_ITEMS = self.set_desired_items("desired_items")
         self.DESIRED_PETS = self.set_desired_items("desired_pets")
@@ -49,6 +38,8 @@ class MegaData:
         # get name dictionaries
         self.ITEM_NAMES = self.set_item_names()
         self.PET_NAMES = self.set_pet_names()
+
+        self.upload_timers = self.set_upload_timers()
 
     #### VARIABLE RELATED FUNCTIONS ####
     @staticmethod
@@ -101,11 +92,17 @@ class MegaData:
         pet_info = requests.get(
             f"https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US&access_token={self.access_token}"
         ).json()["pets"]
-        pet_info = {pet["id"]: pet["name"] for pet in pet_info}
+        pet_info = {int(pet["id"]): pet["name"] for pet in pet_info}
         return pet_info
 
     def set_item_names(self):
-        return get_itemnames()
+        item_names = get_itemnames()
+        item_names = {
+            int(id): name
+            for id, name in item_names.items()
+            if int(id) in self.DESIRED_ITEMS.keys()
+        }
+        return item_names
 
     def set_desired_items(self, item_list_name):
         file_name = f"{item_list_name}.json"
@@ -134,6 +131,25 @@ class MegaData:
             error_message += "or user_data/mega/desired_pets.json\n"
             error_message += "You can also set env vars with the json for DESIRED_ITEMS or DESIRED_PETS"
             raise Exception(error_message)
+
+    def set_upload_timers(self):
+        update_timers = requests.post(
+            "http://api.saddlebagexchange.com/api/wow/uploadtimers",
+            json={},
+        ).json()["data"]
+        server_update_times = {
+            time_data["dataSetID"]: time_data
+            for time_data in update_timers
+            if time_data["dataSetID"] not in [-1, -2]
+            and time_data["region"] == self.REGION
+        }
+        return server_update_times
+
+    def get_upload_time_list(self):
+        return list(self.upload_timers.values())
+
+    def get_upload_time_minutes(self):
+        return set(realm["lastUploadMinute"] for realm in self.get_upload_time_list())
 
     #### GENERAL USE FUNCTIONS ####
     def send_discord_message(self, message):
