@@ -21,7 +21,6 @@ class MegaData:
         self.SHOW_BIDPRICES = self.__set_mega_vars("SHOW_BID_PRICES", raw_mega_data)
         self.REGION = self.__set_mega_vars("WOW_REGION", raw_mega_data, True)
         self.EXTRA_ALERTS = self.__set_mega_vars("EXTRA_ALERTS", raw_mega_data)
-        self.ADD_DELAY = self.__set_mega_vars("ADD_DELAY", raw_mega_data)
         self.WOW_SERVER_NAMES = json.load(
             open(f"data/{self.REGION.lower()}-wow-connected-realm-ids.json")
         )

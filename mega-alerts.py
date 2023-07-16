@@ -207,14 +207,8 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
 
 #### MAIN ####
 def main():
-    global alert_record
     while True:
         current_min = int(datetime.now().minute)
-        # clear out the alert record once an hour
-        if current_min == 0:
-            print("\n\nClearing Alert Record\n\n")
-            alert_record = []
-
         matching_realms = [
             realm["dataSetID"]
             for realm in mega_data.get_upload_time_list()
@@ -229,22 +223,6 @@ def main():
                 ]
 
         if matching_realms != []:
-            if mega_data.ADD_DELAY:
-                try:
-                    delay = int(mega_data.ADD_DELAY)
-                    if delay > 0:
-                        print(f"sleeping for {delay} seconds for ADD_DELAY")
-                        time.sleep(delay)
-                except Exception as e:
-                    raise Exception(
-                        f"ADD_DELAY must be an integer, got {mega_data.ADD_DELAY}:\n{e}"
-                    )
-            else:
-                # auto sleep 30 sec
-                delay = 30
-                print(f"sleeping for {delay} seconds for ADD_DELAY")
-                time.sleep(delay)
-
             pool = ThreadPoolExecutor(max_workers=16)
             for connected_id in matching_realms:
                 pool.submit(pull_single_realm_data, connected_id)
