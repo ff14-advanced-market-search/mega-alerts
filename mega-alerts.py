@@ -13,6 +13,7 @@ import utils.mega_data_setup
 print("Sleep 10 sec on start to avoid spamming the api")
 time.sleep(10)
 
+
 #### GLOBALS ####
 alert_record = []
 mega_data = utils.mega_data_setup.MegaData()
