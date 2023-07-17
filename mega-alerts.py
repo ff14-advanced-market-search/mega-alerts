@@ -208,8 +208,14 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
 
 #### MAIN ####
 def main():
+    global alert_record
     while True:
         current_min = int(datetime.now().minute)
+
+        if current_min == 0 and datetime.now().hour in [0, 6, 12, 18]:
+            print("\n\nClearing Alert Record\n\n")
+            alert_record = []
+
         matching_realms = [
             realm["dataSetID"]
             for realm in mega_data.get_upload_time_list()
