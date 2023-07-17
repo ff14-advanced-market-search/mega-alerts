@@ -1,3 +1,17 @@
+# mega-alerts
+
+A super fast Blizzard AH sniper by Saddlebag Exchange
+
+[Current Docker versions](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/tags?page=1&ordering=last_updated):
+```
+cohenaj194/mega-alerts:latest
+cohenaj194/mega-alerts:1.4
+cohenaj194/mega-alerts:1.3
+cohenaj194/mega-alerts:1.2
+cohenaj194/mega-alerts:1.1
+cohenaj194/mega-alerts:1.0
+```
+
 # Alert Example
 <img width="601" alt="image" src="https://user-images.githubusercontent.com/17516896/224507162-53513e8a-69ab-41e2-a5d5-ea4e51a9fc89.png">
 
@@ -81,7 +95,6 @@ Then just run the [mega-alerts.py file](https://github.com/ff14-advanced-market-
 
 Make sure to set `WOW_REGION` with either `EU` or `NA`
 
-If you want to snipe across all realms then do not add the `HOME_REALMS` env var.
 ```
 docker run -dit \
     --name wow-test \
@@ -91,20 +104,6 @@ docker run -dit \
     --env WOW_REGION=EU \
     --env DESIRED_ITEMS='{"194641": 500000, "159840":40000}' \
     --env DESIRED_PETS='{"3390": 2700}' \
-    cohenaj194/mega-alerts
-```
-If you want to snipe only on specific realms then add the `HOME_REALMS` env var in as a string:
-
-```
-docker run -dit \
-    --name wow-test \
-    --env MEGA_WEBHOOK_URL=$MEGA_WEBHOOK_URL \
-    --env WOW_CLIENT_ID=$WOW_CLIENT_ID \
-    --env WOW_CLIENT_SECRET=$WOW_CLIENT_SECRET \
-    --env WOW_REGION=EU \
-    --env DESIRED_ITEMS='{"194641": 500000, "159840":40000}' \
-    --env DESIRED_PETS='{"3390": 2700}' \
-    --env HOME_REALMS='["Thrall", "Silvermoon"]' \
     cohenaj194/mega-alerts
 ```
 
@@ -126,7 +125,6 @@ docker run -dit \
 We also have the following optional env vars you can add in to change alert behavior:
 - `--env SHOW_BID_PRICES=true` Bid prices below your price limit will also be shown.
 - `--env WOWHEAD_LINK=true` Uses wowhead links instead of undermine and shows pictures, but the message length will be longer.
-- `--env ADD_DELAY=30` By default triggers on the exact minute of the update and then sleeps for 30 seconds.  You can increase or decrease the sleep with this value.
 
 
 10. In docker desktop download the image and run it 

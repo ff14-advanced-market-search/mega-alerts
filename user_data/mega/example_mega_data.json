@@ -5,6 +5,5 @@
     "WOW_REGION": "EU",
     "EXTRA_ALERTS": "[]",
     "SHOW_BID_PRICES": false,
-    "WOWHEAD_LINK": false,
-    "ADD_DELAY": 30
+    "WOWHEAD_LINK": false
 }
