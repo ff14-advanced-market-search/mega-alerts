@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from __future__ import print_function
-import time, json
+import time, json, random
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from utils.helpers import (
@@ -209,10 +209,13 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
 #### MAIN ####
 def main():
     global alert_record
+    refresh_hour = random.randint(0, 23)
+    refresh_min = random.randint(0, 59)
     while True:
         current_min = int(datetime.now().minute)
 
-        if current_min == 0 and datetime.now().hour in [0, 6, 12, 18]:
+        # keep one daily alert refresh in at a random time
+        if current_min == refresh_min and datetime.now().hour == refresh_hour:
             print("\n\nClearing Alert Record\n\n")
             alert_record = []
 
