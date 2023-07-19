@@ -123,6 +123,7 @@ docker run -dit \
 ```
 
 We also have the following optional env vars you can add in to change alert behavior:
+- `--env SCAN_TIME_MAX=1` increase or decrease the minutes after the data updates to stop scanning (default to keep scanning 3 min after the data updates).
 - `--env MEGA_THREADS=100` increase or decrease the threadcount (do a max of 100).
 - `--env SHOW_BID_PRICES=true` Bid prices below your price limit will also be shown.
 - `--env WOWHEAD_LINK=true` Uses wowhead links instead of undermine and shows pictures, but the message length will be longer.

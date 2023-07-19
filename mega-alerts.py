@@ -221,7 +221,9 @@ def main():
         matching_realms = [
             realm["dataSetID"]
             for realm in mega_data.get_upload_time_list()
-            if realm["lastUploadMinute"] < current_min <= realm["lastUploadMinute"] + 3
+            if realm["lastUploadMinute"]
+            < current_min
+            <= realm["lastUploadMinute"] + mega_data.SCAN_TIME_MAX
         ]
         # mega wants extra alerts
         if mega_data.EXTRA_ALERTS:
