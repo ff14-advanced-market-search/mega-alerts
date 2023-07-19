@@ -221,7 +221,7 @@ def main():
         matching_realms = [
             realm["dataSetID"]
             for realm in mega_data.get_upload_time_list()
-            if realm["lastUploadMinute"] <= current_min <= realm["lastUploadMinute"] + 5
+            if realm["lastUploadMinute"] < current_min <= realm["lastUploadMinute"] + 5
         ]
         # mega wants extra alerts
         if mega_data.EXTRA_ALERTS:
@@ -232,7 +232,7 @@ def main():
                 ]
 
         if matching_realms != []:
-            pool = ThreadPoolExecutor(max_workers=16)
+            pool = ThreadPoolExecutor(max_workers=48)
             for connected_id in matching_realms:
                 pool.submit(pull_single_realm_data, connected_id)
             pool.shutdown(wait=True)
@@ -255,7 +255,7 @@ def main_single():
 
 def main_fast():
     # run everything once fast
-    pool = ThreadPoolExecutor(max_workers=16)
+    pool = ThreadPoolExecutor(max_workers=48)
     for connected_id in set(mega_data.WOW_SERVER_NAMES.values()):
         pool.submit(pull_single_realm_data, connected_id)
     pool.shutdown(wait=True)
@@ -265,5 +265,5 @@ mega_data.send_discord_message("starting mega alerts")
 main()
 
 ## for debugging
-main_single()
-main_fast()
+# main_single()
+# main_fast()
