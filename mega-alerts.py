@@ -41,12 +41,13 @@ def pull_single_realm_data(connected_id):
             + f"`region:` {mega_data.REGION} "
             + f"`realmID:` {auction['realmID']} "
             + id_msg
-            + f"[Undermine link]({auction['itemlink']})\n"
             + f"realmNames: {auction['realmNames']}\n"
         )
         if mega_data.WOWHEAD_LINK and auction["itemID"]:
             item_id = auction["itemID"]
-            message += f"https://www.wowhead.com/item={item_id}"
+            message += f"[Wowhead link](https://www.wowhead.com/item={item_id})\n"
+        else:
+            message += f"[Undermine link]({auction['itemlink']})\n"
         if "bid_prices" in auction:
             message += f"bid_prices: {auction['bid_prices']}\n"
         else:
@@ -209,13 +210,11 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
 #### MAIN ####
 def main():
     global alert_record
-    refresh_hour = random.randint(0, 23)
-    refresh_min = random.randint(0, 59)
     while True:
         current_min = int(datetime.now().minute)
 
-        # keep one daily alert refresh in at a random time
-        if current_min == refresh_min and datetime.now().hour == refresh_hour:
+        # refresh alerts 1 time per hour
+        if current_min == 1:
             print("\n\nClearing Alert Record\n\n")
             alert_record = []
 
@@ -266,5 +265,5 @@ mega_data.send_discord_message("starting mega alerts")
 main()
 
 ## for debugging
-# main_single()
-# main_fast()
+main_single()
+main_fast()
