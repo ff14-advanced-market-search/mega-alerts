@@ -71,7 +71,10 @@ class MegaData:
         # default to 48 threads if not set
         if var_name == "MEGA_THREADS" and var_value is not None:
             if str(var_value).isdigit() or isinstance(var_value, int):
-                var_value = int(var_value)
+                if 1 < int(var_value) < 100:
+                    var_value = int(var_value)
+                else:
+                    var_value = 48
             else:
                 var_value = 48
         elif var_name == "MEGA_THREADS":
@@ -79,7 +82,10 @@ class MegaData:
 
         if var_name == "SCAN_TIME_MAX" and var_value is not None:
             if str(var_value).isdigit() or isinstance(var_value, int):
-                var_value = int(var_value)
+                if 1 <= int(var_value) < 15:
+                    var_value = int(var_value)
+                else:
+                    var_value = 3
             else:
                 var_value = 3
         elif var_name == "SCAN_TIME_MAX":
