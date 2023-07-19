@@ -232,7 +232,7 @@ def main():
                 ]
 
         if matching_realms != []:
-            pool = ThreadPoolExecutor(max_workers=48)
+            pool = ThreadPoolExecutor(max_workers=mega_data.THREADS)
             for connected_id in matching_realms:
                 pool.submit(pull_single_realm_data, connected_id)
             pool.shutdown(wait=True)
@@ -255,7 +255,7 @@ def main_single():
 
 def main_fast():
     # run everything once fast
-    pool = ThreadPoolExecutor(max_workers=48)
+    pool = ThreadPoolExecutor(max_workers=mega_data.THREADS)
     for connected_id in set(mega_data.WOW_SERVER_NAMES.values()):
         pool.submit(pull_single_realm_data, connected_id)
     pool.shutdown(wait=True)

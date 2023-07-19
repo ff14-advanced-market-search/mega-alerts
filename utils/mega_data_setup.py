@@ -11,6 +11,8 @@ class MegaData:
         # the raw file users can write their input into
         raw_mega_data = json.load(open("user_data/mega/mega_data.json"))
 
+        self.THREADS = self.__set_mega_vars("MEGA_THREADS", raw_mega_data)
+
         # set generic values usually in the env vars
         self.WOW_CLIENT_ID = self.__set_mega_vars("WOW_CLIENT_ID", raw_mega_data, True)
         self.WOW_CLIENT_SECRET = self.__set_mega_vars(
@@ -22,7 +24,7 @@ class MegaData:
         self.REGION = self.__set_mega_vars("WOW_REGION", raw_mega_data, True)
         self.EXTRA_ALERTS = self.__set_mega_vars("EXTRA_ALERTS", raw_mega_data)
         self.WOW_SERVER_NAMES = json.load(
-            open(f"data/{self.REGION.lower()}-wow-connected-realm-ids.json")
+            open(f"data/{str(self.REGION).lower()}-wow-connected-realm-ids.json")
         )
         # set access token for wow api
         self.access_token_creation_unix_time = 0
@@ -64,6 +66,15 @@ class MegaData:
             # for people who are confused about US vs NA, all our data uses NA
             if var_value == "US":
                 var_value = "NA"
+
+        # default to 48 threads if not set
+        if var_name == "MEGA_THREADS" and var_value is not None:
+            if str(var_value).isdigit() or isinstance(var_value, int):
+                var_value = int(var_value)
+            else:
+                var_value = 48
+        elif var_name == "MEGA_THREADS":
+            var_value = 48
 
         return var_value
 
