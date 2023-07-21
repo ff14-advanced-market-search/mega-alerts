@@ -213,16 +213,19 @@ def main():
     while True:
         current_min = int(datetime.now().minute)
 
+        if mega_data.REFRESH_ALERTS:
+            a = None
+
         # refresh alerts 1 time per hour
-        if current_min == 1:
+        if current_min == 1 and mega_data.REFRESH_ALERTS:
             print("\n\nClearing Alert Record\n\n")
             alert_record = []
 
         matching_realms = [
             realm["dataSetID"]
             for realm in mega_data.get_upload_time_list()
-            if realm["lastUploadMinute"]
-            < current_min
+            if realm["lastUploadMinute"] + mega_data.SCAN_TIME_MIN
+            <= current_min
             <= realm["lastUploadMinute"] + mega_data.SCAN_TIME_MAX
         ]
         # mega wants extra alerts

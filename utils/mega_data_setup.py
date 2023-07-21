@@ -12,7 +12,9 @@ class MegaData:
         raw_mega_data = json.load(open("user_data/mega/mega_data.json"))
 
         self.THREADS = self.__set_mega_vars("MEGA_THREADS", raw_mega_data)
+        self.SCAN_TIME_MIN = self.__set_mega_vars("SCAN_TIME_MIN", raw_mega_data)
         self.SCAN_TIME_MAX = self.__set_mega_vars("SCAN_TIME_MAX", raw_mega_data)
+        self.REFRESH_ALERTS = self.__set_mega_vars("REFRESH_ALERTS", raw_mega_data)
 
         # set generic values usually in the env vars
         self.WOW_CLIENT_ID = self.__set_mega_vars("WOW_CLIENT_ID", raw_mega_data, True)
@@ -90,6 +92,23 @@ class MegaData:
                 var_value = 3
         elif var_name == "SCAN_TIME_MAX":
             var_value = 3
+
+        if var_name == "SCAN_TIME_MIN" and var_value is not None:
+            if str(var_value).isdigit() or isinstance(var_value, int):
+                if -10 <= int(var_value) < 10:
+                    var_value = int(var_value)
+                else:
+                    var_value = 1
+            else:
+                var_value = 1
+        elif var_name == "SCAN_TIME_MIN":
+            var_value = 1
+
+        if var_name == "REFRESH_ALERTS":
+            if var_value == "false" or var_value == False:
+                var_value = False
+            else:
+                var_value = True
 
         return var_value
 
