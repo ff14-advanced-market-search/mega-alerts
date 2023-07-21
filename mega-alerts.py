@@ -213,9 +213,6 @@ def main():
     while True:
         current_min = int(datetime.now().minute)
 
-        if mega_data.REFRESH_ALERTS:
-            a = None
-
         # refresh alerts 1 time per hour
         if current_min == 1 and mega_data.REFRESH_ALERTS:
             print("\n\nClearing Alert Record\n\n")
