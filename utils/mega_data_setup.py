@@ -80,7 +80,7 @@ class MegaData:
             else:
                 var_value = 48
 
-        if var_name == "SCAN_TIME_MAX" and var_value is not None:
+        if var_name == "SCAN_TIME_MAX":
             if str(var_value).isnumeric() or isinstance(var_value, int):
                 if 1 <= int(var_value) < 15:
                     var_value = int(var_value)
@@ -88,10 +88,8 @@ class MegaData:
                     var_value = 3
             else:
                 var_value = 3
-        elif var_name == "SCAN_TIME_MAX":
-            var_value = 3
 
-        if var_name == "SCAN_TIME_MIN" and var_value is not None:
+        if var_name == "SCAN_TIME_MIN":
             if str(var_value).replace("-", "").isnumeric() or isinstance(
                 var_value, int
             ):
@@ -101,8 +99,6 @@ class MegaData:
                     var_value = 1
             else:
                 var_value = 1
-        elif var_name == "SCAN_TIME_MIN":
-            var_value = 1
 
         if var_name == "REFRESH_ALERTS":
             if var_value == "false" or var_value == False:
