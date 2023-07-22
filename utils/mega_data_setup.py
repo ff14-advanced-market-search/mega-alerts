@@ -73,7 +73,7 @@ class MegaData:
         # default to 48 threads if not set
         if var_name == "MEGA_THREADS":
             if str(var_value).isdigit() or isinstance(var_value, int):
-                if 1 < int(var_value) <= 1000:
+                if 1 < int(var_value):
                     var_value = int(var_value)
                 else:
                     var_value = 48
