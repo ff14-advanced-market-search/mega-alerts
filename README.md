@@ -26,7 +26,7 @@ cohenaj194/mega-alerts:1.0
 <img width="633" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/595fee57-e0db-4910-995d-5b5ae48190a2">
 
 
-4. Setup a discord channel with a webhook url for sending the alert messages
+4. [Setup a discord channel with a webhook url for sending the alert messages](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
 
 5. Download [the docker image](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/general), if on windows open a [command prompt](https://www.youtube.com/watch?v=uE9WgNr3OjM) to run this.
 
