@@ -34,7 +34,7 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
         )
         exit(1)
 
-    req = requests.get(url, timeout=25)
+    req = requests.get(url, timeout=45)
 
     auction_info = req.json()
     return auction_info["auctions"]
