@@ -11,6 +11,8 @@ class MegaData:
         # the raw file users can write their input into
         raw_mega_data = json.load(open("user_data/mega/mega_data.json"))
 
+        self.DESIRED_ILVL_ITEMS = self.__set_desired_ilvl()
+
         self.THREADS = self.__set_mega_vars("MEGA_THREADS", raw_mega_data)
         self.SCAN_TIME_MIN = self.__set_mega_vars("SCAN_TIME_MIN", raw_mega_data)
         self.SCAN_TIME_MAX = self.__set_mega_vars("SCAN_TIME_MAX", raw_mega_data)
@@ -189,7 +191,7 @@ class MegaData:
             "avoidance": False,
         }
 
-        if len(set(ilvl_info.keys()) & set(example.keys())) != 0:
+        if ilvl_info.keys() != example.keys():
             raise Exception(
                 f"error missing required keys {set(example.keys())} from info:\n{ilvl_info}"
             )
@@ -200,16 +202,16 @@ class MegaData:
         for key, value in ilvl_info.items():
             if key in bool_vars:
                 if isinstance(ilvl_info[key], bool):
-                    snipe_info[key] = ilvl_info[value]
+                    snipe_info[key] = value
                 else:
                     raise Exception(f"{key} must be true or false")
             elif key in int_vars:
                 if isinstance(ilvl_info[key], int):
-                    snipe_info[key] = ilvl_info[value]
+                    snipe_info[key] = value
                 else:
                     raise Exception(f"{key} must be an int")
 
-        return ilvl_info
+        return snipe_info
 
     def __validate_snipe_lists(self):
         if (
