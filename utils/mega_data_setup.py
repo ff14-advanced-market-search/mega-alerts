@@ -45,7 +45,12 @@ class MegaData:
         self.ITEM_NAMES = self.__set_item_names()
         self.PET_NAMES = self.__set_pet_names()
         # get static lists of bonus id values
-        self.socket_ids, self.leech_ids, self.avoidance_ids, self.speed_ids = get_bonus_id_sets()
+        (
+            self.socket_ids,
+            self.leech_ids,
+            self.avoidance_ids,
+            self.speed_ids,
+        ) = get_bonus_id_sets()
 
         self.upload_timers = self.__set_upload_timers()
 

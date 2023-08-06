@@ -9,7 +9,6 @@ from utils.helpers import (
 )
 import utils.mega_data_setup
 
-
 print("Sleep 10 sec on start to avoid spamming the api")
 time.sleep(10)
 
@@ -28,7 +27,13 @@ def pull_single_realm_data(connected_id):
     for auction in clean_auctions:
         if "itemID" in auction:
             id_msg = f"`itemID:` {auction['itemID']}\n"
-            if auction["itemID"] in mega_data.ITEM_NAMES:
+            if "tertiary_stats" in auction:
+                item_name = mega_data.DESIRED_ILVL_ITEMS["item_names"][
+                    auction["itemID"]
+                ]
+                id_msg += f"`Name:` {item_name}\n"
+                id_msg += f"`tertiary_stats:` {auction['tertiary_stats']}\n"
+            elif auction["itemID"] in mega_data.ITEM_NAMES:
                 item_name = mega_data.ITEM_NAMES[auction["itemID"]]
                 id_msg += f"`Name:` {item_name}\n"
         else:
@@ -61,6 +66,7 @@ def pull_single_realm_data(connected_id):
 def clean_listing_data(auctions, connected_id):
     all_ah_buyouts, all_ah_bids = {}, {}
     pet_ah_buyouts, pet_ah_bids = {}, {}
+    ilvl_ah_buyouts, ilvl_ah_bids = {}, {}
     for item in auctions:
         item_id = item["item"]["id"]
         # regular items
@@ -106,16 +112,26 @@ def clean_listing_data(auctions, connected_id):
                             pet_ah_buyouts[pet_id] = [price / 10000]
                         elif price / 10000 not in pet_ah_buyouts[pet_id]:
                             pet_ah_buyouts[pet_id].append(price / 10000)
+        # ilvl snipe items
+        elif mega_data.DESIRED_ILVL_ITEMS:
+            a = mega_data.DESIRED_ILVL_ITEMS["item_ids"]
+            if item_id in mega_data.DESIRED_ILVL_ITEMS["item_ids"]:
+                ilvl_item_info = check_tertiary_stats(item)
+                if ilvl_item_info:
+                    ilvl_ah_buyouts[item_id] = ilvl_item_info
 
     if (
         all_ah_buyouts == {}
         and all_ah_bids == {}
         and pet_ah_buyouts == {}
         and pet_ah_bids == {}
+        and ilvl_ah_buyouts == {}
     ):
         print(
             f"no listings found matching items {mega_data.DESIRED_ITEMS} "
-            + f"or pets {mega_data.DESIRED_PETS} on {connected_id} "
+            + f"or pets {mega_data.DESIRED_PETS} "
+            + f"or ids {mega_data.DESIRED_ILVL_ITEMS['item_ids']} "
+            + f"on {connected_id} "
             + f"{mega_data.REGION}"
         )
         return
@@ -126,7 +142,50 @@ def clean_listing_data(auctions, connected_id):
             connected_id,
             pet_ah_buyouts,
             pet_ah_bids,
+            ilvl_ah_buyouts,
         )
+
+
+def check_tertiary_stats(auction):
+    if "bonus_lists" not in auction["item"]:
+        return False
+    item_bonus_ids = set(auction["item"]["bonus_lists"])
+    # look for intersection of bonus_ids and any other lists
+    tertiary_stats = {
+        "sockets": len(item_bonus_ids & mega_data.socket_ids) != 0,
+        "leech": len(item_bonus_ids & mega_data.leech_ids) != 0,
+        "avoidance": len(item_bonus_ids & mega_data.avoidance_ids) != 0,
+        "speed": len(item_bonus_ids & mega_data.speed_ids) != 0,
+    }
+
+    # if we're looking for sockets, leech, avoidance, or speed, skip if none of those are present
+    if (
+        mega_data.DESIRED_ILVL_ITEMS["sockets"]
+        or mega_data.DESIRED_ILVL_ITEMS["leech"]
+        or mega_data.DESIRED_ILVL_ITEMS["avoidance"]
+        or mega_data.DESIRED_ILVL_ITEMS["speed"]
+    ):
+        if not (
+            (mega_data.DESIRED_ILVL_ITEMS["sockets"] and tertiary_stats["sockets"])
+            or (mega_data.DESIRED_ILVL_ITEMS["leech"] and tertiary_stats["leech"])
+            or (
+                mega_data.DESIRED_ILVL_ITEMS["avoidance"]
+                and tertiary_stats["avoidance"]
+            )
+            or (mega_data.DESIRED_ILVL_ITEMS["speed"] and tertiary_stats["speed"])
+        ):
+            return False
+
+    # if we get through everything and still haven't skipped, add to matching
+    buyout = round(auction["buyout"] / 10000, 2)
+    if buyout > mega_data.DESIRED_ILVL_ITEMS["buyout"]:
+        return False
+    else:
+        return {
+            "item_id": auction["item"]["id"],
+            "buyout": buyout,
+            "tertiary_stats": tertiary_stats,
+        }
 
 
 def format_alert_messages(
@@ -135,6 +194,7 @@ def format_alert_messages(
     connected_id,
     pet_ah_buyouts,
     pet_ah_bids,
+    ilvl_ah_buyouts,
 ):
     results = []
     realm_names = mega_data.get_realm_names(connected_id)
@@ -157,6 +217,17 @@ def format_alert_messages(
         results.append(
             results_dict(
                 auction, itemlink, connected_id, realm_names, petID, "petID", "buyout"
+            )
+        )
+
+    for itemID, auction in ilvl_ah_buyouts.items():
+        # use instead of item name
+        itemlink = create_oribos_exchange_item_link(
+            realm_names[0], itemID, mega_data.REGION
+        )
+        results.append(
+            ilvl_results_dict(
+                auction, itemlink, connected_id, realm_names, itemID, "itemID", "buyout"
             )
         )
 
@@ -207,6 +278,24 @@ def results_dict(auction, itemlink, connected_id, realm_names, id, idType, price
     }
 
 
+def ilvl_results_dict(
+    auction, itemlink, connected_id, realm_names, id, idType, priceType
+):
+    tertiary_stats = [
+        stat for stat, present in auction["tertiary_stats"].items() if present
+    ]
+    return {
+        "region": mega_data.REGION,
+        "realmID": connected_id,
+        "realmNames": realm_names,
+        f"{idType}": id,
+        "itemlink": itemlink,
+        "minPrice": auction[priceType],
+        f"{priceType}_prices": auction[priceType],
+        "tertiary_stats": tertiary_stats,
+    }
+
+
 #### MAIN ####
 def main():
     global alert_record
@@ -245,6 +334,7 @@ def main():
                 f"none found triggering at {datetime.now()} : "
                 f"checking for items {mega_data.DESIRED_ITEMS} "
                 + f"or pets {mega_data.DESIRED_PETS} "
+                + f"or items {mega_data.DESIRED_ILVL['item_ids']} at buyout {mega_data.DESIRED_ILVL['buyout']} "
             )
             time.sleep(20)
 
