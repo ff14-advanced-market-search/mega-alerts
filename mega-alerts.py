@@ -117,12 +117,14 @@ def clean_listing_data(auctions, connected_id):
                         elif price / 10000 not in pet_ah_buyouts[pet_id]:
                             pet_ah_buyouts[pet_id].append(price / 10000)
         # ilvl snipe items
-        elif mega_data.DESIRED_ILVL_ITEMS:
-            a = mega_data.DESIRED_ILVL_ITEMS["item_ids"]
+        if mega_data.DESIRED_ILVL_ITEMS:
             if item_id in mega_data.DESIRED_ILVL_ITEMS["item_ids"]:
                 ilvl_item_info = check_tertiary_stats(item)
                 if ilvl_item_info:
-                    ilvl_ah_buyouts[item_id] = ilvl_item_info
+                    if item_id not in ilvl_ah_buyouts.keys():
+                        ilvl_ah_buyouts[item_id] = ilvl_item_info
+                    elif ilvl_ah_buyouts[item_id]["buyout"] > ilvl_item_info["buyout"]:
+                        ilvl_ah_buyouts[item_id] = ilvl_item_info
 
     if (
         all_ah_buyouts == {}
