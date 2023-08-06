@@ -34,7 +34,7 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
         )
         exit(1)
 
-    req = requests.get(url, timeout=45)
+    req = requests.get(url, timeout=20)
 
     auction_info = req.json()
     return auction_info["auctions"]
@@ -93,6 +93,14 @@ def get_raidbots_bonus_ids():
     ).json()
     return {int(id): data for id, data in bonus_ids.items()}
 
+
+def get_ilvl_ids(json_data):
+    results = requests.post(
+        "http://api.saddlebagexchange.com/api/wow/itemdata",
+        json=json_data,
+    ).json()
+    item_ids = [int(itemID) for itemID in results.keys()]
+    return item_ids
 
 def simple_snipe(json_data):
     snipe_results = requests.post(

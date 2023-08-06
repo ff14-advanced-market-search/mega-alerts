@@ -217,7 +217,7 @@ class MegaData:
                 f"{self.REGION} is not yet supported, reach out for us to add this region option"
             )
 
-        req = requests.get(url, timeout=45)
+        req = requests.get(url, timeout=20)
         # this auto updates self.upload_timers for each realm
         if "Last-Modified" in dict(req.headers):
             try:
