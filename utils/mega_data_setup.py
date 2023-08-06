@@ -218,9 +218,11 @@ class MegaData:
                     raise Exception(f"error in ilvl info '{key}' must be an int")
 
         # get names and ids of items
-        snipe_info["item_names"], snipe_info["item_ids"] = get_ilvl_items(
-            ilvl_info["ilvl"]
-        )
+        (
+            snipe_info["item_names"],
+            snipe_info["item_ids"],
+            snipe_info["base_ilvls"],
+        ) = get_ilvl_items(ilvl_info["ilvl"])
 
         return snipe_info
 

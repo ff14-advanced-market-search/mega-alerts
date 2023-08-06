@@ -31,7 +31,11 @@ def pull_single_realm_data(connected_id):
                 item_name = mega_data.DESIRED_ILVL_ITEMS["item_names"][
                     auction["itemID"]
                 ]
+                base_ilvl = mega_data.DESIRED_ILVL_ITEMS["base_ilvls"][
+                    auction["itemID"]
+                ]
                 id_msg += f"`Name:` {item_name}\n"
+                id_msg += f"`base_ilvl:` {base_ilvl}\n"
                 id_msg += f"`tertiary_stats:` {auction['tertiary_stats']}\n"
             elif auction["itemID"] in mega_data.ITEM_NAMES:
                 item_name = mega_data.ITEM_NAMES[auction["itemID"]]
@@ -46,7 +50,7 @@ def pull_single_realm_data(connected_id):
             + f"`region:` {mega_data.REGION} "
             + f"`realmID:` {auction['realmID']} "
             + id_msg
-            + f"realmNames: {auction['realmNames']}\n"
+            + f"`realmNames`: {auction['realmNames']}\n"
         )
         if mega_data.WOWHEAD_LINK and auction["itemID"]:
             item_id = auction["itemID"]
@@ -54,9 +58,9 @@ def pull_single_realm_data(connected_id):
         else:
             message += f"[Undermine link]({auction['itemlink']})\n"
         if "bid_prices" in auction:
-            message += f"bid_prices: {auction['bid_prices']}\n"
+            message += f"`bid_prices`: {auction['bid_prices']}\n"
         else:
-            message += f"buyout_prices: {auction['buyout_prices']}\n"
+            message += f"`buyout_prices`: {auction['buyout_prices']}\n"
         message += "==================================\n"
         if auction not in alert_record:
             mega_data.send_discord_message(message)
