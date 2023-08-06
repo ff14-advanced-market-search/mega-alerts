@@ -4,14 +4,13 @@ import json, requests, os
 from datetime import datetime
 from tenacity import retry, stop_after_attempt
 from utils.api_requests import send_discord_message, get_itemnames, get_ilvl_items
+from utils.bonus_ids import get_bonus_id_sets
 
 
 class MegaData:
     def __init__(self):
         # the raw file users can write their input into
         raw_mega_data = json.load(open("user_data/mega/mega_data.json"))
-
-        self.DESIRED_ILVL_ITEMS = self.__set_desired_ilvl()
 
         self.THREADS = self.__set_mega_vars("MEGA_THREADS", raw_mega_data)
         self.SCAN_TIME_MIN = self.__set_mega_vars("SCAN_TIME_MIN", raw_mega_data)
@@ -45,6 +44,8 @@ class MegaData:
         # get name dictionaries
         self.ITEM_NAMES = self.__set_item_names()
         self.PET_NAMES = self.__set_pet_names()
+        # get static lists of bonus id values
+        self.socket_ids, self.leech_ids, self.avoidance_ids, self.speed_ids = get_bonus_id_sets()
 
         self.upload_timers = self.__set_upload_timers()
 
