@@ -5,12 +5,16 @@ A super fast Blizzard AH sniper by Saddlebag Exchange
 [Current Docker versions](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/tags?page=1&ordering=last_updated):
 ```
 cohenaj194/mega-alerts:latest
+cohenaj194/mega-alerts:1.6
+cohenaj194/mega-alerts:1.5
 cohenaj194/mega-alerts:1.4
 cohenaj194/mega-alerts:1.3
 cohenaj194/mega-alerts:1.2
 cohenaj194/mega-alerts:1.1
 cohenaj194/mega-alerts:1.0
 ```
+
+Last Stable Version: `1.5`
 
 # Alert Example
 <img width="601" alt="image" src="https://user-images.githubusercontent.com/17516896/224507162-53513e8a-69ab-41e2-a5d5-ea4e51a9fc89.png">
