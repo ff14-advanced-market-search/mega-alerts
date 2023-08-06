@@ -34,7 +34,7 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
         )
         exit(1)
 
-    req = requests.get(url, timeout=25)
+    req = requests.get(url, timeout=20)
 
     auction_info = req.json()
     return auction_info["auctions"]
@@ -85,6 +85,38 @@ def get_petnames(client_id, client_secret):
     ).json()["pets"]
     pet_info = {pet["id"]: pet["name"] for pet in pet_info}
     return pet_info
+
+
+def get_raidbots_bonus_ids():
+    bonus_ids = requests.get(
+        "https://www.raidbots.com/static/data/live/bonuses.json"
+    ).json()
+    return {int(id): data for id, data in bonus_ids.items()}
+
+
+def get_ilvl_items(ilvl):
+    json_data = {
+        "ilvl": ilvl,
+        "itemQuality": -1,
+        "required_level": -1,
+        "item_class": [2, 4],
+        "item_subclass": [-1],
+    }
+    results = requests.post(
+        "http://api.saddlebagexchange.com/api/wow/itemdata",
+        json=json_data,
+    ).json()
+    if len(results) == 0:
+        raise Exception(
+            f"No items found at or above ilvl {ilvl}, contact us on discord"
+        )
+    item_names = {
+        int(itemID): item_info["itemName"] for itemID, item_info in results.items()
+    }
+    base_ilvls = {
+        int(itemID): item_info["ilvl"] for itemID, item_info in results.items()
+    }
+    return item_names, set(item_names.keys()), base_ilvls
 
 
 def simple_snipe(json_data):

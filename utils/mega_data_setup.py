@@ -3,7 +3,8 @@ from __future__ import print_function
 import json, requests, os
 from datetime import datetime
 from tenacity import retry, stop_after_attempt
-from utils.api_requests import send_discord_message, get_itemnames
+from utils.api_requests import send_discord_message, get_itemnames, get_ilvl_items
+from utils.bonus_ids import get_bonus_id_sets
 
 
 class MegaData:
@@ -34,16 +35,24 @@ class MegaData:
         self.access_token = self.check_access_token()
 
         # setup items to snipe
-        self.DESIRED_ITEMS = self.set_desired_items("desired_items")
-        self.DESIRED_PETS = self.set_desired_items("desired_pets")
-        self.validate_snipe_lists()
+        self.DESIRED_ITEMS = self.__set_desired_items("desired_items")
+        self.DESIRED_PETS = self.__set_desired_items("desired_pets")
+        self.DESIRED_ILVL_ITEMS = self.__set_desired_ilvl()
+        self.__validate_snipe_lists()
 
         ## should do this here and only get the names of desired items to limit data
         # get name dictionaries
-        self.ITEM_NAMES = self.set_item_names()
-        self.PET_NAMES = self.set_pet_names()
+        self.ITEM_NAMES = self.__set_item_names()
+        self.PET_NAMES = self.__set_pet_names()
+        # get static lists of bonus id values
+        (
+            self.socket_ids,
+            self.leech_ids,
+            self.avoidance_ids,
+            self.speed_ids,
+        ) = get_bonus_id_sets()
 
-        self.upload_timers = self.set_upload_timers()
+        self.upload_timers = self.__set_upload_timers()
 
     #### VARIABLE RELATED FUNCTIONS ####
     @staticmethod
@@ -128,14 +137,14 @@ class MegaData:
             self.access_token_creation_unix_time = int(datetime.now().timestamp())
             return self.access_token
 
-    def set_pet_names(self):
+    def __set_pet_names(self):
         pet_info = requests.get(
             f"https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US&access_token={self.access_token}"
         ).json()["pets"]
         pet_info = {int(pet["id"]): pet["name"] for pet in pet_info}
         return pet_info
 
-    def set_item_names(self):
+    def __set_item_names(self):
         item_names = get_itemnames()
         item_names = {
             int(id): name
@@ -144,7 +153,7 @@ class MegaData:
         }
         return item_names
 
-    def set_desired_items(self, item_list_name):
+    def __set_desired_items(self, item_list_name):
         file_name = f"{item_list_name}.json"
         env_var_name = item_list_name.upper()
         desired_items_raw = json.load(open(f"user_data/mega/{file_name}"))
@@ -156,23 +165,82 @@ class MegaData:
             if os.getenv(env_var_name):
                 desired_items_raw = json.loads(os.getenv(env_var_name))
             else:
+                print(f"skipping {item_list_name} its not set in file or env var")
                 desired_items_raw = {}
         desired_items = {}
         for k, v in desired_items_raw.items():
             desired_items[int(k)] = int(v)
         return desired_items
 
-    def validate_snipe_lists(self):
-        if len(self.DESIRED_ITEMS) == 0 and len(self.DESIRED_PETS) == 0:
-            error_message = "Error no snipe data found!\n"
-            error_message += (
-                "You need to set up your user_data/mega/desired_items.json "
+    def __set_desired_ilvl(self):
+        item_list_name = "desired_ilvl"
+        file_name = f"{item_list_name}.json"
+        env_var_name = item_list_name.upper()
+        ilvl_info = json.load(open(f"user_data/mega/{file_name}"))
+        # if file is not set use env var
+        if len(ilvl_info) == 0:
+            print(
+                f"no desired items found in user_data/mega/{file_name} pulling from env vars"
             )
-            error_message += "or user_data/mega/desired_pets.json\n"
-            error_message += "You can also set env vars with the json for DESIRED_ITEMS or DESIRED_PETS"
+            if os.getenv(env_var_name):
+                ilvl_info = json.loads(os.getenv(env_var_name))
+            else:
+                print(f"skipping {item_list_name} its not set in file or env var")
+                return {}
+
+        example = {
+            "ilvl": 360,
+            "buyout": 50000,
+            "sockets": False,
+            "speed": True,
+            "leech": False,
+            "avoidance": False,
+        }
+
+        if ilvl_info.keys() != example.keys():
+            raise Exception(
+                f"error missing required keys {set(example.keys())} from info:\n{ilvl_info}"
+            )
+
+        snipe_info = {}
+        bool_vars = ["sockets", "speed", "leech", "avoidance"]
+        int_vars = ["ilvl", "buyout"]
+        for key, value in ilvl_info.items():
+            if key in bool_vars:
+                if isinstance(ilvl_info[key], bool):
+                    snipe_info[key] = value
+                else:
+                    raise Exception(f"error in ilvl info '{key}' must be true or false")
+            elif key in int_vars:
+                if isinstance(ilvl_info[key], int):
+                    snipe_info[key] = value
+                else:
+                    raise Exception(f"error in ilvl info '{key}' must be an int")
+
+        # get names and ids of items
+        (
+            snipe_info["item_names"],
+            snipe_info["item_ids"],
+            snipe_info["base_ilvls"],
+        ) = get_ilvl_items(ilvl_info["ilvl"])
+
+        return snipe_info
+
+    def __validate_snipe_lists(self):
+        if (
+            len(self.DESIRED_ITEMS) == 0
+            and len(self.DESIRED_PETS) == 0
+            and len(self.DESIRED_ILVL_ITEMS) == 0
+        ):
+            error_message = "Error no snipe data found!\n"
+            error_message += "You need to set env vars for DESIRED_ITEMS or DESIRED_PETS or DESIRED_ILVL\n"
+            error_message += "Or you need to set up your user_data/mega/ json files with one of the following files:\n"
+            error_message += "- desired_items.json\n"
+            error_message += "- desired_pets.json\n"
+            error_message += "- desired_ilvl.json\n"
             raise Exception(error_message)
 
-    def set_upload_timers(self):
+    def __set_upload_timers(self):
         update_timers = requests.post(
             "http://api.saddlebagexchange.com/api/wow/uploadtimers",
             json={},
@@ -217,7 +285,7 @@ class MegaData:
                 f"{self.REGION} is not yet supported, reach out for us to add this region option"
             )
 
-        req = requests.get(url, timeout=25)
+        req = requests.get(url, timeout=20)
         # this auto updates self.upload_timers for each realm
         if "Last-Modified" in dict(req.headers):
             try:
