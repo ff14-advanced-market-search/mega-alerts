@@ -133,6 +133,7 @@ We also have the following optional env vars you can add in to change alert beha
 - `--env SCAN_TIME_MAX=1` increase or decrease the minutes after the data updates to stop scanning (default to keep scanning 3 min after the data updates).
 - `--env MEGA_THREADS=100` increase or decrease the threadcount (do a max of 100).
 - `--env REFRESH_ALERTS="false"` (default true) if set to false then you will not see the same alert more than once.
+- We now also allow additional options with `DESIRED_ILVL` [see the section below](https://github.com/ff14-advanced-market-search/mega-alerts#snipe-by-ilvl-and-tertiary-stats)
 
 10. In docker desktop download the image and run it 
 
@@ -228,3 +229,20 @@ To set this up:
 3. Run the [simple-alerts.py](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/simple-alerts.py) script:
 
 <img width="1043" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/ab94648f-c900-40fe-af3b-51c04df12710">
+
+# Snipe by ilvl and tertiary stats
+
+We now have an extra option similar to the `DESIRED_ITEMS` or `DESIRED_PETS` for sniping items based on ilvl.  This also lets you search for items with specific item levels and leech, sockets, speed or avoidance.
+
+To enable this set the env var `DESIRED_ILVL` with json similar to the following. This example looks for items with over an ilvl of 360 with a speed stat:
+
+```
+{"ilvl": 360, "buyout": 10000, "sockets": false, "speed": true, "leech": false, "avoidance": false}
+```
+
+If we change this to and set `"sockets": true` then it will show items over an ilvl of 360 with a speed stat or a socket:
+
+```
+{"ilvl": 360, "buyout": 10000, "sockets": true, "speed": true, "leech": false, "avoidance": false}
+```
+
