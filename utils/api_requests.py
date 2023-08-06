@@ -94,13 +94,15 @@ def get_raidbots_bonus_ids():
     return {int(id): data for id, data in bonus_ids.items()}
 
 
-def get_ilvl_ids(json_data):
+def get_ilvl_items(json_data):
     results = requests.post(
         "http://api.saddlebagexchange.com/api/wow/itemdata",
         json=json_data,
     ).json()
-    item_ids = [int(itemID) for itemID in results.keys()]
-    return item_ids
+    item_names = {
+        int(itemID): item_info["itemName"] for itemID, item_info in results.items()
+    }
+    return item_names, set(item_names.keys())
 
 
 def simple_snipe(json_data):
