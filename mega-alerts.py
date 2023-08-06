@@ -70,7 +70,7 @@ def pull_single_realm_data(connected_id):
 def clean_listing_data(auctions, connected_id):
     all_ah_buyouts, all_ah_bids = {}, {}
     pet_ah_buyouts, pet_ah_bids = {}, {}
-    ilvl_ah_buyouts, ilvl_ah_bids = {}, {}
+    ilvl_ah_buyouts, ilvl_ah_bids = [], []
     for item in auctions:
         item_id = item["item"]["id"]
         # regular items
@@ -121,17 +121,14 @@ def clean_listing_data(auctions, connected_id):
             if item_id in mega_data.DESIRED_ILVL_ITEMS["item_ids"]:
                 ilvl_item_info = check_tertiary_stats(item)
                 if ilvl_item_info:
-                    if item_id not in ilvl_ah_buyouts.keys():
-                        ilvl_ah_buyouts[item_id] = ilvl_item_info
-                    elif ilvl_ah_buyouts[item_id]["buyout"] > ilvl_item_info["buyout"]:
-                        ilvl_ah_buyouts[item_id] = ilvl_item_info
+                    ilvl_ah_buyouts.append(ilvl_item_info)
 
     if (
         all_ah_buyouts == {}
         and all_ah_bids == {}
         and pet_ah_buyouts == {}
         and pet_ah_bids == {}
-        and ilvl_ah_buyouts == {}
+        and ilvl_ah_buyouts == []
     ):
         print(
             f"no listings found matching items {mega_data.DESIRED_ITEMS} "
@@ -226,7 +223,8 @@ def format_alert_messages(
             )
         )
 
-    for itemID, auction in ilvl_ah_buyouts.items():
+    for auction in ilvl_ah_buyouts:
+        itemID = auction["item_id"]
         # use instead of item name
         itemlink = create_oribos_exchange_item_link(
             realm_names[0], itemID, mega_data.REGION
