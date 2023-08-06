@@ -245,4 +245,5 @@ If we change this to and set `"sockets": true` then it will show items over an i
 ```
 {"ilvl": 360, "buyout": 10000, "sockets": true, "speed": true, "leech": false, "avoidance": false}
 ```
+<img width="369" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/ad6b61cc-c439-4079-8982-4c2eaa165eb5">
 
