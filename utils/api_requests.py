@@ -1,4 +1,4 @@
-import requests, os
+import requests
 from tenacity import retry, stop_after_attempt
 
 
@@ -11,11 +11,11 @@ def send_discord_message(message, webhook_url):
 
 
 @retry(stop=stop_after_attempt(3))
-def get_wow_access_token():
+def get_wow_access_token(client_id, client_secret):
     access_token = requests.post(
         "https://oauth.battle.net/token",
         data={"grant_type": "client_credentials"},
-        auth=(os.getenv("WOW_CLIENT_ID"), os.getenv("WOW_CLIENT_SECRET")),
+        auth=(client_id, client_secret),
     ).json()["access_token"]
     return access_token
 
@@ -28,6 +28,11 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
         url = f"https://us.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}/auctions?namespace=dynamic-us&locale=en_US&access_token={access_token}"
     elif region == "EU":
         url = f"https://eu.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}/auctions?namespace=dynamic-eu&locale=en_EU&access_token={access_token}"
+    else:
+        print(
+            f"{region} is not yet supported, reach out for us to add this region option"
+        )
+        exit(1)
 
     req = requests.get(url, timeout=25)
 
@@ -35,28 +40,29 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
     return auction_info["auctions"]
 
 
-def get_update_timers(home_realm_ids, region):
+def get_update_timers(region, simple_snipe=False):
+    # get from api every time
     update_timers = requests.post(
         "http://api.saddlebagexchange.com/api/wow/uploadtimers",
         json={},
     ).json()["data"]
 
-    # cover all realms
-    if home_realm_ids == []:
-        # remove commodities get all others
+    # cover specific realms
+    if simple_snipe:
+        if region == "EU":
+            update_id = -2
+        else:
+            update_id = -1
         server_update_times = [
             time_data
             for time_data in update_timers
-            if time_data["dataSetID"] not in [-1, -2] and time_data["region"] == region
+            if time_data["dataSetID"] == update_id
         ]
-    # cover specific realms
     else:
         server_update_times = [
             time_data
             for time_data in update_timers
-            if time_data["dataSetID"] not in [-1, -2]
-            and time_data["dataSetID"] in home_realm_ids
-            and time_data["region"] == region
+            if time_data["dataSetID"] not in [-1, -2] and time_data["region"] == region
         ]
         print(server_update_times)
 
@@ -72,8 +78,8 @@ def get_itemnames():
     return item_names
 
 
-def get_petnames():
-    access_token = get_wow_access_token()
+def get_petnames(client_id, client_secret):
+    access_token = get_wow_access_token(client_id, client_secret)
     pet_info = requests.get(
         f"https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US&access_token={access_token}"
     ).json()["pets"]
@@ -86,3 +92,12 @@ def get_raidbots_bonus_ids():
         "https://www.raidbots.com/static/data/live/bonuses.json"
     ).json()
     return {int(id): data for id, data in bonus_ids.items()}
+
+
+def simple_snipe(json_data):
+    snipe_results = requests.post(
+        "http://api.saddlebagexchange.com/api/wow/regionpricecheck",
+        json=json_data,
+    ).json()
+
+    return snipe_results

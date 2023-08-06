@@ -19,15 +19,17 @@ RUN apk -v --update add \
 
 WORKDIR /app
 RUN mkdir /app/data/
+RUN mkdir /app/user_data/
+RUN mkdir /app/user_data/mega/
+RUN mkdir /app/user_data/simple/
 RUN mkdir /app/utils/
 COPY ./mega-alerts.py /app/
 COPY ./utils/* /app/utils/
+COPY ./data/* /app/data/
+COPY ./user_data/mega/* /app/user_data/mega/
+COPY ./user_data/simple/* /app/user_data/simple/
 COPY ./run /app/
 RUN chmod +x /app/*
-
-# wow data
-COPY ./data/na-wow-connected-realm-ids.json /app/data/
-COPY ./data/eu-wow-connected-realm-ids.json /app/data/
 
 CMD /app/run
 

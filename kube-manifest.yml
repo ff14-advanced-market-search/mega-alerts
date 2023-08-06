@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mega-alerts
+spec:
+  selector:
+    matchLabels:
+      run: mega-alerts
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: mega-alerts
+    spec:
+      containers:
+      - name: mega-alerts
+        image: cohenaj194/mega-alerts
+        env:
+        - name: MEGA_WEBHOOK_URL
+          value: "https://discord.com/api/webhooks/12345678/foobar"
+        # EU or NA
+        - name: WOW_REGION
+          value: "NA"
+        - name: WOW_CLIENT_ID
+          value: "123456789asdfghjk"
+        - name: WOW_CLIENT_SECRET
+          value: "123456789asdfghjk"
+        - name: DESIRED_ITEMS
+          value: '{"194641": 500000, "159840":40000}'
+        - name: DESIRED_PETS
+          value: '{"3390": 2700}'
