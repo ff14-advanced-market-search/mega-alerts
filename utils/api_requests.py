@@ -106,6 +106,10 @@ def get_ilvl_items(ilvl):
         "http://api.saddlebagexchange.com/api/wow/itemdata",
         json=json_data,
     ).json()
+    if len(results) == 0:
+        raise Exception(
+            f"No items found at or above ilvl {ilvl}, contact us on discord"
+        )
     item_names = {
         int(itemID): item_info["itemName"] for itemID, item_info in results.items()
     }

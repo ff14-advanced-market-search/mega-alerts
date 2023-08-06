@@ -3,7 +3,7 @@ from __future__ import print_function
 import json, requests, os
 from datetime import datetime
 from tenacity import retry, stop_after_attempt
-from utils.api_requests import send_discord_message, get_itemnames
+from utils.api_requests import send_discord_message, get_itemnames, get_ilvl_items
 
 
 class MegaData:
@@ -204,12 +204,17 @@ class MegaData:
                 if isinstance(ilvl_info[key], bool):
                     snipe_info[key] = value
                 else:
-                    raise Exception(f"{key} must be true or false")
+                    raise Exception(f"error in ilvl info '{key}' must be true or false")
             elif key in int_vars:
                 if isinstance(ilvl_info[key], int):
                     snipe_info[key] = value
                 else:
-                    raise Exception(f"{key} must be an int")
+                    raise Exception(f"error in ilvl info '{key}' must be an int")
+
+        # get names and ids of items
+        snipe_info["item_names"], snipe_info["item_ids"] = get_ilvl_items(
+            ilvl_info["ilvl"]
+        )
 
         return snipe_info
 
