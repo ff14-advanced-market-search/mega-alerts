@@ -134,7 +134,7 @@ def clean_listing_data(auctions, connected_id):
         print(
             f"no listings found matching items {mega_data.DESIRED_ITEMS} "
             + f"or pets {mega_data.DESIRED_PETS} "
-            + f"or ids {mega_data.DESIRED_ILVL_ITEMS['item_ids']} "
+            + f"or items to snipe by ilvl and stats  "
             + f"on {connected_id} "
             + f"{mega_data.REGION}"
         )
@@ -338,7 +338,7 @@ def main():
                 f"none found triggering at {datetime.now()} : "
                 f"checking for items {mega_data.DESIRED_ITEMS} "
                 + f"or pets {mega_data.DESIRED_PETS} "
-                + f"or items {mega_data.DESIRED_ILVL['item_ids']} at buyout {mega_data.DESIRED_ILVL['buyout']} "
+                + f"or items to snipe by ilvl and stats "
             )
             time.sleep(20)
 
