@@ -19,7 +19,7 @@ Last Stable Version: `1.5`
 # Alert Example
 <img width="601" alt="image" src="https://user-images.githubusercontent.com/17516896/224507162-53513e8a-69ab-41e2-a5d5-ea4e51a9fc89.png">
 
-# Setup
+# Software Setup
 
 1. [Install Docker](https://docs.docker.com/engine/install/) used to run the sniper
 
@@ -32,13 +32,14 @@ Last Stable Version: `1.5`
 
 3. [Setup a discord channel with a webhook url for sending the alert messages](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
 
-5. Download [the docker image](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/general), if on windows open a [command prompt](https://www.youtube.com/watch?v=uE9WgNr3OjM) to run this.
+4. Download [the docker image](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/general), if on windows open a [command prompt](https://www.youtube.com/watch?v=uE9WgNr3OjM) to run this.
 
 ```
 docker pull cohenaj194/mega-alerts
 ```
 
-5. Make a json object with the item ids and prices that you want to snipe for!
+# Item Selection
+1. If you have specific items and prices you want, then make a json object with the item ids and prices that you want to snipe for!
 
 This is what you will set for `DESIRED_ITEMS` or you can set `{}` if you only want to snipe pets.
 
@@ -53,7 +54,9 @@ For example the following looks for [item id 194641 (which is the elemental lari
 
 You can find that id at the end of the undermine exchange link for the item https://undermine.exchange/#us-thrall/194641 or if you look it up on wowhead the url also has the item id https://www.wowhead.com/item=194641/design-elemental-lariat
 
-6. Make a json object with the pet ids and prices that you want to snipe for!
+[You can also use our item id to name lookup tool, which makes this even easier.](https://temp.saddlebagexchange.com/itemnames)
+
+2.  If you have specific pets and prices you want, then make a json object with the pet ids and prices that you want to snipe for!
 
 This is what you will set for `DESIRED_PETS` or you can set `{}` if you only want to snipe regular items.
 
@@ -68,34 +71,65 @@ For example the following looks for [pet species id 3390 (which is the Sophic Am
 
 You can find that id at the end of the undermine exchange link for the item next to `82800` (which is the item id for pet cages) https://undermine.exchange/#us-suramar/82800-3390.
 
-7. If you only want to run the alerts on specific realms then make a json list of all the realm names and put it in a string:
+3. If you want to snipe based on ilvl, leech, speed, avoidance or sockets then setup the json object for that:
+
+We now have an extra option similar to the `DESIRED_ITEMS` or `DESIRED_PETS` for sniping items based on ilvl.  This also lets you search for items with specific item levels and leech, sockets, speed or avoidance.
+
+To enable this set the env var `DESIRED_ILVL` with json similar to the following. This example looks for items with over an ilvl of 360 with a speed stat:
+
 ```
-'["Thrall", "Silvermoon"]'
+{"ilvl": 360, "buyout": 10000, "sockets": false, "speed": true, "leech": false, "avoidance": false}
 ```
 
-8. If you want to run locally with python or pycharm, first clone the repo or [download the code](https://github.com/ff14-advanced-market-search/mega-alerts/archive/refs/heads/main.zip).  Then set all your user values in the data files under the [user_data/mega](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/) json files:
+If we change this to and set `"sockets": true` then it will show items over an ilvl of 360 with a speed stat or a socket:
+
+```
+{"ilvl": 360, "buyout": 10000, "sockets": true, "speed": true, "leech": false, "avoidance": false}
+```
+
+4. If you want to run locally with python or pycharm, first clone the repo or [download the code](https://github.com/ff14-advanced-market-search/mega-alerts/archive/refs/heads/main.zip).  Then set all your user values in the data files under the [user_data/mega](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/) json files:
 
 - [Set the item ids and prices you want](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/desired_items.json)
 - [Set the pet ids and prices you want](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/desired_pets.json)
+- [Set the ilvl and price info for snipe by ilvl and stats](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/desired_ilvl.json)
 - [Set up all the other important details for alerts](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/mega/mega_data.json)
 
-You can then run it with python or run locally with docker compose using:
 
-```
-docker compose up --build
-```
+Even if you are not going to run directly in python then you should still save this somewhere in a text file.
 
-Make sure the required packages are installed by running:
 
-```
-pip3 install -r requirements.txt
-```
+# How to run the alerts
 
-Then just run the [mega-alerts.py file](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/mega-alerts.py). To do this right click the mega alerts file and click run:
+With whatever method you choose you will provide all the details the code needs in *Environmental Variables*.  You must provide at least the following:
 
-<img width="1046" alt="Screen Shot 2023-07-11 at 1 14 40 PM" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/d7363e3d-fef6-4a06-93ab-42ae38fa3ac0">
+- `MEGA_WEBHOOK_URL`
+- `WOW_CLIENT_ID`
+- `WOW_CLIENT_SECRET`
+- `WOW_REGION` either `EU` or `NA`
+- Then for your snipe method you must provide at least one correct json data for `DESIRED_ITEMS`, `DESIRED_PETS` or `DESIRED_ILVL`
 
-9. To run the docker container (go to 10. if you are running it with docker desktop) with the following env vars.
+We also have the following optional env vars you can add in to change alert behavior:
+- `SHOW_BID_PRICES=true` Bid prices below your price limit will also be shown.
+- `WOWHEAD_LINK=true` Uses wowhead links instead of undermine and shows pictures, but the message length will be longer.
+- `SCAN_TIME_MIN=-1` increase or decrease the minutes before or at the data update time to start scanning (default to keep scanning 3 min after the data updates).
+- `SCAN_TIME_MAX=1` increase or decrease the minutes after the data updates to stop scanning (default to keep scanning 3 min after the data updates).
+- `MEGA_THREADS=100` increase or decrease the threadcount (do a max of 100).
+- `REFRESH_ALERTS="false"` (default true) if set to false then you will not see the same alert more than once.
+
+## Different ways to run mega alerts
+
+1.  Running with docker desktop is the simplist and most stable method.  It will be easiest for windows users.
+
+In docker desktop download the image and click `run` to run it.  It will then give you the option to add variables.
+
+<img width="1297" alt="image" src="https://user-images.githubusercontent.com/17516896/224506498-d385e177-4fd0-41fc-ae80-78e77b2e0c7b.png">
+
+Click to add more variables in and put the variable names in with your values
+
+<img width="554" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/2fd6618b-1532-485c-8959-0c83f39ca7ea">
+
+
+2. If you are able do run a docker run command directly on your command line then that will be even easier than option 1 as you can just save your run command and paste it in the command line.
 
 Make sure to set `WOW_REGION` with either `EU` or `NA`
 
@@ -111,40 +145,28 @@ docker run -dit \
     cohenaj194/mega-alerts
 ```
 
-If you want it to trigger for all selected realms on a minute or several specific min of each hour you can trigger this with `EXTRA_ALERTS`:
+3. You can also try running with docker-compose which will automatically pick up values if you set them in the json files (mentioned in step 4 of the `Item Selection` section of the guide)
+
+You can then run it with docker compose using:
 
 ```
-docker run -dit \
-    --name wow-test \
-    --env MEGA_WEBHOOK_URL=$MEGA_WEBHOOK_URL \
-    --env WOW_CLIENT_ID=$WOW_CLIENT_ID \
-    --env WOW_CLIENT_SECRET=$WOW_CLIENT_SECRET \
-    --env WOW_REGION=EU \
-    --env DESIRED_ITEMS='{"194641": 500000, "159840":40000}' \
-    --env DESIRED_PETS='{"3390": 2700}' \
-    --env EXTRA_ALERTS='[15,45]'
-    cohenaj194/mega-alerts
+docker compose up --build
 ```
 
-We also have the following optional env vars you can add in to change alert behavior:
-- `--env SHOW_BID_PRICES=true` Bid prices below your price limit will also be shown.
-- `--env WOWHEAD_LINK=true` Uses wowhead links instead of undermine and shows pictures, but the message length will be longer.
-- `--env SCAN_TIME_MIN=-1` increase or decrease the minutes before or at the data update time to start scanning (default to keep scanning 3 min after the data updates).
-- `--env SCAN_TIME_MAX=1` increase or decrease the minutes after the data updates to stop scanning (default to keep scanning 3 min after the data updates).
-- `--env MEGA_THREADS=100` increase or decrease the threadcount (do a max of 100).
-- `--env REFRESH_ALERTS="false"` (default true) if set to false then you will not see the same alert more than once.
-- We now also allow additional options with `DESIRED_ILVL` [see the section below](https://github.com/ff14-advanced-market-search/mega-alerts#snipe-by-ilvl-and-tertiary-stats)
+4. You can run it with python on your computer with pycharm
 
-10. In docker desktop download the image and run it 
+Make sure the required packages are installed by running:
 
-<img width="1297" alt="image" src="https://user-images.githubusercontent.com/17516896/224506498-d385e177-4fd0-41fc-ae80-78e77b2e0c7b.png">
+```
+pip3 install -r requirements.txt
+```
 
-For the env vars set all the env vars you see in the `--env` lines in step 10 and then click run:
+Then just run the [mega-alerts.py file](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/mega-alerts.py). To do this right click the mega alerts file and click run:
 
-<img width="554" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/2fd6618b-1532-485c-8959-0c83f39ca7ea">
+<img width="1046" alt="Screen Shot 2023-07-11 at 1 14 40 PM" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/d7363e3d-fef6-4a06-93ab-42ae38fa3ac0">
 
 
-11. Alternatively you can try to run this in kubernetes on minikube to autorestart if the pods fail
+5. Alternatively you can try to run this in kubernetes on minikube to autorestart if the pods fail
 
 If you can run shell and python locally please run this instead of using kubernetes as you can easily exit it by hitting "control" + "c" on your keyboard:
 
