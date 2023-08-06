@@ -94,7 +94,14 @@ def get_raidbots_bonus_ids():
     return {int(id): data for id, data in bonus_ids.items()}
 
 
-def get_ilvl_items(json_data):
+def get_ilvl_items(ilvl):
+    json_data = {
+        "ilvl": ilvl,
+        "itemQuality": -1,
+        "required_level": -1,
+        "item_class": [2, 4],
+        "item_subclass": [-1],
+    }
     results = requests.post(
         "http://api.saddlebagexchange.com/api/wow/itemdata",
         json=json_data,
