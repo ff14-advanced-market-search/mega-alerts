@@ -102,6 +102,7 @@ def get_ilvl_ids(json_data):
     item_ids = [int(itemID) for itemID in results.keys()]
     return item_ids
 
+
 def simple_snipe(json_data):
     snipe_results = requests.post(
         "http://api.saddlebagexchange.com/api/wow/regionpricecheck",

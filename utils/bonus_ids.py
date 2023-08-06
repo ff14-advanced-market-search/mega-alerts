@@ -27,3 +27,14 @@ def get_bonus_ids():
         "speed": speed,
         "ilvl": ilvl,
     }
+
+
+def get_bonus_id_sets():
+    # get raw data
+    bonus_ids = get_bonus_ids()
+    # get ids for each bonus type
+    socket_ids = set(bonus_ids["sockets"].keys())
+    leech_ids = set(bonus_ids["leech"].keys())
+    avoidance_ids = set(bonus_ids["avoidance"].keys())
+    speed_ids = set(bonus_ids["speed"].keys())
+    return socket_ids, leech_ids, avoidance_ids, speed_ids
