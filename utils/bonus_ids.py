@@ -10,6 +10,7 @@ def get_bonus_ids():
 
     # the rest are buried in rawStats
     leech, avoidance, speed = {}, {}, {}
+    haste, crit, mastery, versatility = {}, {}, {}, {}
     for k, v in bonus_id_dict.items():
         if "rawStats" in v.keys():
             for stats in v["rawStats"]:
@@ -19,13 +20,24 @@ def get_bonus_ids():
                     avoidance[k] = v
                 if "RunSpeed" in stats.values():
                     speed[k] = v
-
+                if "Haste" in stats.values():
+                    haste[k] = v
+                if "Crit" in stats.values():
+                    crit[k] = v
+                if "Mastery" in stats.values():
+                    mastery[k] = v
+                if "Versatility" in stats.values():
+                    versatility[k] = v
     return {
         "sockets": sockets,
         "leech": leech,
         "avoidance": avoidance,
         "speed": speed,
         "ilvl": ilvl,
+        "haste": haste,
+        "crit": crit,
+        "mastery": mastery,
+        "versatility": versatility,
     }
 
 
@@ -38,3 +50,14 @@ def get_bonus_id_sets():
     avoidance_ids = set(bonus_ids["avoidance"].keys())
     speed_ids = set(bonus_ids["speed"].keys())
     return socket_ids, leech_ids, avoidance_ids, speed_ids
+
+
+def get_secondary_stats():
+    # get raw data
+    bonus_ids = get_bonus_ids()
+    # get ids for each bonus type
+    haste_ids = set(bonus_ids["haste"].keys())
+    crit_ids = set(bonus_ids["crit"].keys())
+    mastery_ids = set(bonus_ids["mastery"].keys())
+    versatility_ids = set(bonus_ids["versatility"].keys())
+    return haste_ids, crit_ids, mastery_ids, versatility_ids
