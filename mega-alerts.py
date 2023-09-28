@@ -52,7 +52,7 @@ def pull_single_realm_data(connected_id):
             + id_msg
             + f"`realmNames`: {auction['realmNames']}\n"
         )
-        if mega_data.WOWHEAD_LINK and auction["itemID"]:
+        if mega_data.WOWHEAD_LINK and "itemID" in auction:
             item_id = auction["itemID"]
             message += f"[Wowhead link](https://www.wowhead.com/item={item_id})\n"
         else:
