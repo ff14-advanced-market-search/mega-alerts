@@ -24,6 +24,10 @@ if len(price_alert_data) == 0:
 region = price_alert_data["region"]
 
 simple_snipe_info = json.load(open("user_data/simple/simple_snipe_info.json"))
+# remove homeRealmName if players insert it from the website
+if "homeRealmName" in simple_snipe_info:
+    del simple_snipe_info["homeRealmName"]
+
 webhook_url = simple_snipe_info["MEGA_WEBHOOK_URL"]
 # default to env var if not set in json
 if not webhook_url:
@@ -94,7 +98,7 @@ def test():
     format_discord_message()
 
 
-send_discord_message("starting mega alerts", webhook_url)
+send_discord_message("starting simple alerts", webhook_url)
 main()
 
 ## for debugging
