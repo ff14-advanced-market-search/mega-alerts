@@ -108,7 +108,7 @@ def get_ilvl_items(ilvl):
     ).json()
     if len(results) == 0:
         raise Exception(
-            f"No items found at or above ilvl {ilvl}, contact us on discord"
+            f"No items found at or above a base ilvl of {ilvl}, contact us on discord"
         )
     item_names = {
         int(itemID): item_info["itemName"] for itemID, item_info in results.items()
