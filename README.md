@@ -52,6 +52,8 @@ For example the following looks for [item id 194641 (which is the elemental lari
 {"194641": 500000, "159840":40000}
 ```
 
+[Paste that into this json checker if you want to make sure your json is valid](https://jsonlint.com/)
+
 You can find that id at the end of the undermine exchange link for the item https://undermine.exchange/#us-thrall/194641 or if you look it up on wowhead the url also has the item id https://www.wowhead.com/item=194641/design-elemental-lariat
 
 [You can also use our item id to name lookup tool, which makes this even easier.](https://temp.saddlebagexchange.com/itemnames)
