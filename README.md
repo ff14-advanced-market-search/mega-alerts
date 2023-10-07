@@ -23,7 +23,7 @@ Last Stable Version: `1.5`
 
 1. [Install Docker](https://docs.docker.com/engine/install/) used to run the sniper
 
-2. Go to https://develop.battle.net/access/clients and create a client, get the blizzard oauth client and secret ids
+2. Go to https://develop.battle.net/access/clients and create a client, get the blizzard oauth client and secret ids.  You will use these values for the `WOW_CLIENT_ID` and `WOW_CLIENT_SECRET` later on.
 
 <img width="1304" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/e954289a-ccbc-4afb-9f66-897bbc68f677">
 
