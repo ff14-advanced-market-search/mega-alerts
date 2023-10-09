@@ -68,74 +68,76 @@ def pull_single_realm_data(connected_id):
 
 
 def clean_listing_data(auctions, connected_id):
-    all_ah_buyouts, all_ah_bids = {}, {}
-    pet_ah_buyouts, pet_ah_bids = {}, {}
-    ilvl_ah_buyouts, ilvl_ah_bids = [], []
+    all_ah_buyouts = {}
+    all_ah_bids = {}
+    pet_ah_buyouts = {}
+    pet_ah_bids = {}
+    ilvl_ah_buyouts = set()
+
+    def add_price_to_dict(price, item_id, price_dict, is_pet=False):
+        if is_pet:
+            if price < mega_data.DESIRED_PETS[item_id] * 10000:
+                if item_id not in price_dict:
+                    price_dict[item_id] = [price / 10000]
+                elif price / 10000 not in price_dict[item_id]:
+                    price_dict[item_id].append(price / 10000)
+        elif price < mega_data.DESIRED_ITEMS[item_id] * 10000:
+            if item_id not in price_dict:
+                price_dict[item_id] = [price / 10000]
+            elif price / 10000 not in price_dict[item_id]:
+                price_dict[item_id].append(price / 10000)
+
     for item in auctions:
         item_id = item["item"]["id"]
+
         # regular items
         if item_id in mega_data.DESIRED_ITEMS and item_id != 82800:
-            # idk why this is here, but have a feeling everything breaks without it
             price = 10000000 * 10000
-            # if it has a bid use the bid price
-            if "bid" in item.keys() and mega_data.SHOW_BIDPRICES == "true":
+
+            if "bid" in item and mega_data.SHOW_BIDPRICES == "true":
                 price = item["bid"]
-                # filter out items that are too expensive
-                if price < mega_data.DESIRED_ITEMS[item_id] * 10000:
-                    if item_id not in all_ah_bids.keys():
-                        all_ah_bids[item_id] = [price / 10000]
-                    elif price / 10000 not in all_ah_bids[item_id]:
-                        all_ah_bids[item_id].append(price / 10000)
-            if "buyout" in item.keys():
+                add_price_to_dict(price, item_id, all_ah_bids)
+
+            if "buyout" in item:
                 price = item["buyout"]
-                # filter out items that are too expensive
-                if price < mega_data.DESIRED_ITEMS[item_id] * 10000:
-                    if item_id not in all_ah_buyouts.keys():
-                        all_ah_buyouts[item_id] = [price / 10000]
-                    elif price / 10000 not in all_ah_buyouts[item_id]:
-                        all_ah_buyouts[item_id].append(price / 10000)
+                add_price_to_dict(price, item_id, all_ah_buyouts)
+
         # all caged battle pets have item id 82800
         elif item_id == 82800:
-            if item["item"]["pet_species_id"] in mega_data.DESIRED_PETS.keys():
+            if item["item"]["pet_species_id"] in mega_data.DESIRED_PETS:
                 pet_id = item["item"]["pet_species_id"]
-                # idk why this is here, but have a feeling everything breaks without it
                 price = 10000000 * 10000
-                if "bid" in item.keys() and mega_data.SHOW_BIDPRICES == "true":
-                    price = item["bid"]
-                    # filter out items that are too expensive
-                    if price < mega_data.DESIRED_PETS[pet_id] * 10000:
-                        if pet_id not in pet_ah_bids.keys():
-                            pet_ah_bids[pet_id] = [price / 10000]
-                        elif price / 10000 not in pet_ah_bids[pet_id]:
-                            pet_ah_bids[pet_id].append(price / 10000)
-                if "buyout" in item.keys():
-                    price = item["buyout"]
-                    # filter out items that are too expensive
-                    if price < mega_data.DESIRED_PETS[pet_id] * 10000:
-                        if pet_id not in pet_ah_buyouts.keys():
-                            pet_ah_buyouts[pet_id] = [price / 10000]
-                        elif price / 10000 not in pet_ah_buyouts[pet_id]:
-                            pet_ah_buyouts[pet_id].append(price / 10000)
-        # ilvl snipe items
-        if mega_data.DESIRED_ILVL_ITEMS:
-            if item_id in mega_data.DESIRED_ILVL_ITEMS["item_ids"]:
-                ilvl_item_info = check_tertiary_stats(item)
-                if ilvl_item_info:
-                    ilvl_ah_buyouts.append(ilvl_item_info)
 
-    if (
-        all_ah_buyouts == {}
-        and all_ah_bids == {}
-        and pet_ah_buyouts == {}
-        and pet_ah_bids == {}
-        and ilvl_ah_buyouts == []
+                if "bid" in item and mega_data.SHOW_BIDPRICES == "true":
+                    price = item["bid"]
+                    add_price_to_dict(price, pet_id, pet_ah_bids, is_pet=True)
+
+                if "buyout" in item:
+                    price = item["buyout"]
+                    add_price_to_dict(price, pet_id, pet_ah_buyouts, is_pet=True)
+
+        # ilvl snipe items
+        if (
+            mega_data.DESIRED_ILVL_ITEMS
+            and item_id in mega_data.DESIRED_ILVL_ITEMS["item_ids"]
+        ):
+            ilvl_item_info = check_tertiary_stats(item)
+            if ilvl_item_info:
+                ilvl_ah_buyouts.add(ilvl_item_info)
+
+    if not (
+        all_ah_buyouts
+        or all_ah_bids
+        or pet_ah_buyouts
+        or pet_ah_bids
+        or ilvl_ah_buyouts
     ):
         print(
             f"no listings found matching items {mega_data.DESIRED_ITEMS} "
-            + f"or pets {mega_data.DESIRED_PETS} "
-            + f"or items to snipe by ilvl and stats  "
-            + f"on {connected_id} "
-            + f"{mega_data.REGION}"
+            f"or pets {mega_data.DESIRED_PETS} "
+            f"or items to snipe by ilvl and stats  "
+            f"on {connected_id} "
+            f"{mega_data.REGION}"
         )
         return
     else:
@@ -145,7 +147,7 @@ def clean_listing_data(auctions, connected_id):
             connected_id,
             pet_ah_buyouts,
             pet_ah_bids,
-            ilvl_ah_buyouts,
+            list(ilvl_ah_buyouts),
         )
 
 
