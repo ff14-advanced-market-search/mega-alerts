@@ -10,7 +10,7 @@ from utils.helpers import (
 import utils.mega_data_setup
 
 print("Sleep 10 sec on start to avoid spamming the api")
-# time.sleep(10)
+time.sleep(10)
 
 
 #### GLOBALS ####
@@ -360,8 +360,8 @@ def main_fast():
 
 
 mega_data.send_discord_message("starting mega alerts")
-# main()
+main()
 
 ## for debugging
-main_single()
+# main_single()
 # main_fast()
