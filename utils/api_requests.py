@@ -88,6 +88,7 @@ def get_petnames(client_id, client_secret):
 
 
 def get_raidbots_bonus_ids():
+    # thanks so much to Seriallos (Raidbots) and BinaryHabitat (GoblinStockAlerts) for organizing this data!
     bonus_ids = requests.get(
         "https://www.raidbots.com/static/data/live/bonuses.json"
     ).json()
