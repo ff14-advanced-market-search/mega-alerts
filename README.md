@@ -80,13 +80,13 @@ We now have an extra option similar to the `DESIRED_ITEMS` or `DESIRED_PETS` for
 To enable this set the env var `DESIRED_ILVL` with json similar to the following. This example looks for items with over an ilvl of 360 with a speed stat:
 
 ```
-{"ilvl": 360, "buyout": 10000, "sockets": false, "speed": true, "leech": false, "avoidance": false}
+{"ilvl": 360, "buyout": 1000, "sockets": false, "speed": true, "leech": false, "avoidance": false}
 ```
 
 If we change this to and set `"sockets": true` then it will show items over an ilvl of 360 with a speed stat or a socket:
 
 ```
-{"ilvl": 360, "buyout": 10000, "sockets": true, "speed": true, "leech": false, "avoidance": false}
+{"ilvl": 360, "buyout": 1000, "sockets": true, "speed": true, "leech": false, "avoidance": false}
 ```
 
 4. If you want to run locally with python or pycharm, first clone the repo or [download the code](https://github.com/ff14-advanced-market-search/mega-alerts/archive/refs/heads/main.zip).  Then set all your user values in the data files under the [user_data/mega](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/user_data/) json files:

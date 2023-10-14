@@ -5,8 +5,16 @@ def get_bonus_ids():
     bonus_id_dict = get_raidbots_bonus_ids()
     # sockets are simple
     sockets = {k: v for k, v in bonus_id_dict.items() if "socket" in v.keys()}
-    # ilvl is a bit weird but this seems to be it
-    ilvl = {k: v for k, v in bonus_id_dict.items() if "base_level" in v.keys()}
+
+    # maybe do this in the future, we can rely on the saddlebag api for now
+    # base_level = {k: v["base_level"] for k, v in bonus_id_dict.items() if "base_level" in v.keys()}
+
+    # should be the ilvl added to the items base level
+    ilvl_addition = {
+        k: v["level"]
+        for k, v in bonus_id_dict.items()
+        if list(v.keys()) == ["id", "level"]
+    }
 
     # the rest are buried in rawStats
     leech, avoidance, speed = {}, {}, {}
@@ -33,7 +41,8 @@ def get_bonus_ids():
         "leech": leech,
         "avoidance": avoidance,
         "speed": speed,
-        "ilvl": ilvl,
+        "ilvl_addition": ilvl_addition,
+        # "ilvl_base": base_level,
         "haste": haste,
         "crit": crit,
         "mastery": mastery,
@@ -49,7 +58,13 @@ def get_bonus_id_sets():
     leech_ids = set(bonus_ids["leech"].keys())
     avoidance_ids = set(bonus_ids["avoidance"].keys())
     speed_ids = set(bonus_ids["speed"].keys())
-    return socket_ids, leech_ids, avoidance_ids, speed_ids
+    return (
+        socket_ids,
+        leech_ids,
+        avoidance_ids,
+        speed_ids,
+        bonus_ids["ilvl_addition"],
+    )  # , bonus_ids["ilvl_base"]
 
 
 def get_secondary_stats():
