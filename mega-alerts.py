@@ -10,7 +10,7 @@ from utils.helpers import (
 import utils.mega_data_setup
 
 print("Sleep 10 sec on start to avoid spamming the api")
-# time.sleep(10)
+time.sleep(10)
 
 
 #### GLOBALS ####
@@ -31,14 +31,9 @@ def pull_single_realm_data(connected_id):
                 item_name = mega_data.DESIRED_ILVL_ITEMS["item_names"][
                     auction["itemID"]
                 ]
-                base_ilvl = mega_data.DESIRED_ILVL_ITEMS["base_ilvls"][
-                    auction["itemID"]
-                ]
-                ilvl_addition = [mega_data.ilvl_addition[bonus_id] for bonus_id in auction["bonus_ids"] if bonus_id in mega_data.ilvl_addition.keys()]
-                if len(ilvl_addition) > 0:
-                    base_ilvl += sum(ilvl_addition)
+                ilvl = auction["ilvl"]
                 id_msg += f"`Name:` {item_name}\n"
-                id_msg += f"`ilvl:` {base_ilvl}\n"
+                id_msg += f"`ilvl:` {ilvl}\n"
                 id_msg += f"`tertiary_stats:` {auction['tertiary_stats']}\n"
                 id_msg += f"`bonus_ids:` {list(auction['bonus_ids'])}\n"
             elif auction["itemID"] in mega_data.ITEM_NAMES:
@@ -185,6 +180,20 @@ def check_tertiary_stats(auction):
         ):
             return False
 
+    # get ilvl
+    base_ilvl = mega_data.DESIRED_ILVL_ITEMS["base_ilvls"][auction["item"]["id"]]
+    ilvl_addition = [
+        mega_data.ilvl_addition[bonus_id]
+        for bonus_id in item_bonus_ids
+        if bonus_id in mega_data.ilvl_addition.keys()
+    ]
+    if len(ilvl_addition) > 0:
+        ilvl = base_ilvl + sum(ilvl_addition)
+
+    # skip if ilvl is too low
+    if ilvl < mega_data.min_ilvl:
+        return False
+
     # if we get through everything and still haven't skipped, add to matching
     buyout = round(auction["buyout"] / 10000, 2)
     if buyout > mega_data.DESIRED_ILVL_ITEMS["buyout"]:
@@ -195,6 +204,7 @@ def check_tertiary_stats(auction):
             "buyout": buyout,
             "tertiary_stats": tertiary_stats,
             "bonus_ids": item_bonus_ids,
+            "ilvl": ilvl,
         }
 
 
@@ -305,6 +315,7 @@ def ilvl_results_dict(
         f"{priceType}_prices": auction[priceType],
         "tertiary_stats": tertiary_stats,
         "bonus_ids": auction["bonus_ids"],
+        "ilvl": auction["ilvl"],
     }
 
 
@@ -366,8 +377,8 @@ def main_fast():
 
 
 mega_data.send_discord_message("starting mega alerts")
-# main()
+main()
 
 ## for debugging
-main_single()
+# main_single()
 # main_fast()

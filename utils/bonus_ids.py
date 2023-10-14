@@ -10,7 +10,11 @@ def get_bonus_ids():
     # base_level = {k: v["base_level"] for k, v in bonus_id_dict.items() if "base_level" in v.keys()}
 
     # should be the ilvl added to the items base level
-    ilvl_addition = {k: v["level"] for k, v in bonus_id_dict.items() if list(v.keys()) == ["id", "level"]}
+    ilvl_addition = {
+        k: v["level"]
+        for k, v in bonus_id_dict.items()
+        if list(v.keys()) == ["id", "level"]
+    }
 
     # the rest are buried in rawStats
     leech, avoidance, speed = {}, {}, {}
@@ -54,7 +58,13 @@ def get_bonus_id_sets():
     leech_ids = set(bonus_ids["leech"].keys())
     avoidance_ids = set(bonus_ids["avoidance"].keys())
     speed_ids = set(bonus_ids["speed"].keys())
-    return socket_ids, leech_ids, avoidance_ids, speed_ids, bonus_ids["ilvl_addition"]#, bonus_ids["ilvl_base"]
+    return (
+        socket_ids,
+        leech_ids,
+        avoidance_ids,
+        speed_ids,
+        bonus_ids["ilvl_addition"],
+    )  # , bonus_ids["ilvl_base"]
 
 
 def get_secondary_stats():

@@ -220,7 +220,9 @@ class MegaData:
                     raise Exception(f"error in ilvl info '{key}' must be an int")
 
         if ilvl_info["ilvl"] < 201:
-            raise Exception(f"error we do not snipe for any legacy items below ilvl 201 it will be too much spam")
+            raise Exception(
+                f"error we do not snipe for any legacy items below ilvl 201 it will be too much spam"
+            )
 
         # get names and ids of items
         (
