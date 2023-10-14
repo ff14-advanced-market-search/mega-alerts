@@ -72,7 +72,7 @@ def clean_listing_data(auctions, connected_id):
     all_ah_bids = {}
     pet_ah_buyouts = {}
     pet_ah_bids = {}
-    ilvl_ah_buyouts = set()
+    ilvl_ah_buyouts = []
 
     def add_price_to_dict(price, item_id, price_dict, is_pet=False):
         if is_pet:
@@ -123,7 +123,7 @@ def clean_listing_data(auctions, connected_id):
         ):
             ilvl_item_info = check_tertiary_stats(item)
             if ilvl_item_info:
-                ilvl_ah_buyouts.add(ilvl_item_info)
+                ilvl_ah_buyouts.append(ilvl_item_info)
 
     if not (
         all_ah_buyouts
