@@ -45,14 +45,15 @@ class MegaData:
         self.ITEM_NAMES = self.__set_item_names()
         self.PET_NAMES = self.__set_pet_names()
         # get static lists of bonus id values
-        (
-            self.socket_ids,
-            self.leech_ids,
-            self.avoidance_ids,
-            self.speed_ids,
-            self.ilvl_addition,
-            # self.ilvl_base,
-        ) = get_bonus_id_sets()
+        if len(self.DESIRED_ILVL_ITEMS) > 0:
+            (
+                self.socket_ids,
+                self.leech_ids,
+                self.avoidance_ids,
+                self.speed_ids,
+                self.ilvl_addition,
+                # self.ilvl_base,
+            ) = get_bonus_id_sets()
 
         self.upload_timers = self.__set_upload_timers()
 
@@ -188,7 +189,7 @@ class MegaData:
                 ilvl_info = json.loads(os.getenv(env_var_name))
             else:
                 print(f"skipping {item_list_name} its not set in file or env var")
-                return {}
+                return {}, 201
 
         example = {
             "ilvl": 360,
