@@ -95,6 +95,9 @@ def get_raidbots_bonus_ids():
 
 
 def get_ilvl_items(ilvl):
+    # hardcode for dragonflight only
+    ilvl = 201
+
     json_data = {
         "ilvl": ilvl,
         "itemQuality": -1,

@@ -38,10 +38,9 @@ def pull_single_realm_data(connected_id):
                 if len(ilvl_addition) > 0:
                     base_ilvl += sum(ilvl_addition)
                 id_msg += f"`Name:` {item_name}\n"
-                id_msg += f"`base_ilvl:` {base_ilvl}\n"
+                id_msg += f"`ilvl:` {base_ilvl}\n"
                 id_msg += f"`tertiary_stats:` {auction['tertiary_stats']}\n"
                 id_msg += f"`bonus_ids:` {list(auction['bonus_ids'])}\n"
-                a = None
             elif auction["itemID"] in mega_data.ITEM_NAMES:
                 item_name = mega_data.ITEM_NAMES[auction["itemID"]]
                 id_msg += f"`Name:` {item_name}\n"

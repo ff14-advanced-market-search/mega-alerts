@@ -37,7 +37,7 @@ class MegaData:
         # setup items to snipe
         self.DESIRED_ITEMS = self.__set_desired_items("desired_items")
         self.DESIRED_PETS = self.__set_desired_items("desired_pets")
-        self.DESIRED_ILVL_ITEMS = self.__set_desired_ilvl()
+        self.DESIRED_ILVL_ITEMS, self.min_ilvl = self.__set_desired_ilvl()
         self.__validate_snipe_lists()
 
         ## should do this here and only get the names of desired items to limit data
@@ -50,7 +50,8 @@ class MegaData:
             self.leech_ids,
             self.avoidance_ids,
             self.speed_ids,
-            self.ilvl_addition
+            self.ilvl_addition,
+            # self.ilvl_base,
         ) = get_bonus_id_sets()
 
         self.upload_timers = self.__set_upload_timers()
@@ -218,6 +219,9 @@ class MegaData:
                 else:
                     raise Exception(f"error in ilvl info '{key}' must be an int")
 
+        if ilvl_info["ilvl"] < 201:
+            raise Exception(f"error we do not snipe for any legacy items below ilvl 201 it will be too much spam")
+
         # get names and ids of items
         (
             snipe_info["item_names"],
@@ -225,7 +229,7 @@ class MegaData:
             snipe_info["base_ilvls"],
         ) = get_ilvl_items(ilvl_info["ilvl"])
 
-        return snipe_info
+        return snipe_info, ilvl_info["ilvl"]
 
     def __validate_snipe_lists(self):
         if (
