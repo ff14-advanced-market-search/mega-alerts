@@ -10,7 +10,7 @@ from utils.helpers import (
 import utils.mega_data_setup
 
 print("Sleep 10 sec on start to avoid spamming the api")
-time.sleep(10)
+# time.sleep(10)
 
 
 #### GLOBALS ####
@@ -34,9 +34,14 @@ def pull_single_realm_data(connected_id):
                 base_ilvl = mega_data.DESIRED_ILVL_ITEMS["base_ilvls"][
                     auction["itemID"]
                 ]
+                ilvl_addition = [mega_data.ilvl_addition[bonus_id] for bonus_id in auction["bonus_ids"] if bonus_id in mega_data.ilvl_addition.keys()]
+                if len(ilvl_addition) > 0:
+                    base_ilvl += sum(ilvl_addition)
                 id_msg += f"`Name:` {item_name}\n"
                 id_msg += f"`base_ilvl:` {base_ilvl}\n"
                 id_msg += f"`tertiary_stats:` {auction['tertiary_stats']}\n"
+                id_msg += f"`bonus_ids:` {list(auction['bonus_ids'])}\n"
+                a = None
             elif auction["itemID"] in mega_data.ITEM_NAMES:
                 item_name = mega_data.ITEM_NAMES[auction["itemID"]]
                 id_msg += f"`Name:` {item_name}\n"
@@ -135,7 +140,7 @@ def clean_listing_data(auctions, connected_id):
         print(
             f"no listings found matching items {mega_data.DESIRED_ITEMS} "
             f"or pets {mega_data.DESIRED_PETS} "
-            f"or items to snipe by ilvl and stats  "
+            f"or items to snipe by ilvl and stats "
             f"on {connected_id} "
             f"{mega_data.REGION}"
         )
@@ -190,6 +195,7 @@ def check_tertiary_stats(auction):
             "item_id": auction["item"]["id"],
             "buyout": buyout,
             "tertiary_stats": tertiary_stats,
+            "bonus_ids": item_bonus_ids,
         }
 
 
@@ -299,6 +305,7 @@ def ilvl_results_dict(
         "minPrice": auction[priceType],
         f"{priceType}_prices": auction[priceType],
         "tertiary_stats": tertiary_stats,
+        "bonus_ids": auction["bonus_ids"],
     }
 
 
@@ -360,8 +367,8 @@ def main_fast():
 
 
 mega_data.send_discord_message("starting mega alerts")
-main()
+# main()
 
 ## for debugging
-# main_single()
+main_single()
 # main_fast()
