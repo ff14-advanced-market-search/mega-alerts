@@ -257,16 +257,30 @@ To set this up:
 
 We now have an extra option similar to the `DESIRED_ITEMS` or `DESIRED_PETS` for sniping items based on ilvl.  This also lets you search for items with specific item levels and leech, sockets, speed or avoidance.
 
-To enable this set the env var `DESIRED_ILVL` with json similar to the following. This example looks for items with over an ilvl of 360 with a speed stat:
+To enable this set the env var `DESIRED_ILVL` with json similar to the following. 
+
+This example will snipe anything based on ilvl (just make sure all the stats are set to false for ilvl alone):
+
+```
+{"ilvl": 440, "buyout": 70000, "sockets": false, "speed": false, "leech": false, "avoidance": false}
+```
+
+<img width="680" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/722e828d-fdbf-485e-82b5-b8bc08827e3a">
+
+
+This example looks for items with over an ilvl of 360 with a speed stat:
 
 ```
 {"ilvl": 360, "buyout": 10000, "sockets": false, "speed": true, "leech": false, "avoidance": false}
 ```
+
+<img width="460" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/1a7250be-e1fe-41f9-b056-a2dc3cfd3abe">
+
 
 If we change this to and set `"sockets": true` then it will show items over an ilvl of 360 with a speed stat or a socket:
 
 ```
 {"ilvl": 360, "buyout": 10000, "sockets": true, "speed": true, "leech": false, "avoidance": false}
 ```
-<img width="369" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/ad6b61cc-c439-4079-8982-4c2eaa165eb5">
+
 
