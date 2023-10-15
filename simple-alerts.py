@@ -87,6 +87,7 @@ def main():
             update_time + 3 <= current_min <= update_time + 7
             or current_min in extra_alert_mins
         ):
+            print(f"NOW AT MATCHING UPDATE MIN!!! {datetime.now()}, checking for snipes")
             format_discord_message()
             time.sleep(60)
         else:
