@@ -87,7 +87,9 @@ def main():
             update_time + 3 <= current_min <= update_time + 7
             or current_min in extra_alert_mins
         ):
-            print(f"NOW AT MATCHING UPDATE MIN!!! {datetime.now()}, checking for snipes")
+            print(
+                f"NOW AT MATCHING UPDATE MIN!!! {datetime.now()}, checking for snipes"
+            )
             format_discord_message()
             time.sleep(60)
         else:
@@ -99,7 +101,12 @@ def test():
     format_discord_message()
 
 
-send_discord_message("starting simple alerts", webhook_url)
+if not send_discord_message("starting simple alerts", webhook_url):
+    print("Failed to send Discord message")
+    exit(1)
+else:
+    print("Discord message sent successfully")
+
 main()
 
 ## for debugging

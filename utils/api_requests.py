@@ -5,9 +5,12 @@ from tenacity import retry, stop_after_attempt
 def send_discord_message(message, webhook_url):
     try:
         json_data = {"content": message}
-        requests.post(webhook_url, json=json_data)
-    except Exception as ex:
-        print(f"The exception was:", ex)
+        response = requests.post(webhook_url, json=json_data)
+        response.raise_for_status()  # Raise an exception for non-2xx status codes
+        return True  # Message sent successfully
+    except requests.exceptions.RequestException as ex:
+        print("Error sending Discord message: %s", ex)
+        return False  # Failed to send the message
 
 
 @retry(stop=stop_after_attempt(3))
