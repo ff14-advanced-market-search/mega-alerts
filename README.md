@@ -268,7 +268,7 @@ This example will snipe anything based on ilvl (just make sure all the stats are
 <img width="680" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/722e828d-fdbf-485e-82b5-b8bc08827e3a">
 
 
-This example looks for items with over an ilvl of 360 with a speed stat:
+This example looks for items with over an ilvl of 360 with a speed stat because `"speed": true`:
 
 ```
 {"ilvl": 360, "buyout": 10000, "sockets": false, "speed": true, "leech": false, "avoidance": false}
@@ -277,10 +277,11 @@ This example looks for items with over an ilvl of 360 with a speed stat:
 <img width="460" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/1a7250be-e1fe-41f9-b056-a2dc3cfd3abe">
 
 
-If we change this to and set `"sockets": true` then it will show items over an ilvl of 360 with a speed stat or a socket:
+If we change this and also set `"sockets": true` then it will show items over an ilvl of 360 with a speed stat or a socket:
 
 ```
 {"ilvl": 360, "buyout": 10000, "sockets": true, "speed": true, "leech": false, "avoidance": false}
 ```
 
+<img width="353" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/53418363-caa7-4a71-b388-a270aef464eb">
 
