@@ -70,6 +70,7 @@ def format_discord_message():
 #### MAIN ####
 def main():
     global alert_record
+    alert_item_ids = [item["itemID"] for item in price_alert_data["user_auctions"]]
     update_time = get_update_timers(region, True)[0]["lastUploadMinute"]
     while True:
         current_min = int(datetime.now().minute)
@@ -88,12 +89,14 @@ def main():
             or current_min in extra_alert_mins
         ):
             print(
-                f"NOW AT MATCHING UPDATE MIN!!! {datetime.now()}, checking for snipes"
+                f"NOW AT MATCHING UPDATE MIN!!! {datetime.now()}, checking for snipes on {alert_item_ids}"
             )
             format_discord_message()
             time.sleep(60)
         else:
-            print(f"at {datetime.now()}, waiting for {[update_time]+extra_alert_mins}")
+            print(
+                f"at {datetime.now()}, waiting for {[update_time]+extra_alert_mins} for {alert_item_ids}"
+            )
             time.sleep(60)
 
 
