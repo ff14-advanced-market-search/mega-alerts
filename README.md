@@ -110,13 +110,14 @@ With whatever method you choose you will provide all the details the code needs 
 - `WOW_REGION` either `EU` or `NA`
 - Then for your snipe method you must provide at least one correct json data for `DESIRED_ITEMS`, `DESIRED_PETS` or `DESIRED_ILVL`
 
-We also have the following optional env vars you can add in to change alert behavior:
-- `SHOW_BID_PRICES=true` Bid prices below your price limit will also be shown.
-- `WOWHEAD_LINK=true` Uses wowhead links instead of undermine and shows pictures, but the message length will be longer.
+We also have the following **optional** env vars you can add in to change alert behavior, but you dont need to as all have default values when not manually set:
+- `SHOW_BID_PRICES=true` Bid prices below your price limit will also be shown (default false)
+- `WOWHEAD_LINK=true` Uses wowhead links instead of undermine and shows pictures, but the message length will be longer (default false)
 - `SCAN_TIME_MIN=-1` increase or decrease the minutes before or at the data update time to start scanning (default to keep scanning 1 min after the data updates).
 - `SCAN_TIME_MAX=1` increase or decrease the minutes after the data updates to stop scanning (default to keep scanning 3 min after the data updates).
-- `MEGA_THREADS=100` increase or decrease the threadcount (do a max of 100).
-- `REFRESH_ALERTS="false"` (default true) if set to false then you will not see the same alert more than once.
+- `MEGA_THREADS=100` increase or decrease the threadcount (default to scan 48 realms at once)(more threads = faster scans, but doing more threads then realms is pointless).
+- `REFRESH_ALERTS="false"` if set to false then you will not see the same alert more than once (default true)
+
 
 ## Different ways to run mega alerts
 
