@@ -264,7 +264,7 @@ This example will snipe anything based on ilvl (just make sure all the stats are
 
 ```
 {
-  "ilvl": 440,
+  "ilvl": 420,
   "buyout": 70000,
   "sockets": false,
   "speed": false,
