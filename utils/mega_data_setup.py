@@ -191,6 +191,10 @@ class MegaData:
                 print(f"skipping {item_list_name} its not set in file or env var")
                 return {}, 201
 
+        # add empty item_ids if not set
+        if "item_ids" not in ilvl_info.keys():
+            ilvl_info["item_ids"] = []
+
         example = {
             "ilvl": 360,
             "buyout": 50000,
@@ -198,6 +202,7 @@ class MegaData:
             "speed": True,
             "leech": False,
             "avoidance": False,
+            "item_ids": [12345, 67890],
         }
 
         if ilvl_info.keys() != example.keys():
@@ -230,7 +235,7 @@ class MegaData:
             snipe_info["item_names"],
             snipe_info["item_ids"],
             snipe_info["base_ilvls"],
-        ) = get_ilvl_items(ilvl_info["ilvl"])
+        ) = get_ilvl_items(ilvl_info["ilvl"], ilvl_info["item_ids"])
 
         return snipe_info, ilvl_info["ilvl"]
 

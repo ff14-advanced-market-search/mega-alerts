@@ -4,5 +4,6 @@
   "sockets": false,
   "speed": true,
   "leech": false,
-  "avoidance": false
+  "avoidance": false,
+  "item_ids": [204965, 204930]
 }

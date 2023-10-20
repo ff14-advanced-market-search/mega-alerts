@@ -98,7 +98,7 @@ def get_raidbots_bonus_ids():
     return {int(id): data for id, data in bonus_ids.items()}
 
 
-def get_ilvl_items(ilvl):
+def get_ilvl_items(ilvl, item_ids=[]):
     # hardcode for dragonflight only
     ilvl = 201
 
@@ -117,6 +117,14 @@ def get_ilvl_items(ilvl):
         raise Exception(
             f"No items found at or above a base ilvl of {ilvl}, contact us on discord"
         )
+    # filter only for specific item ids when given, use everything when not given
+    if len(item_ids) > 0:
+        results = {
+            itemID: item_info
+            for itemID, item_info in results.items()
+            if int(itemID) in item_ids
+        }
+
     item_names = {
         int(itemID): item_info["itemName"] for itemID, item_info in results.items()
     }
