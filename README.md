@@ -263,7 +263,15 @@ To enable this set the env var `DESIRED_ILVL` with json similar to the following
 This example will snipe anything based on ilvl (just make sure all the stats are set to false for ilvl alone):
 
 ```
-{"ilvl": 440, "buyout": 70000, "sockets": false, "speed": false, "leech": false, "avoidance": false}
+{
+  "ilvl": 440,
+  "buyout": 70000,
+  "sockets": false,
+  "speed": false,
+  "leech": false,
+  "avoidance": false,
+  "item_ids": [204423, 204410]
+}
 ```
 
 <img width="680" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/722e828d-fdbf-485e-82b5-b8bc08827e3a">
@@ -272,7 +280,15 @@ This example will snipe anything based on ilvl (just make sure all the stats are
 This example looks for items with over an ilvl of 360 with a speed stat because `"speed": true`:
 
 ```
-{"ilvl": 360, "buyout": 10000, "sockets": false, "speed": true, "leech": false, "avoidance": false}
+{
+  "ilvl": 360,
+  "buyout": 10000,
+  "sockets": false,
+  "speed": true,
+  "leech": false,
+  "avoidance": false,
+  "item_ids": [204966, 204920]
+}
 ```
 
 <img width="460" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/1a7250be-e1fe-41f9-b056-a2dc3cfd3abe">
@@ -281,8 +297,29 @@ This example looks for items with over an ilvl of 360 with a speed stat because 
 If we change this and also set `"sockets": true` then it will show items over an ilvl of 360 with a speed stat or a socket:
 
 ```
-{"ilvl": 360, "buyout": 10000, "sockets": true, "speed": true, "leech": false, "avoidance": false}
+{
+  "ilvl": 360,
+  "buyout": 10000,
+  "sockets": true,
+  "speed": true,
+  "leech": false,
+  "avoidance": false,
+  "item_ids": [204948, 204951, 204965]
+}
 ```
 
 <img width="353" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/53418363-caa7-4a71-b388-a270aef464eb">
 
+
+You can also remove the `item_ids` or leave it empty to snipe for all items at that ilvl:
+
+```
+{
+  "ilvl": 360,
+  "buyout": 10000,
+  "sockets": false,
+  "speed": false,
+  "leech": false,
+  "avoidance": false
+}
+```
