@@ -1,10 +1,15 @@
 # mega-alerts
 
-A super fast Blizzard AH sniper by Saddlebag Exchange
+A super fast Blizzard AH sniper created by Saddlebag Exchange
+
+**Please dontate to our patreon so we can keep the project running**
+
+https://www.patreon.com/indopan
 
 [Current Docker versions](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/tags?page=1&ordering=last_updated):
 ```
 cohenaj194/mega-alerts:latest
+cohenaj194/mega-alerts:1.7
 cohenaj194/mega-alerts:1.6
 cohenaj194/mega-alerts:1.5
 cohenaj194/mega-alerts:1.4
@@ -14,7 +19,7 @@ cohenaj194/mega-alerts:1.1
 cohenaj194/mega-alerts:1.0
 ```
 
-Last Stable Version: `1.5`
+Last Stable Version: `1.7`
 
 # Alert Example
 <img width="601" alt="image" src="https://user-images.githubusercontent.com/17516896/224507162-53513e8a-69ab-41e2-a5d5-ea4e51a9fc89.png">
