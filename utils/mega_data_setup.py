@@ -266,14 +266,13 @@ class MegaData:
             if time_data["dataSetID"] not in [-1, -2]
             and time_data["region"] == self.REGION
         }
-        if self.REGION == "EU" and os.getenv("NO_RUSSIAN_REALMS"):
-            if os.getenv("NO_RUSSIAN_REALMS").lower() == "true":
-                russian_realm_ids = get_wow_russian_realm_ids()
-                server_update_times = {
-                    k: v
-                    for k, v in server_update_times.items()
-                    if v["dataSetID"] not in russian_realm_ids
-                }
+        if self.REGION == "EU" and os.getenv("NO_RUSSIAN_REALMS", "").lower() == "true":
+            russian_realm_ids = get_wow_russian_realm_ids()
+            server_update_times = {
+                k: v
+                for k, v in server_update_times.items()
+                if v["dataSetID"] not in russian_realm_ids
+            }
 
         return server_update_times
 
