@@ -122,6 +122,7 @@ We also have the following **optional** env vars you can add in to change alert 
 - `SCAN_TIME_MAX=1` increase or decrease the minutes after the data updates to stop scanning (default to keep scanning 3 min after the data updates).
 - `MEGA_THREADS=100` increase or decrease the threadcount (default to scan 48 realms at once)(more threads = faster scans, but doing more threads then realms is pointless).
 - `REFRESH_ALERTS="false"` if set to false then you will not see the same alert more than once (default true)
+- `NO_RUSSIAN_REALMS="true"` set this to true if you are on EU and do not want to get alerts from russian realms
 
 
 ## Different ways to run mega alerts

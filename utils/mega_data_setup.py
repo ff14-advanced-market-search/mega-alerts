@@ -5,6 +5,7 @@ from datetime import datetime
 from tenacity import retry, stop_after_attempt
 from utils.api_requests import send_discord_message, get_itemnames, get_ilvl_items
 from utils.bonus_ids import get_bonus_id_sets
+from utils.helpers import get_wow_russian_realm_ids
 
 
 class MegaData:
@@ -55,6 +56,7 @@ class MegaData:
                 # self.ilvl_base,
             ) = get_bonus_id_sets()
 
+        # get upload times once from api and then we get it dynamically from each scan
         self.upload_timers = self.__set_upload_timers()
 
     #### VARIABLE RELATED FUNCTIONS ####
@@ -264,6 +266,14 @@ class MegaData:
             if time_data["dataSetID"] not in [-1, -2]
             and time_data["region"] == self.REGION
         }
+        if self.REGION == "EU" and os.getenv("NO_RUSSIAN_REALMS", "").lower() == "true":
+            russian_realm_ids = get_wow_russian_realm_ids()
+            server_update_times = {
+                k: v
+                for k, v in server_update_times.items()
+                if v["dataSetID"] not in russian_realm_ids
+            }
+
         return server_update_times
 
     def get_upload_time_list(self):
