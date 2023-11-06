@@ -56,7 +56,7 @@ class MegaData:
                 # self.ilvl_base,
             ) = get_bonus_id_sets()
 
-        # want to add option to remove russian realms from the list if user sets NO_RUSSIAN_REALMS to true
+        # get upload times once from api and then we get it dynamically from each scan
         self.upload_timers = self.__set_upload_timers()
 
     #### VARIABLE RELATED FUNCTIONS ####
