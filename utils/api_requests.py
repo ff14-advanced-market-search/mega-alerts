@@ -1,17 +1,39 @@
+import json
+import time
+
 import requests
 from tenacity import retry, stop_after_attempt
+
+
+def handle_rate_limit(response, request):
+    """
+    Handle the rate limit by resending the webhook until a successful response.
+    """
+    while response.status_code == 429:
+        errors = json.loads(response.content.decode("utf-8"))
+        if not response.headers.get("Via"):
+            response.raise_for_status()
+        wh_sleep = float(errors["retry_after"]) + 0.1
+        print(f"Webhook rate limited: sleeping for {wh_sleep:.3f} seconds...")
+        time.sleep(wh_sleep)
+        response = request()
+        if response.status_code in [200, 204]:
+            return True
 
 
 def send_discord_message(message, webhook_url):
     try:
         json_data = {"content": message}
         response = requests.post(webhook_url, json=json_data)
-        response.raise_for_status()  # Raise an exception for non-2xx status codes
-        return True  # Message sent successfully
+        if response.status_code in [200, 204]:
+            return True
+        elif response.status_code == 429:
+            handle_rate_limit(response, requests)
+        else:
+            response.raise_for_status()  # Raise an exception for non-2xx status codes
     except requests.exceptions.RequestException as ex:
         print("Error sending Discord message: %s", ex)
         return False  # Failed to send the message
-
 
 @retry(stop=stop_after_attempt(3))
 def get_wow_access_token(client_id, client_secret):
