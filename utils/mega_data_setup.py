@@ -78,11 +78,13 @@ class MegaData:
 
         # need to do this no matter where we get the region from
         if var_name == "REGION":
-            if var_value not in ["US", "EU", "NA"]:
+            if var_value.upper() not in ["US", "EU", "NA"]:
                 raise Exception(f"error {var_value} not a valid region")
             # for people who are confused about US vs NA, all our data uses NA
-            if var_value == "US":
+            if var_value.upper() == "US":
                 var_value = "NA"
+            else:
+                var_value = var_value.upper()
 
         # default to 48 threads if not set
         if var_name == "MEGA_THREADS":
