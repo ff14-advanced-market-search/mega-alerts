@@ -9,7 +9,13 @@ def handle_rate_limit(response, request):
     """
     Handle the rate limit by resending the webhook until a successful response.
     """
-    while response.status_code == 429:
+    max_retries = 500
+
+    for _ in range(max_retries):
+        if response.status_code != 429:
+            if response.status_code in [200, 204]:
+                return True
+            return False
         errors = json.loads(response.content.decode("utf-8"))
         if not response.headers.get("Via"):
             response.raise_for_status()
@@ -17,8 +23,9 @@ def handle_rate_limit(response, request):
         print(f"Webhook rate limited: sleeping for {wh_sleep:.3f} seconds...")
         time.sleep(wh_sleep)
         response = request()
-        if response.status_code in [200, 204]:
-            return True
+
+    print(f"Webhook retry limit exceeded: {max_retries}")
+    return False
 
 
 def send_discord_message(message, webhook_url):
