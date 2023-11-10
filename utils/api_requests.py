@@ -26,14 +26,14 @@ def send_discord_message(message, webhook_url):
         json_data = {"content": message}
         response = requests.post(webhook_url, json=json_data)
         if response.status_code in [200, 204]:
-            return True
+            return True  # Succeeded in sending a message
         elif response.status_code == 429:
-            handle_rate_limit(response, requests)
-        else:
-            response.raise_for_status()  # Raise an exception for non-2xx status codes
+            return handle_rate_limit(response, lambda: requests.post(webhook_url, json=json_data))
+        response.raise_for_status()  # Raise an exception for non-2xx status codes
     except requests.exceptions.RequestException as ex:
         print("Error sending Discord message: %s", ex)
         return False  # Failed to send the message
+
 
 @retry(stop=stop_after_attempt(3))
 def get_wow_access_token(client_id, client_secret):
