@@ -43,3 +43,13 @@ CMD /app/run
 #      --env WOW_CLIENT_ID=$WOW_CLIENT_ID \
 #      --env WOW_CLIENT_SECRET=$WOW_CLIENT_SECRET \
 #      cohenaj194/mega-alerts
+
+## run local ilvl
+#  docker run -dit \
+#      --name wow-test \
+#      --env WOW_REGION=NA \
+#      --env DESIRED_ILVL='{"ilvl": 470, "buyout": 5000000, "sockets": false, "speed": false, "leech": false, "avoidance": false}' \
+#      --env MEGA_WEBHOOK_URL=$MEGA_WEBHOOK_URL \
+#      --env WOW_CLIENT_ID=$WOW_CLIENT_ID \
+#      --env WOW_CLIENT_SECRET=$WOW_CLIENT_SECRET \
+#      cohenaj194/mega-alerts
