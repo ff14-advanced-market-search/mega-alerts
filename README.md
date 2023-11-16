@@ -244,6 +244,26 @@ pod_name=$(kubectl get pods | grep -v NAME | awk '{print $1}')
 kubectl logs $pod_name 
 ```
 
+# How to update versions
+
+To update to the latest code version in docker desktop click the 3 dots next to the latest `cohenaj194/mega-alerts` image and then click **pull**.
+
+<img width="1260" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/ba861fe2-eb42-4594-bff4-b722dd5c1548">
+
+
+To update to the latest code version in docker you can also run the following command in your terminal or windows command line:
+
+```
+docker pull cohenaj194/mega-alerts
+```
+
+To update python if you are running it locally go to the folder with mega-alerts and run the following:
+
+```
+git checkout main
+git pull
+```
+
 # Simple Alerts
 
 If you have trouble setting up mega alerts or making a battle.net oauth token you can use the [simple-alerts.py](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/mega-alerts.py) instead.
