@@ -188,6 +188,8 @@ def check_tertiary_stats(auction):
     ]
     if len(ilvl_addition) > 0:
         ilvl = base_ilvl + sum(ilvl_addition)
+    else:
+        ilvl = base_ilvl
 
     # skip if ilvl is too low
     if ilvl < mega_data.min_ilvl:
