@@ -354,7 +354,7 @@ def main():
 
         else:
             print(
-                f"Waiting for a match in update minute {mega_data.get_upload_time_minutes()} "
+                f"Waiting to run {mega_data.THREADS} concurrent api calls for a match in update minute {mega_data.get_upload_time_minutes()} "
                 f"none found triggering at {datetime.now()} : "
                 f"checking for items {mega_data.DESIRED_ITEMS} "
                 + f"or pets {mega_data.DESIRED_PETS} "
