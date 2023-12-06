@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from __future__ import print_function
-import json, requests, os
+import json, requests, os, time
 from datetime import datetime
 from tenacity import retry, stop_after_attempt
 from utils.api_requests import send_discord_message, get_itemnames, get_ilvl_items
@@ -311,6 +311,19 @@ class MegaData:
             )
 
         req = requests.get(url, timeout=20)
+        # check for api errors
+        if req.status_code == 429:
+            print(
+                f"{req} BLIZZARD too many requests error on {self.REGION} {str(connectedRealmId)} realm data, sleep 30 min and exit"
+            )
+            time.sleep(30 * 60)
+            exit(1)
+        elif req.status_code != 200:
+            print(
+                f"{req} BLIZZARD error getting {self.REGION} {str(connectedRealmId)} realm data"
+            )
+            exit(1)
+
         # this auto updates self.upload_timers for each realm
         if "Last-Modified" in dict(req.headers):
             try:
