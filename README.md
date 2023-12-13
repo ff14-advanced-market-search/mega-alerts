@@ -2,7 +2,7 @@
 
 A super fast Blizzard AH sniper created by Saddlebag Exchange
 
-**Please dontate to our patreon so we can keep the project running**
+**Please dontate to our patreon so we can keep the project running.  If you need help setting it up, our creator will personally help any patreon subscribers.**
 
 https://www.patreon.com/indopan
 
