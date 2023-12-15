@@ -2,6 +2,7 @@ import requests
 from tenacity import retry, stop_after_attempt
 
 
+@retry(stop=stop_after_attempt(3))
 def send_discord_message(message, webhook_url):
     try:
         json_data = {"content": message}
