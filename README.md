@@ -116,7 +116,7 @@ With whatever method you choose you will provide all the details the code needs 
 - Then for your snipe method you must provide at least one correct json data for `DESIRED_ITEMS`, `DESIRED_PETS` or `DESIRED_ILVL`
 
 We also have the following **optional** env vars you can add in to change alert behavior, but you dont need to as all have default values when not manually set:
-- `DEBUG="true"` this will instantly trigger a scan on all realms against your inputs, this will only run once so use it to debug and make sure your data is working.
+- `DEBUG="true"` This will instantly trigger a scan on all realms against your inputs, this will only run once and then exit the script or container so use it to debug and make sure your data is working.
 - `SHOW_BID_PRICES=true` Bid prices below your price limit will also be shown (default false)
 - `WOWHEAD_LINK=true` Uses wowhead links instead of undermine and shows pictures, but the message length will be longer (default false)
 - `SCAN_TIME_MIN=-1` increase or decrease the minutes before or at the data update time to start scanning (default to keep scanning 1 min after the data updates).
