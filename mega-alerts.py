@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from __future__ import print_function
-import time, json, random
+import time, json, random, os
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from utils.helpers import (
@@ -377,9 +377,12 @@ def main_fast():
     pool.shutdown(wait=True)
 
 
-mega_data.send_discord_message("starting mega alerts")
-main()
-
-## for debugging
-# main_single()
-# main_fast()
+# start app here
+if os.getenv("DEBUG"):
+    mega_data.send_discord_message("DEBUG MODE: starting mega alerts")
+    # for debugging
+    main_single()
+    # main_fast()
+else:
+    mega_data.send_discord_message("starting mega alerts")
+    main()
