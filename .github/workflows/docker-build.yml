@@ -6,7 +6,7 @@ on:
       - 'dev'
       - 'main'
     paths-ignore:
-      - 'README.md'
+      - '**/README.md'
 
 jobs:
   docker:
