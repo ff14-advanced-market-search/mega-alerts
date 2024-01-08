@@ -57,6 +57,9 @@ class MegaData:
             ) = get_bonus_id_sets()
 
         # get upload times once from api and then we get it dynamically from each scan
+        self.NO_RUSSIAN_REALMS = self.__set_mega_vars(
+            "NO_RUSSIAN_REALMS", raw_mega_data
+        )
         self.upload_timers = self.__set_upload_timers()
 
     #### VARIABLE RELATED FUNCTIONS ####
@@ -268,7 +271,7 @@ class MegaData:
             if time_data["dataSetID"] not in [-1, -2]
             and time_data["region"] == self.REGION
         }
-        if self.REGION == "EU" and os.getenv("NO_RUSSIAN_REALMS", "").lower() == "true":
+        if self.NO_RUSSIAN_REALMS:
             russian_realm_ids = get_wow_russian_realm_ids()
             server_update_times = {
                 k: v
