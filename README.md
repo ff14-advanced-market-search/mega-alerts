@@ -138,6 +138,11 @@ Click to add more variables in and put the variable names in with your values
 
 <img width="530" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/1ad70ad7-67db-45a2-b665-a5d33a192de1">
 
+You can use any combination of `DESIRED_ITEMS`, `DESIRED_PETS`, `DESIRED_ILVL` or `DESIRED_ILVL_LIST` but at least one must be set.
+
+<img width="573" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/ff91e233-a692-48e3-b197-c31fbcba5eed">
+
+
 2. If you are able do run a docker run command directly on your command line then that will be even easier than option 1 as you can just save your run command and paste it in the command line.
 
 Make sure to set `WOW_REGION` with either `EU` or `NA`
