@@ -123,6 +123,21 @@ def clean_listing_data(auctions, connected_id):
             if ilvl_item_info:
                 ilvl_ah_buyouts.append(ilvl_item_info)
 
+        for desired_ilvl_item in mega_data.DESIRED_ILVL_LIST:
+            if item_id in desired_ilvl_item["item_ids"]:
+                ilvl_item_info = check_tertiary_stats_generic(
+                    item,
+                    desired_ilvl_item["socket_ids"],
+                    desired_ilvl_item["leech_ids"],
+                    desired_ilvl_item["avoidance_ids"],
+                    desired_ilvl_item["speed_ids"],
+                    desired_ilvl_item["ilvl_addition"],
+                    desired_ilvl_item,
+                    desired_ilvl_item["ilvl"],
+                )
+                if ilvl_item_info:
+                    ilvl_ah_buyouts.append(ilvl_item_info)
+
     if not (
         all_ah_buyouts
         or all_ah_bids
@@ -198,6 +213,72 @@ def check_tertiary_stats(auction):
     # if we get through everything and still haven't skipped, add to matching
     buyout = round(auction["buyout"] / 10000, 2)
     if buyout > mega_data.DESIRED_ILVL_ITEMS["buyout"]:
+        return False
+    else:
+        return {
+            "item_id": auction["item"]["id"],
+            "buyout": buyout,
+            "tertiary_stats": tertiary_stats,
+            "bonus_ids": item_bonus_ids,
+            "ilvl": ilvl,
+        }
+
+
+def check_tertiary_stats_generic(
+    auction,
+    socket_ids,
+    leech_ids,
+    avoidance_ids,
+    speed_ids,
+    ilvl_addition,
+    DESIRED_ILVL_ITEMS,
+    min_ilvl,
+):
+    if "bonus_lists" not in auction["item"]:
+        return False
+    item_bonus_ids = set(auction["item"]["bonus_lists"])
+    # look for intersection of bonus_ids and any other lists
+    tertiary_stats = {
+        "sockets": len(item_bonus_ids & socket_ids) != 0,
+        "leech": len(item_bonus_ids & leech_ids) != 0,
+        "avoidance": len(item_bonus_ids & avoidance_ids) != 0,
+        "speed": len(item_bonus_ids & speed_ids) != 0,
+    }
+
+    # if we're looking for sockets, leech, avoidance, or speed, skip if none of those are present
+    if (
+        DESIRED_ILVL_ITEMS["sockets"]
+        or DESIRED_ILVL_ITEMS["leech"]
+        or DESIRED_ILVL_ITEMS["avoidance"]
+        or DESIRED_ILVL_ITEMS["speed"]
+    ):
+        if not (
+            (DESIRED_ILVL_ITEMS["sockets"] and tertiary_stats["sockets"])
+            or (DESIRED_ILVL_ITEMS["leech"] and tertiary_stats["leech"])
+            or (DESIRED_ILVL_ITEMS["avoidance"] and tertiary_stats["avoidance"])
+            or (DESIRED_ILVL_ITEMS["speed"] and tertiary_stats["speed"])
+        ):
+            return False
+
+    # get ilvl
+    base_ilvl = DESIRED_ILVL_ITEMS["base_ilvls"][auction["item"]["id"]]
+    ilvl_addition = [
+        ilvl_addition[bonus_id]
+        for bonus_id in item_bonus_ids
+        if bonus_id in ilvl_addition.keys()
+    ]
+    if len(ilvl_addition) > 0:
+        ilvl = base_ilvl + sum(ilvl_addition)
+    else:
+        ilvl = base_ilvl
+
+    # skip if ilvl is too low
+    if ilvl < min_ilvl:
+        return False
+
+    # if we get through everything and still haven't skipped, add to matching
+    buyout = round(auction["buyout"] / 10000, 2)
+    if buyout > DESIRED_ILVL_ITEMS["buyout"]:
         return False
     else:
         return {

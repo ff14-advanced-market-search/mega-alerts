@@ -57,6 +57,16 @@ class MegaData:
                 # self.ilvl_base,
             ) = get_bonus_id_sets()
 
+        for desired_ilvl_item in self.DESIRED_ILVL_LIST:
+            (
+                desired_ilvl_item["socket_ids"],
+                desired_ilvl_item["leech_ids"],
+                desired_ilvl_item["avoidance_ids"],
+                desired_ilvl_item["speed_ids"],
+                desired_ilvl_item["ilvl_addition"],
+                # desired_ilvl_item["ilvl_base"],
+            ) = get_bonus_id_sets()
+
         # get upload times once from api and then we get it dynamically from each scan
         self.NO_RUSSIAN_REALMS = self.__set_mega_vars(
             "NO_RUSSIAN_REALMS", raw_mega_data
