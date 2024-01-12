@@ -191,7 +191,7 @@ minikube start
 
 Then update the [https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/kube-manifest.yml](kube-manifest.yml) with your own environmental variables:
 
-``` 
+```
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -289,7 +289,7 @@ To enable this set the env var `DESIRED_ILVL` with json similar to the following
 
 This example will snipe anything based on ilvl (just make sure all the stats are set to false for ilvl alone):
 
-```
+```json
 {
   "ilvl": 420,
   "buyout": 1000,
@@ -306,7 +306,7 @@ This example will snipe anything based on ilvl (just make sure all the stats are
 
 This example looks for items with over an ilvl of 360 with a speed stat because `"speed": true`:
 
-```
+```json
 {
   "ilvl": 424,
   "buyout": 1000,
@@ -323,7 +323,7 @@ This example looks for items with over an ilvl of 360 with a speed stat because 
 
 If we change this and also set `"sockets": true` then it will show items over an ilvl of 360 with a speed stat or a socket:
 
-```
+```json
 {
   "ilvl": 424,
   "buyout": 1000,
@@ -340,7 +340,7 @@ If we change this and also set `"sockets": true` then it will show items over an
 
 You can also remove the `item_ids` or leave it empty to snipe for all items at that ilvl (warning this may spam so many messages it breaks your webhook, if that happens just make a new webhook):
 
-```
+```json
 {
   "ilvl": 424,
   "buyout": 1000,
@@ -349,4 +349,14 @@ You can also remove the `item_ids` or leave it empty to snipe for all items at t
   "leech": false,
   "avoidance": false
 }
+```
+
+If you want to set specific snipes for multiple different items with different prices or ilvls then you can set a list and give it to `DESIRED_ILVL_LIST`:
+
+```json
+[
+  {"ilvl": 457, "buyout":175001, "sockets": false, "speed": false, "leech": false, "avoidance": false,"item_ids": [208420]},
+  {"ilvl": 470, "buyout": 220001, "sockets": true, "speed": false, "leech": true, "avoidance": true,"item_ids": [208426, 208428, 208431]},
+  {"ilvl": 483, "buyout": 1200001, "sockets": false, "speed": false, "leech": true, "avoidance": false,"item_ids": [208426, 208427]}
+]
 ```
