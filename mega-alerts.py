@@ -28,9 +28,7 @@ def pull_single_realm_data(connected_id):
         if "itemID" in auction:
             id_msg = f"`itemID:` {auction['itemID']}\n"
             if "tertiary_stats" in auction:
-                item_name = mega_data.DESIRED_ILVL_ITEMS["item_names"][
-                    auction["itemID"]
-                ]
+                item_name = mega_data.DESIRED_ILVL_NAMES[auction["itemID"]]
                 id_msg += f"`Name:` {item_name}\n"
                 id_msg += f"`ilvl:` {auction['ilvl']}\n"
                 id_msg += f"`tertiary_stats:` {auction['tertiary_stats']}\n"

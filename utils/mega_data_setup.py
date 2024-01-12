@@ -47,6 +47,7 @@ class MegaData:
         self.ITEM_NAMES = self.__set_item_names()
         self.PET_NAMES = self.__set_pet_names()
         # get static lists of bonus id values
+        self.DESIRED_ILVL_NAMES = {}
         if len(self.DESIRED_ILVL_ITEMS) > 0:
             (
                 self.socket_ids,
@@ -56,6 +57,8 @@ class MegaData:
                 self.ilvl_addition,
                 # self.ilvl_base,
             ) = get_bonus_id_sets()
+            for k, v in self.DESIRED_ILVL_ITEMS["item_names"].items():
+                self.DESIRED_ILVL_NAMES[k] = v
 
         for desired_ilvl_item in self.DESIRED_ILVL_LIST:
             (
@@ -66,6 +69,8 @@ class MegaData:
                 desired_ilvl_item["ilvl_addition"],
                 # desired_ilvl_item["ilvl_base"],
             ) = get_bonus_id_sets()
+            for k, v in desired_ilvl_item["item_names"].items():
+                self.DESIRED_ILVL_NAMES[k] = v
 
         # get upload times once from api and then we get it dynamically from each scan
         self.NO_RUSSIAN_REALMS = self.__set_mega_vars(
