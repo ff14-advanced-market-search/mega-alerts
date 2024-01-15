@@ -9,6 +9,8 @@ https://www.patreon.com/indopan
 [Current Docker versions](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/tags?page=1&ordering=last_updated):
 ```
 cohenaj194/mega-alerts:latest
+cohenaj194/mega-alerts:1.9
+cohenaj194/mega-alerts:1.8
 cohenaj194/mega-alerts:1.7
 cohenaj194/mega-alerts:1.6
 cohenaj194/mega-alerts:1.5
