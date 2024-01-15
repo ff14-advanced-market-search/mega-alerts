@@ -53,3 +53,14 @@ CMD /app/run
 #      --env WOW_CLIENT_ID=$WOW_CLIENT_ID \
 #      --env WOW_CLIENT_SECRET=$WOW_CLIENT_SECRET \
 #      cohenaj194/mega-alerts
+
+## test the list from my env
+# docker run -dit \
+#     --name wow-test \
+#     --env DEBUG=true \
+#     --env WOW_REGION=NA \
+#     --env DESIRED_ILVL_LIST="$DESIRED_ILVL_LIST" \
+#     --env MEGA_WEBHOOK_URL="$MEGA_WEBHOOK_URL" \
+#     --env WOW_CLIENT_ID="$WOW_CLIENT_ID" \
+#     --env WOW_CLIENT_SECRET="$WOW_CLIENT_SECRET" \
+#     cohenaj194/mega-alerts-test

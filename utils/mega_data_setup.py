@@ -38,7 +38,8 @@ class MegaData:
         # setup items to snipe
         self.DESIRED_ITEMS = self.__set_desired_items("desired_items")
         self.DESIRED_PETS = self.__set_desired_items("desired_pets")
-        self.DESIRED_ILVL_ITEMS, self.min_ilvl = self.__set_desired_ilvl()
+        self.DESIRED_ILVL_ITEMS, self.min_ilvl = self.__set_desired_ilvl_single()
+        self.DESIRED_ILVL_LIST = self.__set_desired_ilvl_list()
         self.__validate_snipe_lists()
 
         ## should do this here and only get the names of desired items to limit data
@@ -46,6 +47,7 @@ class MegaData:
         self.ITEM_NAMES = self.__set_item_names()
         self.PET_NAMES = self.__set_pet_names()
         # get static lists of bonus id values
+        self.DESIRED_ILVL_NAMES = {}
         if len(self.DESIRED_ILVL_ITEMS) > 0:
             (
                 self.socket_ids,
@@ -55,6 +57,20 @@ class MegaData:
                 self.ilvl_addition,
                 # self.ilvl_base,
             ) = get_bonus_id_sets()
+            for k, v in self.DESIRED_ILVL_ITEMS["item_names"].items():
+                self.DESIRED_ILVL_NAMES[k] = v
+
+        for desired_ilvl_item in self.DESIRED_ILVL_LIST:
+            (
+                desired_ilvl_item["socket_ids"],
+                desired_ilvl_item["leech_ids"],
+                desired_ilvl_item["avoidance_ids"],
+                desired_ilvl_item["speed_ids"],
+                desired_ilvl_item["ilvl_addition"],
+                # desired_ilvl_item["ilvl_base"],
+            ) = get_bonus_id_sets()
+            for k, v in desired_ilvl_item["item_names"].items():
+                self.DESIRED_ILVL_NAMES[k] = v
 
         # get upload times once from api and then we get it dynamically from each scan
         self.NO_RUSSIAN_REALMS = self.__set_mega_vars(
@@ -182,7 +198,7 @@ class MegaData:
             desired_items[int(k)] = int(v)
         return desired_items
 
-    def __set_desired_ilvl(self):
+    def __set_desired_ilvl_single(self):
         item_list_name = "desired_ilvl"
         file_name = f"{item_list_name}.json"
         env_var_name = item_list_name.upper()
@@ -197,7 +213,36 @@ class MegaData:
             else:
                 print(f"skipping {item_list_name} its not set in file or env var")
                 return {}, 201
+        DESIRED_ILVL_ITEMS, min_ilvl = self.__set_desired_ilvl(ilvl_info)
+        return DESIRED_ILVL_ITEMS, min_ilvl
 
+    def __set_desired_ilvl_list(self):
+        item_list_name = "desired_ilvl_list"
+        file_name = f"{item_list_name}.json"
+        env_var_name = item_list_name.upper()
+        ilvl_info = json.load(open(f"user_data/mega/{file_name}"))
+        # if file is not set use env var
+        if len(ilvl_info) == 0:
+            print(
+                f"no desired items found in user_data/mega/{file_name} pulling from env vars"
+            )
+            if os.getenv(env_var_name):
+                ilvl_info = json.loads(os.getenv(env_var_name))
+            else:
+                print(f"skipping {item_list_name} its not set in file or env var")
+                return []
+        DESIRED_ILVL_LIST = []
+        for ilvl_info_single in ilvl_info:
+            # to reduce data all list ilvls must be for specific item ids
+            if "item_ids" not in ilvl_info_single.keys():
+                continue
+            elif len(ilvl_info_single["item_ids"]) == 0:
+                continue
+            snipe_info, min_ilvl = self.__set_desired_ilvl(ilvl_info_single)
+            DESIRED_ILVL_LIST.append(snipe_info)
+        return DESIRED_ILVL_LIST
+
+    def __set_desired_ilvl(self, ilvl_info):
         # add empty item_ids if not set
         if "item_ids" not in ilvl_info.keys():
             ilvl_info["item_ids"] = []
@@ -251,9 +296,10 @@ class MegaData:
             len(self.DESIRED_ITEMS) == 0
             and len(self.DESIRED_PETS) == 0
             and len(self.DESIRED_ILVL_ITEMS) == 0
+            and len(self.DESIRED_ILVL_LIST) == 0
         ):
             error_message = "Error no snipe data found!\n"
-            error_message += "You need to set env vars for DESIRED_ITEMS or DESIRED_PETS or DESIRED_ILVL\n"
+            error_message += "You need to set env vars for DESIRED_ITEMS or DESIRED_PETS, DESIRED_ILVL or DESIRED_ILVL_LIST\n"
             error_message += "Or you need to set up your user_data/mega/ json files with one of the following files:\n"
             error_message += "- desired_items.json\n"
             error_message += "- desired_pets.json\n"
