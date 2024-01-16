@@ -6,6 +6,8 @@ A super fast Blizzard AH sniper created by Saddlebag Exchange
 
 https://www.patreon.com/indopan
 
+![1605baca-f022-4437-b1d9-aa93e7ff348e](https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/dbdf6a86-e560-4f59-b87e-bac7379f3b9d)
+
 [Current Docker versions](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/tags?page=1&ordering=last_updated):
 ```
 cohenaj194/mega-alerts:latest
