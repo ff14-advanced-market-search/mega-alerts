@@ -117,7 +117,16 @@ def clean_listing_data(auctions, connected_id):
             mega_data.DESIRED_ILVL_ITEMS
             and item_id in mega_data.DESIRED_ILVL_ITEMS["item_ids"]
         ):
-            ilvl_item_info = check_tertiary_stats(item)
+            ilvl_item_info = check_tertiary_stats_generic(
+                item,
+                mega_data.socket_ids,
+                mega_data.leech_ids,
+                mega_data.avoidance_ids,
+                mega_data.speed_ids,
+                mega_data.ilvl_addition,
+                mega_data.DESIRED_ILVL_ITEMS,
+                mega_data.min_ilvl,
+            )
             if ilvl_item_info:
                 ilvl_ah_buyouts.append(ilvl_item_info)
 
@@ -160,66 +169,6 @@ def clean_listing_data(auctions, connected_id):
             pet_ah_bids,
             list(ilvl_ah_buyouts),
         )
-
-
-def check_tertiary_stats(auction):
-    if "bonus_lists" not in auction["item"]:
-        return False
-    item_bonus_ids = set(auction["item"]["bonus_lists"])
-    # look for intersection of bonus_ids and any other lists
-    tertiary_stats = {
-        "sockets": len(item_bonus_ids & mega_data.socket_ids) != 0,
-        "leech": len(item_bonus_ids & mega_data.leech_ids) != 0,
-        "avoidance": len(item_bonus_ids & mega_data.avoidance_ids) != 0,
-        "speed": len(item_bonus_ids & mega_data.speed_ids) != 0,
-    }
-
-    # if we're looking for sockets, leech, avoidance, or speed, skip if none of those are present
-    if (
-        mega_data.DESIRED_ILVL_ITEMS["sockets"]
-        or mega_data.DESIRED_ILVL_ITEMS["leech"]
-        or mega_data.DESIRED_ILVL_ITEMS["avoidance"]
-        or mega_data.DESIRED_ILVL_ITEMS["speed"]
-    ):
-        if not (
-            (mega_data.DESIRED_ILVL_ITEMS["sockets"] and tertiary_stats["sockets"])
-            or (mega_data.DESIRED_ILVL_ITEMS["leech"] and tertiary_stats["leech"])
-            or (
-                mega_data.DESIRED_ILVL_ITEMS["avoidance"]
-                and tertiary_stats["avoidance"]
-            )
-            or (mega_data.DESIRED_ILVL_ITEMS["speed"] and tertiary_stats["speed"])
-        ):
-            return False
-
-    # get ilvl
-    base_ilvl = mega_data.DESIRED_ILVL_ITEMS["base_ilvls"][auction["item"]["id"]]
-    ilvl_addition = [
-        mega_data.ilvl_addition[bonus_id]
-        for bonus_id in item_bonus_ids
-        if bonus_id in mega_data.ilvl_addition.keys()
-    ]
-    if len(ilvl_addition) > 0:
-        ilvl = base_ilvl + sum(ilvl_addition)
-    else:
-        ilvl = base_ilvl
-
-    # skip if ilvl is too low
-    if ilvl < mega_data.min_ilvl:
-        return False
-
-    # if we get through everything and still haven't skipped, add to matching
-    buyout = round(auction["buyout"] / 10000, 2)
-    if buyout > mega_data.DESIRED_ILVL_ITEMS["buyout"]:
-        return False
-    else:
-        return {
-            "item_id": auction["item"]["id"],
-            "buyout": buyout,
-            "tertiary_stats": tertiary_stats,
-            "bonus_ids": item_bonus_ids,
-            "ilvl": ilvl,
-        }
 
 
 def check_tertiary_stats_generic(
