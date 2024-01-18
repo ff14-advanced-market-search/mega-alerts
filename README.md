@@ -1,8 +1,11 @@
 # mega-alerts
 
-A super fast Blizzard AH sniper created by Saddlebag Exchange
+A super fast Blizzard AH sniper created by Saddlebag Exchange. 
 
 **Please dontate to our patreon so we can keep the project running.  If you need help setting it up, our creator will personally help any patreon subscribers.**
+
+This amazing tool runs every time the blizzard API updates each hour.  Blizzard only sends out new AH data to the API one time per horu. You what minute of each hour blizzard releases new data for your realm [here on our upload times page.](https://saddlebagexchange.com/wow/upload-timers) 
+
 
 https://www.patreon.com/indopan
 
