@@ -408,7 +408,9 @@ def main_fast():
 
 # start app here
 if os.getenv("DEBUG"):
-    mega_data.send_discord_message("DEBUG MODE: starting mega alerts")
+    mega_data.send_discord_message(
+        "DEBUG MODE: starting mega alerts to run once and then exit operations"
+    )
     # for debugging one realm at a time
     main_single()
     # # for debugging all realms at once in threads
