@@ -1,15 +1,19 @@
-# mega-alerts
+# MEGA-ALERTS
 
 A super fast Blizzard AH sniper created by Saddlebag Exchange. 
 
 **Please dontate to our patreon so we can keep the project running.  If you need help setting it up, our creator will personally help any patreon subscribers.**
 
-This amazing tool runs every time the blizzard API updates each hour.  Blizzard only sends out new AH data to the API one time per horu. You what minute of each hour blizzard releases new data for your realm [here on our upload times page.](https://saddlebagexchange.com/wow/upload-timers) 
-
-
 https://www.patreon.com/indopan
 
-![1605baca-f022-4437-b1d9-aa93e7ff348e](https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/dbdf6a86-e560-4f59-b87e-bac7379f3b9d)
+This amazing tool runs every time the blizzard API updates each hour and then alerts you on discord.
+
+Blizzard only sends out new AH data to the API one time per hour, the rest of the time MEGA-ALERTS will sit and wait for new data to come out before sending more alerts. You can see what minute of each hour blizzard releases new data for your realm [here on our upload times page to find when new alerts will be sent to you.](https://saddlebagexchange.com/wow/upload-timers) 
+
+<img src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/dbdf6a86-e560-4f59-b87e-bac7379f3b9d" width="300" height="300">
+
+<!-- comment out original -->
+<!-- ![1605baca-f022-4437-b1d9-aa93e7ff348e](https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/dbdf6a86-e560-4f59-b87e-bac7379f3b9d) -->
 
 [Current Docker versions](https://hub.docker.com/repository/docker/cohenaj194/mega-alerts/tags?page=1&ordering=last_updated):
 ```
