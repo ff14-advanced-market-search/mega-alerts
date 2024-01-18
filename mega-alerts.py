@@ -382,9 +382,10 @@ def main():
 
         else:
             print(
-                f"Waiting to run {mega_data.THREADS} concurrent api calls for a match in update minute {mega_data.get_upload_time_minutes()} "
-                f"none found triggering at {datetime.now()} : "
-                f"checking for items {mega_data.DESIRED_ITEMS} "
+                f"Blizzard API data only updates 1 time per hour. The updates will come on minute {mega_data.get_upload_time_minutes()} of each hour. "
+                + f"{datetime.now()} is not the update time. "
+                + f"Waiting to run {mega_data.THREADS} concurrent api calls: "
+                + f"checking for items {mega_data.DESIRED_ITEMS} "
                 + f"or pets {mega_data.DESIRED_PETS} "
                 + f"or items to snipe by ilvl and stats "
             )
@@ -413,5 +414,21 @@ if os.getenv("DEBUG"):
     # # for debugging all realms at once in threads
     # main_fast()
 else:
-    mega_data.send_discord_message("starting mega alerts")
+    mega_data.send_discord_message(
+        "Starting mega alerts and scan all AH data instantly.\n"
+        + "These first few messages might be old."
+        + "All future messages will release seconds after the new data is available."
+    )
+    print(
+        f"Blizzard API data only updates 1 time per hour."
+        + f"The updates will come on minute {mega_data.get_upload_time_minutes()} of each hour. "
+        + f"{datetime.now()} may not the update time."
+        + "But we will run once to get the current data so no one asks me about the waiting time. "
+        + "After the first run we will trigger once per hour when the new data updates."
+    )
+
+    # im sick of idiots asking me about the waiting time just run once on startup
+    main_fast()
+
+    # then run the main loop
     main()
