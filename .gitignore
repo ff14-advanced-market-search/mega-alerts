@@ -1,2 +1,3 @@
 __pycache__/
 data/upload_timers.json
+user_data/gui_data/env_vars.json
