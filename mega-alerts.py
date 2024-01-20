@@ -134,11 +134,11 @@ def clean_listing_data(auctions, connected_id):
             if item_id in desired_ilvl_item["item_ids"]:
                 ilvl_item_info = check_tertiary_stats_generic(
                     item,
-                    desired_ilvl_item["socket_ids"],
-                    desired_ilvl_item["leech_ids"],
-                    desired_ilvl_item["avoidance_ids"],
-                    desired_ilvl_item["speed_ids"],
-                    desired_ilvl_item["ilvl_addition"],
+                    mega_data.socket_ids,
+                    mega_data.leech_ids,
+                    mega_data.avoidance_ids,
+                    mega_data.speed_ids,
+                    mega_data.ilvl_addition,
                     desired_ilvl_item,
                     desired_ilvl_item["ilvl"],
                 )

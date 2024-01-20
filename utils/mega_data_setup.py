@@ -46,29 +46,23 @@ class MegaData:
         # get name dictionaries
         self.ITEM_NAMES = self.__set_item_names()
         self.PET_NAMES = self.__set_pet_names()
-        # get static lists of bonus id values
+        # get static lists of ALL bonus id values from raidbots, note this is the index for all ilvl gear
+        (
+            self.socket_ids,
+            self.leech_ids,
+            self.avoidance_ids,
+            self.speed_ids,
+            self.ilvl_addition,
+            # self.ilvl_base,
+        ) = get_bonus_id_sets()
+
+        # get item names from desired ilvl entries
         self.DESIRED_ILVL_NAMES = {}
         if len(self.DESIRED_ILVL_ITEMS) > 0:
-            (
-                self.socket_ids,
-                self.leech_ids,
-                self.avoidance_ids,
-                self.speed_ids,
-                self.ilvl_addition,
-                # self.ilvl_base,
-            ) = get_bonus_id_sets()
             for k, v in self.DESIRED_ILVL_ITEMS["item_names"].items():
                 self.DESIRED_ILVL_NAMES[k] = v
 
         for desired_ilvl_item in self.DESIRED_ILVL_LIST:
-            (
-                desired_ilvl_item["socket_ids"],
-                desired_ilvl_item["leech_ids"],
-                desired_ilvl_item["avoidance_ids"],
-                desired_ilvl_item["speed_ids"],
-                desired_ilvl_item["ilvl_addition"],
-                # desired_ilvl_item["ilvl_base"],
-            ) = get_bonus_id_sets()
             for k, v in desired_ilvl_item["item_names"].items():
                 self.DESIRED_ILVL_NAMES[k] = v
 
