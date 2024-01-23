@@ -227,11 +227,6 @@ class MegaData:
                 return []
         DESIRED_ILVL_LIST = []
         for ilvl_info_single in ilvl_info:
-            # to reduce data all list ilvls must be for specific item ids
-            if "item_ids" not in ilvl_info_single.keys():
-                continue
-            elif len(ilvl_info_single["item_ids"]) == 0:
-                continue
             snipe_info, min_ilvl = self.__set_desired_ilvl(ilvl_info_single)
             DESIRED_ILVL_LIST.append(snipe_info)
         return DESIRED_ILVL_LIST
