@@ -41,9 +41,15 @@ def pull_single_realm_data(connected_id):
             if auction["petID"] in mega_data.PET_NAMES:
                 pet_name = mega_data.PET_NAMES[auction["petID"]]
                 id_msg += f"`Name:` {pet_name}\n"
-        message = (
-            "==================================\n"
-            + f"`region:` {mega_data.REGION} "
+        if os.getenv("IMPORTANT_EMOJI"):
+            if len(os.getenv("IMPORTANT_EMOJI")) == 1:
+                message = os.getenv("IMPORTANT_EMOJI") * 20 + "\n"
+            else:
+                message = "🔥🔥🔥🔥🔥🟢🟢🟢🟢🟢🟢🟢🔥🔥🔥🔥🔥\n"
+        else:
+            message = "==================================\n"
+        message += (
+            f"`region:` {mega_data.REGION} "
             + f"`realmID:` {auction['realmID']} "
             + id_msg
             + f"`realmNames`: {auction['realmNames']}\n"
@@ -57,7 +63,13 @@ def pull_single_realm_data(connected_id):
             message += f"`bid_prices`: {auction['bid_prices']}\n"
         else:
             message += f"`buyout_prices`: {auction['buyout_prices']}\n"
-        message += "==================================\n"
+        if os.getenv("IMPORTANT_EMOJI"):
+            if len(os.getenv("IMPORTANT_EMOJI")) == 1:
+                message += os.getenv("IMPORTANT_EMOJI") * 20 + "\n"
+            else:
+                message += "🔥🔥🔥🔥🔥🟢🟢🟢🟢🟢🟢🟢🔥🔥🔥🔥🔥\n"
+        else:
+            message += "==================================\n"
         if auction not in alert_record:
             mega_data.send_discord_message(message)
             alert_record.append(auction)

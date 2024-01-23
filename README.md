@@ -135,7 +135,7 @@ We also have the following **optional** env vars you can add in to change alert 
 - `MEGA_THREADS=100` increase or decrease the threadcount (default to scan 48 realms at once)(more threads = faster scans, but doing more threads then realms is pointless).
 - `REFRESH_ALERTS="false"` if set to false then you will not see the same alert more than once (default true)
 - `NO_RUSSIAN_REALMS="true"` set this to true if you are on EU and do not want to get alerts from russian realms
-
+- `IMPORTANT_EMOJI=🔥` changes the separators from `====` to whatever emoji you set. 
 
 ## Different ways to run mega alerts
 
