@@ -298,6 +298,7 @@ class MegaData:
             error_message += "- desired_items.json\n"
             error_message += "- desired_pets.json\n"
             error_message += "- desired_ilvl.json\n"
+            error_message += "- desired_ilvl_list.json\n"
             raise Exception(error_message)
 
     def __set_upload_timers(self):
