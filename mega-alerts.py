@@ -213,9 +213,9 @@ def check_tertiary_stats_generic(
     ):
         if not (
             (DESIRED_ILVL_ITEMS["sockets"] and tertiary_stats["sockets"])
-            and (DESIRED_ILVL_ITEMS["leech"] and tertiary_stats["leech"])
-            and (DESIRED_ILVL_ITEMS["avoidance"] and tertiary_stats["avoidance"])
-            and (DESIRED_ILVL_ITEMS["speed"] and tertiary_stats["speed"])
+            or (DESIRED_ILVL_ITEMS["leech"] and tertiary_stats["leech"])
+            or (DESIRED_ILVL_ITEMS["avoidance"] and tertiary_stats["avoidance"])
+            or (DESIRED_ILVL_ITEMS["speed"] and tertiary_stats["speed"])
         ):
             return False
 
