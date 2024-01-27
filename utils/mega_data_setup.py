@@ -135,6 +135,18 @@ class MegaData:
             else:
                 var_value = True
 
+        if var_name == "IMPORTANT_EMOJI":
+            if len(str(var_value)) != 1:
+                var_value = "🔥"
+            else:
+                var_value = str(var_value)
+
+        if var_name == "NO_RUSSIAN_REALMS":
+            if var_value == "false" or var_value == False:
+                var_value = False
+            else:
+                var_value = True
+
         return var_value
 
     # access token setter
