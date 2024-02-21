@@ -30,12 +30,26 @@ cohenaj194/mega-alerts:1.1
 cohenaj194/mega-alerts:1.0
 ```
 
-Last Stable Version: `1.7`
+Last Stable Version: `1.9`
 
-# Alert Example
+# Table of contents
+1. [Alert Example](#alert-example)
+2. [Software Setup](#software-setup)
+3. [Item Selection](#item-selection)
+4. [How to run the alerts](#howto-alerts)
+    1. [Different ways to run mega alerts](#different-ways)
+        1. [Docker](#different-ways-docker)
+        2. [Python](#different-ways-python)
+        3. [Kubernetes](#different-ways-kubernetes)
+5. [How to update versions](#update-versions)
+6. [Simple Alerts](#simple-alerts)
+7. [Snipe by ilvl and tertiary stats](#snipe-ilvl)
+
+
+## Alert Example <a name="alert-example"></a>
 <img width="601" alt="image" src="https://user-images.githubusercontent.com/17516896/224507162-53513e8a-69ab-41e2-a5d5-ea4e51a9fc89.png">
 
-# Software Setup
+# Software Setup <a name="software-setup"></a>
 
 1. [Install Docker](https://docs.docker.com/engine/install/) used to run the sniper.  You may also need to open a command prompt and run `wsl --install --web-download` to get docker desktop running.
 
@@ -54,7 +68,7 @@ Last Stable Version: `1.7`
 docker pull cohenaj194/mega-alerts
 ```
 
-# Item Selection
+## Item Selection <a name="item-selection"></a>
 1. If you have specific items and prices you want, then make a json object with the item ids and prices that you want to snipe for!
 
 This is what you will set for `DESIRED_ITEMS` or you can set `{}` if you only want to snipe pets.
@@ -116,7 +130,7 @@ If we change this to and set `"sockets": true` then it will show items over an i
 Even if you are not going to run directly in python then you should still save this somewhere in a text file.
 
 
-# How to run the alerts
+## How to run the alerts <a name="howto-alerts"></a>
 
 With whatever method you choose you will provide all the details the code needs in *Environmental Variables*.  You must provide at least the following:
 
@@ -137,7 +151,9 @@ We also have the following **optional** env vars you can add in to change alert 
 - `NO_RUSSIAN_REALMS="true"` set this to true if you are on EU and do not want to get alerts from russian realms
 - `IMPORTANT_EMOJI=🔥` changes the separators from `====` to whatever emoji you set. 
 
-## Different ways to run mega alerts
+### Different ways to run mega alerts <a name="different-ways"></a>
+
+#### Docker <a name="different-ways-docker"></a>
 
 1.  Running with docker desktop is the simplist and most stable method.  It will be easiest for windows users.
 
@@ -172,13 +188,46 @@ docker run -dit \
 
 3. You can also try running with docker-compose which will automatically pick up values if you set them in the json files (mentioned in step 4 of the `Item Selection` section of the guide)
 
+Run these commands for the initial file setup:
+```
+mkdir -p ./user_data/mega/
+touch ./user_data/mega/desired_ilvl.json
+touch ./user_data/mega/desired_ilvl_list.json
+touch ./user_data/mega/desired_items.json
+touch ./user_data/mega/desired_pets.json
+touch ./user_data/mega/mega_data.json
+echo "{}" > ./user_data/mega/desired_ilvl.json
+echo "[]" > ./user_data/mega/desired_ilvl_list.json
+echo "{}" > ./user_data/mega/desired_items.json
+echo "{}" > ./user_data/mega/desired_pets.json
+echo "{}" > ./user_data/mega/mega_data.json
+```
+
 You can then run it with docker compose using:
+```
+services:
+  mega-alerts:
+    container_name: mega-alerts
+    image: "cohenaj194/mega-alerts:latest"
+    restart: always
+    volumes:
+      - ./user_data/:/app/user_data/
+    environment:
+      - MEGA_WEBHOOK_URL=webhook
+      - WOW_CLIENT_ID=clientId
+      - WOW_CLIENT_SECRET=secret
+      - WOW_REGION=NA
+      - NO_RUSSION_REALMS=true
+      - IMPORTANT_EMOJI=🔥
+```
 
 ```
-docker compose up --build
+docker compose up -d
 ```
 
-4. You can run it with python on your computer with pycharm
+#### Python <a name="different-ways-python"></a>
+
+1. You can run it with python on your computer with pycharm
 
 Make sure the required packages are installed by running:
 
@@ -190,8 +239,9 @@ Then just run the [mega-alerts.py file](https://github.com/ff14-advanced-market-
 
 <img width="1046" alt="Screen Shot 2023-07-11 at 1 14 40 PM" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/d7363e3d-fef6-4a06-93ab-42ae38fa3ac0">
 
+#### Kubernetes <a name="different-ways-kubernetes"></a>
 
-5. Alternatively you can try to run this in kubernetes on minikube to autorestart if the pods fail
+1. Alternatively you can try to run this in kubernetes on minikube to autorestart if the pods fail
 
 If you can run shell and python locally please run this instead of using kubernetes as you can easily exit it by hitting "control" + "c" on your keyboard:
 
@@ -261,7 +311,7 @@ pod_name=$(kubectl get pods | grep -v NAME | awk '{print $1}')
 kubectl logs $pod_name 
 ```
 
-# How to update versions
+## How to update versions <a name="update-versions"></a>
 
 To update to the latest code version in docker desktop click the 3 dots next to the latest `cohenaj194/mega-alerts` image and then click **pull**.
 
@@ -281,7 +331,7 @@ git checkout main
 git pull
 ```
 
-# Simple Alerts
+## Simple Alerts <a name="simple-alerts"></a>
 
 If you have trouble setting up mega alerts or making a battle.net oauth token you can use the [simple-alerts.py](https://github.com/ff14-advanced-market-search/mega-alerts/blob/main/mega-alerts.py) instead.
 
@@ -297,7 +347,7 @@ To set this up:
 
 <img width="1043" alt="image" src="https://github.com/ff14-advanced-market-search/mega-alerts/assets/17516896/ab94648f-c900-40fe-af3b-51c04df12710">
 
-# Snipe by ilvl and tertiary stats
+## Snipe by ilvl and tertiary stats <a name="snipe-ilvl"></a>
 
 We now have an extra option similar to the `DESIRED_ITEMS` or `DESIRED_PETS` for sniping items based on ilvl.  This also lets you search for items with specific item levels and leech, sockets, speed or avoidance.
 
