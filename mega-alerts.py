@@ -406,15 +406,15 @@ def main():
 
 def main_single():
     # run everything once slow
-    for connected_id in set(mega_data.WOW_SERVER_NAMES.values()):
-        pull_single_realm_data(connected_id)
+    for realm in set(mega_data.get_upload_time_list()):
+        pull_single_realm_data(realm["dataSetID"])
 
 
 def main_fast():
     # run everything once fast
     pool = ThreadPoolExecutor(max_workers=mega_data.THREADS)
-    for connected_id in set(mega_data.WOW_SERVER_NAMES.values()):
-        pool.submit(pull_single_realm_data, connected_id)
+    for realm in set(mega_data.get_upload_time_list()):
+        pool.submit(pull_single_realm_data, realm["dataSetID"])
     pool.shutdown(wait=True)
 
 
