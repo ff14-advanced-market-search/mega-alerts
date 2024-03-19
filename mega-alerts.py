@@ -406,14 +406,14 @@ def main():
 
 def main_single():
     # run everything once slow
-    for realm in set(mega_data.get_upload_time_list()):
+    for realm in mega_data.get_upload_time_list():
         pull_single_realm_data(realm["dataSetID"])
 
 
 def main_fast():
     # run everything once fast
     pool = ThreadPoolExecutor(max_workers=mega_data.THREADS)
-    for realm in set(mega_data.get_upload_time_list()):
+    for realm in mega_data.get_upload_time_list():
         pool.submit(pull_single_realm_data, realm["dataSetID"])
     pool.shutdown(wait=True)
 
