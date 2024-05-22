@@ -10,7 +10,7 @@ charset-normalizer==3.3.2
     # via requests
 idna==3.6
     # via requests
-requests==2.31.0
+requests==2.32.0
     # via -r requirements.in
 tenacity==8.2.3
     # via -r requirements.in
