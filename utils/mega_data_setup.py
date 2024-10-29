@@ -172,7 +172,7 @@ class MegaData:
     def __set_pet_names(self):
         pet_info = requests.get(
             f"https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US",
-            headers={"access_token":self.access_token},
+            headers={"Authorization": f"Bearer {access_token}"},
         ).json()["pets"]
         pet_info = {int(pet["id"]): pet["name"] for pet in pet_info}
         return pet_info
@@ -362,7 +362,7 @@ class MegaData:
                 f"{self.REGION} is not yet supported, reach out for us to add this region option"
             )
 
-        req = requests.get(url, timeout=20, headers={"access_token":self.check_access_token()})
+        req = requests.get(url, timeout=20, headers={"Authorization": f"Bearer {self.check_access_token()}"})
         # check for api errors
         if req.status_code == 429:
             print(
