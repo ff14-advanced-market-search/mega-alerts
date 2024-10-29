@@ -171,7 +171,8 @@ class MegaData:
 
     def __set_pet_names(self):
         pet_info = requests.get(
-            f"https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US&access_token={self.access_token}"
+            f"https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US",
+            headers={"access_token":self.access_token},
         ).json()["pets"]
         pet_info = {int(pet["id"]): pet["name"] for pet in pet_info}
         return pet_info
@@ -352,16 +353,16 @@ class MegaData:
         # we want to use check_access_token here to update the token when expired
         if self.REGION == "NA":
             url = f"https://us.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}"
-            url += f"/auctions?namespace=dynamic-us&locale=en_US&access_token={self.check_access_token()}"
+            url += f"/auctions?namespace=dynamic-us&locale=en_US"
         elif self.REGION == "EU":
             url = f"https://eu.api.blizzard.com/data/wow/connected-realm/{str(connectedRealmId)}"
-            url += f"/auctions?namespace=dynamic-eu&locale=en_EU&access_token={self.check_access_token()}"
+            url += f"/auctions?namespace=dynamic-eu&locale=en_EU"
         else:
             raise Exception(
                 f"{self.REGION} is not yet supported, reach out for us to add this region option"
             )
 
-        req = requests.get(url, timeout=20)
+        req = requests.get(url, timeout=20, headers={"access_token":self.check_access_token()})
         # check for api errors
         if req.status_code == 429:
             print(
