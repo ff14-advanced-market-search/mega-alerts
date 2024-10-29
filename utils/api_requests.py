@@ -38,7 +38,7 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
         )
         exit(1)
 
-    req = requests.get(url, timeout=20, headers={"access_token":access_token})
+    req = requests.get(url, timeout=20, headers={"Authorization": f"Bearer {access_token}"})
 
     auction_info = req.json()
     return auction_info["auctions"]
