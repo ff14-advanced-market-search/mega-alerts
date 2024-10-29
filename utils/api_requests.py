@@ -85,8 +85,8 @@ def get_itemnames():
 def get_petnames(client_id, client_secret):
     access_token = get_wow_access_token(client_id, client_secret)
     pet_info = requests.get(
-        f"https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US",
-        headers={"access_token":access_token},
+        "https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US",
+        headers={"Authorization": f"Bearer {access_token}"},
     ).json()["pets"]
     pet_info = {pet["id"]: pet["name"] for pet in pet_info}
     return pet_info
