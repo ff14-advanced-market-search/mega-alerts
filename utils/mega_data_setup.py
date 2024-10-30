@@ -172,7 +172,7 @@ class MegaData:
     def __set_pet_names(self):
         pet_info = requests.get(
             f"https://us.api.blizzard.com/data/wow/pet/index?namespace=static-us&locale=en_US",
-            headers={"Authorization": f"Bearer {access_token}"},
+            headers={"Authorization": f"Bearer {self.access_token}"},
         ).json()["pets"]
         pet_info = {int(pet["id"]): pet["name"] for pet in pet_info}
         return pet_info
