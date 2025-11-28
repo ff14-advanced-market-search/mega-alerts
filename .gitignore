@@ -1,2 +1,5 @@
 __pycache__/
 data/upload_timers.json
+
+#Ignore cursor AI rules
+.cursor/rules/codacy.mdc

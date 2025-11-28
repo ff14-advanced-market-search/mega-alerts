@@ -311,7 +311,7 @@ class MegaData:
 
     def __set_upload_timers(self):
         update_timers = requests.post(
-            "http://api.saddlebagexchange.com/api/wow/uploadtimers",
+            "https://api.saddlebagexchange.com/api/wow/uploadtimers",
             json={},
         ).json()["data"]
         server_update_times = {

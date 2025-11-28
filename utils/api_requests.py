@@ -47,7 +47,7 @@ def get_listings_single(connectedRealmId: int, access_token: str, region: str):
 def get_update_timers(region, simple_snipe=False):
     # get from api every time
     update_timers = requests.post(
-        "http://api.saddlebagexchange.com/api/wow/uploadtimers",
+        "https://api.saddlebagexchange.com/api/wow/uploadtimers",
         json={},
     ).json()["data"]
 
@@ -75,7 +75,7 @@ def get_update_timers(region, simple_snipe=False):
 
 def get_itemnames():
     item_names = requests.post(
-        "http://api.saddlebagexchange.com/api/wow/itemnames",
+        "https://api.saddlebagexchange.com/api/wow/itemnames",
         json={"return_all": True},
     ).json()
 
@@ -112,7 +112,7 @@ def get_ilvl_items(ilvl, item_ids=[]):
         "item_subclass": [-1],
     }
     results = requests.post(
-        "http://api.saddlebagexchange.com/api/wow/itemdata",
+        "https://api.saddlebagexchange.com/api/wow/itemdata",
         json=json_data,
     ).json()
     if len(results) == 0:
@@ -138,7 +138,7 @@ def get_ilvl_items(ilvl, item_ids=[]):
 
 def simple_snipe(json_data):
     snipe_results = requests.post(
-        "http://api.saddlebagexchange.com/api/wow/regionpricecheck",
+        "https://api.saddlebagexchange.com/api/wow/regionpricecheck",
         json=json_data,
     ).json()
 
