@@ -1,5 +1,8 @@
 # MEGA-ALERTS
 
+> [!WARNING]
+> This project is deprecated. Please use [AzerothAuctionAssassin](https://github.com/ff14-advanced-market-search/AzerothAuctionAssassin) instead.
+
 A super fast Blizzard AH sniper created by Saddlebag Exchange. 
 
 **Please dontate to our patreon so we can keep the project running.  If you need help setting it up, our creator will personally help any patreon subscribers.**
